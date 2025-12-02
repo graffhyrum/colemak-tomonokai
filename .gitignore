@@ -5,3 +5,9 @@ node_modules
 *.iml
 out
 gen
+
+# Build
+dist
+
+# Reports
+playwright-report
