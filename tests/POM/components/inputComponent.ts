@@ -2,9 +2,12 @@ import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import type { ComponentObject } from "../types.ts";
 
-export function createInputComponent(page: Page, selector: string) {
+export function createInputComponent(
+	page: Page,
+	...selectorArgs: Parameters<(typeof page)["locator"]>
+) {
 	const locators = {
-		input: page.locator(selector),
+		input: page.locator(...selectorArgs),
 	} as const satisfies Record<string, Locator>;
 
 	return {
@@ -20,6 +23,9 @@ export function createInputComponent(page: Page, selector: string) {
 			},
 			focus: async () => {
 				await locators.input.focus();
+			},
+			blur: async () => {
+				await locators.input.blur();
 			},
 		},
 		assertions: {

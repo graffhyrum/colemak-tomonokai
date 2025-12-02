@@ -15,7 +15,9 @@ export function createColemakTutorPage(page: Page) {
 	const keyboardSelect = createSelectComponent(page, "#keyboard");
 	const userInput = createInputComponent(page, "#userInput");
 	const wordLimitInput = createInputComponent(page, ".wordLimitModeInput");
+	const wordLimitCheckbox = page.locator(".wordLimitModeButton");
 	const timeLimitInput = createInputComponent(page, ".timeLimitModeInput");
+	const timeLimitCheckbox = page.locator(".timeLimitModeButton");
 	const customKeyInput = createInputComponent(page, "#customUIKeyInput");
 	const scoreDisplay = createDisplayComponent(page, "#scoreText");
 	const timeDisplay = createDisplayComponent(page, "#timeText");
@@ -57,8 +59,16 @@ export function createColemakTutorPage(page: Page) {
 			},
 			settings: {
 				wordLimit: {
+					toggle: async () => {
+						await wordLimitCheckbox.click({ force: true });
+						await page.waitForTimeout(100);
+					},
+					isChecked: async () => {
+						return await wordLimitCheckbox.isChecked();
+					},
 					fill: async (text: string) => {
 						await wordLimitInput.actions.fill(text);
+						await page.keyboard.press("Enter");
 					},
 					clear: async () => {
 						await wordLimitInput.actions.clear();
@@ -68,6 +78,13 @@ export function createColemakTutorPage(page: Page) {
 					},
 				},
 				timeLimit: {
+					toggle: async () => {
+						await timeLimitCheckbox.click({ force: true });
+						await page.waitForTimeout(100);
+					},
+					isChecked: async () => {
+						return await timeLimitCheckbox.isChecked();
+					},
 					fill: async (text: string) => {
 						await timeLimitInput.actions.fill(text);
 					},
@@ -81,6 +98,7 @@ export function createColemakTutorPage(page: Page) {
 				customKey: {
 					fill: async (text: string) => {
 						await customKeyInput.actions.fill(text);
+						await page.keyboard.press("Enter");
 					},
 					clear: async () => {
 						await customKeyInput.actions.clear();
@@ -88,6 +106,9 @@ export function createColemakTutorPage(page: Page) {
 					focus: async () => {
 						await customKeyInput.actions.focus();
 					},
+				},
+				open: async () => {
+					await page.locator("body > button.preferenceButton").click();
 				},
 			},
 			reset: {
@@ -147,6 +168,12 @@ export function createColemakTutorPage(page: Page) {
 			},
 			settings: {
 				wordLimit: {
+					isChecked: async () => {
+						await expect(wordLimitCheckbox).toBeChecked();
+					},
+					isNotChecked: async () => {
+						await expect(wordLimitCheckbox).not.toBeChecked();
+					},
 					hasValue: async (expectedValue: string) => {
 						await wordLimitInput.assertions.hasValue(expectedValue);
 					},
@@ -158,6 +185,12 @@ export function createColemakTutorPage(page: Page) {
 					},
 				},
 				timeLimit: {
+					isChecked: async () => {
+						await expect(timeLimitCheckbox).toBeChecked();
+					},
+					isNotChecked: async () => {
+						await expect(timeLimitCheckbox).not.toBeChecked();
+					},
 					hasValue: async (expectedValue: string) => {
 						await timeLimitInput.assertions.hasValue(expectedValue);
 					},
@@ -195,24 +228,6 @@ export function createColemakTutorPage(page: Page) {
 					},
 					isVisible: async () => {
 						await timeDisplay.assertions.isVisible();
-					},
-				},
-			},
-			links: {
-				github: {
-					hasHref: async (expectedHref: string) => {
-						await githubLink.assertions.hasHref(expectedHref);
-					},
-					isVisible: async () => {
-						await githubLink.assertions.isVisible();
-					},
-				},
-				petition: {
-					hasHref: async (expectedHref: string) => {
-						await petitionLink.assertions.hasHref(expectedHref);
-					},
-					isVisible: async () => {
-						await petitionLink.assertions.isVisible();
 					},
 				},
 			},
