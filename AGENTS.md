@@ -1,63 +1,56 @@
 # Colemak-Tomonokai Project Rules
 
-## Playwright Testing Best Practices
+## Commands
+- `bun typecheck` - TypeScript type checking
+- `bun lint` - Biome linting
+- `bun format` - Biome formatting  
+- `bun check` - Run Biome lint + format
+- `bun check:fix` - Auto-fix Biome issues
+- `bun run test` - Run all Playwright tests
+- `bun run test tests/essential-actions.spec.ts` - Run single test file
+- `bun test:ui` - Playwright test UI mode
+- `bun test:headed` - Playwright headed mode
+- `bun vet` - Full check (lint fix + typecheck + test)
 
-### Testing Philosophy
-- Test user-visible behavior, not implementation details
-- Each test must be completely isolated with fresh state
-- Use beforeEach hooks for common setup like navigation
-- Never test third-party dependencies - mock them instead
+## Code Style
+- Use Biome for formatting/linting (tab indentation, double quotes)
+- TypeScript strict mode enabled
+- Import organization: auto-organize on save
+- File extensions: .ts for TypeScript, .js for JavaScript
+- Use revealing module pattern, not ES6 classes
+- Test files: .spec.ts extension in tests/ directory
+- POM pattern: Component objects in tests/POM/components/
 
-### Locator Usage
-- ALWAYS use user-facing locators: `getByRole()`, `getByText()`, `getByLabel()`, `getByTestId()`
-- NEVER use CSS selectors or XPath unless absolutely necessary
-- Use locator chaining and filtering for complex selections
-- Generate locators with `npx playwright codegen` when unsure
+## Agent Delegation Guidelines
 
-### Assertions
-- Use web-first assertions: `await expect(locator).toBeVisible()`
-- NEVER use manual assertions: `expect(await locator.isVisible()).toBe(true)`
-- Use soft assertions when you want to continue testing after failures
-- All assertions must be awaited properly
+### Playwright Testing
+When working with Playwright tests test creation test debugging or any testing-related tasks:
+- ALWAYS delegate to @playwright subagent for expert analysis and guidance
+- The @playwright agent provides instructions and code samples for you to implement
+- Example: "@playwright analyze this failing test and provide a fix"
 
-### Page Object Model (POM)
-- Follow existing POM structure in `tests/POM/`
-- Components use revealing module pattern (no ES6 classes)
-- Separate actions and assertions clearly
-- Each component file exports a `create*Component` function
-- Use TypeScript with proper typing from `tests/POM/types.ts`
+### When to Use @playwright
+- Creating new Playwright tests get code samples and implementation steps
+- Debugging failing tests get analysis and solutions
+- Reviewing test code for best practices get improvement recommendations
+- Optimizing test performance get specific optimization strategies
+- Questions about Playwright configuration get expert guidance
 
-### Test Structure
-- Use descriptive test names that explain user behavior
-- Group related tests with `test.describe()`
-- Keep tests focused on single user scenarios
-- Use the custom fixture with `colemakPage` for all tests
+### Working with @playwright
+- @playwright will provide analysis recommendations and complete code samples
+- You primary agent are responsible for implementing the provided solutions
+- Follow exact commands provided by @playwright
+- Validate implementations as suggested by @playwright
+- Ask @playwright if any step is unclear
 
-### Configuration & Performance
-- Tests run in single worker mode (workers: 1) due to state management
-- Use trace viewer for debugging CI failures
-- Action timeout set to 100ms, expect timeout to 500ms
-- Always run tests on CI with proper retries
+### When NOT to Use @playwright
+- General application development handle directly
+- Planning non-testing features handle directly
+- Code reviews of non-test code handle directly
 
-### Code Quality
-- Use TypeScript strict mode
-- Import from `./fixture.ts` not directly from playwright/test
-- Follow existing naming conventions (camelCase for functions, PascalCase for types)
-- Use proper async/await patterns throughout
-
-### Debugging
-- Use VS Code Playwright extension for live debugging
-- Use `--debug` flag for step-through debugging
-- Use `--trace on` for detailed local debugging
-- Never commit debugging code
-
-### Browser Testing
-- Currently configured for Chromium only
-- Add Firefox and WebKit projects when cross-browser testing is needed
-- Test on real devices when mobile testing is required
-
-### Anti-Patterns to Avoid
-- Never use `page.waitForTimeout()` except for specific animation timing
-- Don't use force clicks unless absolutely necessary
-- Avoid testing implementation details like CSS classes
-- Never rely on specific network timing in tests
+### Pair Programming Model
+The interaction should resemble pair programming where:
+- Primary agent makes all file changes and runs commands
+- @playwright provides expertise and guidance but no direct input
+- @playwright assumes zero Playwright knowledge from primary agent
+- Instructions include exact commands expected outputs and line-by-line changes
