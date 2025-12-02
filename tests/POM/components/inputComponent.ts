@@ -5,7 +5,7 @@ import type { ComponentObject } from "../types.ts";
 export function createInputComponent(
 	page: Page,
 	selector: string,
-): ComponentObject {
+) {
 	const locators = {
 		input: page.locator(selector),
 	} as const satisfies Record<string, Locator>;

@@ -5,7 +5,7 @@ import type { ComponentObject } from "../types.ts";
 export function createLinkComponent(
 	page: Page,
 	selector: string,
-): ComponentObject {
+) {
 	const locators = {
 		link: page.locator(selector),
 	} as const satisfies Record<string, Locator>;

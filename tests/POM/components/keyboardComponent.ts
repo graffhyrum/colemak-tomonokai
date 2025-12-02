@@ -1,7 +1,7 @@
 import type { Page } from "@playwright/test";
 import type { ComponentObject } from "../types.ts";
 
-export function createKeyboardComponent(page: Page): ComponentObject {
+export function createKeyboardComponent(page: Page) {
 	return {
 		page,
 		actions: {

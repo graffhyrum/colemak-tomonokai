@@ -5,7 +5,7 @@ import type { ComponentObject } from "../types.ts";
 export function createDisplayComponent(
 	page: Page,
 	selector: string,
-): ComponentObject {
+) {
 	const locators = {
 		display: page.locator(selector),
 	} as const satisfies Record<string, Locator>;

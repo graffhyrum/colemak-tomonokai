@@ -15,7 +15,7 @@ export type SelectAssertions = {
 export function createSelectComponent(
 	page: Page,
 	selector: string,
-): ComponentObject {
+) {
 	const locators = {
 		select: page.locator(selector),
 		options: page.locator(`${selector} option`),

@@ -40,7 +40,7 @@ export function createColemakTutorPage(page: Page) {
 			},
 			input: {
 				fill: async (text: string) => {
-					await (userInput.actions).fill(text);
+					await userInput.actions.fill(text);
 				},
 				clear: async () => {
 					await (userInput.actions).clear();
