@@ -12,10 +12,7 @@ export type SelectAssertions = {
 	optionExists: (value: string) => Promise<void>;
 };
 
-export function createSelectComponent(
-	page: Page,
-	selector: string,
-) {
+export function createSelectComponent(page: Page, selector: string) {
 	const locators = {
 		select: page.locator(selector),
 		options: page.locator(`${selector} option`),

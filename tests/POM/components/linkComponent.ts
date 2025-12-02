@@ -2,10 +2,7 @@ import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import type { ComponentObject } from "../types.ts";
 
-export function createLinkComponent(
-	page: Page,
-	selector: string,
-) {
+export function createLinkComponent(page: Page, selector: string) {
 	const locators = {
 		link: page.locator(selector),
 	} as const satisfies Record<string, Locator>;

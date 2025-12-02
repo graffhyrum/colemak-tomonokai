@@ -1,9 +1,9 @@
-import {test} from "./fixture.ts";
+import { test } from "./fixture.ts";
 
 test.describe("Colemak Typing Tutor - Essential Actions", () => {
 	test("user can select different keyboard layouts", async ({
-		                                                          colemakPage,
-	                                                          }) => {
+		colemakPage,
+	}) => {
 		// Initial state
 		await colemakPage.assertions.layout.hasValue("colemak");
 
@@ -19,8 +19,8 @@ test.describe("Colemak Typing Tutor - Essential Actions", () => {
 	});
 
 	test("user can select different keyboard formats", async ({
-		                                                          colemakPage,
-	                                                          }) => {
+		colemakPage,
+	}) => {
 		// Initial state
 		await colemakPage.assertions.keyboard.hasValue("ansi");
 
@@ -32,7 +32,7 @@ test.describe("Colemak Typing Tutor - Essential Actions", () => {
 		await colemakPage.assertions.keyboard.hasValue("ortho");
 	});
 
-	test("user can type in the input field", async ({colemakPage}) => {
+	test("user can type in the input field", async ({ colemakPage }) => {
 		// Type some text
 		await colemakPage.actions.input.fill("test typing");
 		await colemakPage.assertions.input.hasValue("test typing");
@@ -42,13 +42,13 @@ test.describe("Colemak Typing Tutor - Essential Actions", () => {
 		await colemakPage.assertions.input.hasValue("");
 	});
 
-	test("user sees initial score and time", async ({colemakPage}) => {
+	test("user sees initial score and time", async ({ colemakPage }) => {
 		// Check initial values
 		await colemakPage.assertions.display.score.containsText("0/50");
 		await colemakPage.assertions.display.time.containsText("0m :0 s");
 	});
 
-	test("user can adjust word limit input", async ({colemakPage}) => {
+	test("user can adjust word limit input", async ({ colemakPage }) => {
 		// Change word limit value
 		await colemakPage.actions.settings.wordLimit.fill("25");
 		await colemakPage.assertions.settings.wordLimit.hasValue("25");
@@ -57,19 +57,19 @@ test.describe("Colemak Typing Tutor - Essential Actions", () => {
 		await colemakPage.assertions.settings.wordLimit.hasValue("100");
 	});
 
-	test("user can see time limit input exists", async ({colemakPage}) => {
+	test("user can see time limit input exists", async ({ colemakPage }) => {
 		// Check that time limit input exists
 		await colemakPage.assertions.settings.timeLimit.isAttached();
 		await colemakPage.assertions.settings.timeLimit.hasValue("60");
 	});
 
-	test("user can see custom key input exists", async ({colemakPage}) => {
+	test("user can see custom key input exists", async ({ colemakPage }) => {
 		// Check that custom key input exists
 		await colemakPage.assertions.settings.customKey.isAttached();
 		await colemakPage.assertions.settings.customKey.hasValue("");
 	});
 
-	test("user can use keyboard shortcuts", async ({colemakPage}) => {
+	test("user can use keyboard shortcuts", async ({ colemakPage }) => {
 		// Focus on input
 		await colemakPage.actions.input.focus();
 
@@ -82,7 +82,7 @@ test.describe("Colemak Typing Tutor - Essential Actions", () => {
 		await colemakPage.assertions.display.score.containsText("0/50");
 	});
 
-	test("user sees all layout options available", async ({colemakPage}) => {
+	test("user sees all layout options available", async ({ colemakPage }) => {
 		// Check that all expected layouts are present
 		await colemakPage.assertions.layout.hasOptionsCount(14);
 
@@ -94,7 +94,7 @@ test.describe("Colemak Typing Tutor - Essential Actions", () => {
 		await colemakPage.assertions.layout.optionExists("workman");
 	});
 
-	test("user sees all keyboard format options", async ({colemakPage}) => {
+	test("user sees all keyboard format options", async ({ colemakPage }) => {
 		// Check that all keyboard formats are present
 		await colemakPage.assertions.keyboard.hasOptionsCount(3);
 
@@ -104,7 +104,7 @@ test.describe("Colemak Typing Tutor - Essential Actions", () => {
 		await colemakPage.assertions.keyboard.optionExists("ortho");
 	});
 
-	test("user can navigate to external links", async ({colemakPage}) => {
+	test("user can navigate to external links", async ({ colemakPage }) => {
 		// Check links exist and have correct hrefs
 		await colemakPage.assertions.links.github.hasHref(
 			"https://github.com/gnusenpai/colemakclub",
@@ -114,7 +114,7 @@ test.describe("Colemak Typing Tutor - Essential Actions", () => {
 		);
 	});
 
-	test("user sees page title and header", async ({colemakPage}) => {
+	test("user sees page title and header", async ({ colemakPage }) => {
 		// Check page title
 		await colemakPage.assertions.page.title(/Colemak Club/);
 
@@ -123,8 +123,8 @@ test.describe("Colemak Typing Tutor - Essential Actions", () => {
 	});
 
 	test("user can interact with visible form inputs", async ({
-		                                                          colemakPage,
-	                                                          }) => {
+		colemakPage,
+	}) => {
 		// Test typing in visible inputs
 		await colemakPage.actions.input.fill("test");
 		await colemakPage.assertions.input.hasValue("test");

@@ -1,11 +1,11 @@
-import type {Page} from "@playwright/test";
-import {expect} from "@playwright/test";
-import {createDisplayComponent} from "./components/displayComponent.ts";
-import {createInputComponent} from "./components/inputComponent.ts";
-import {createKeyboardComponent} from "./components/keyboardComponent.ts";
-import {createLinkComponent} from "./components/linkComponent.ts";
-import {createSelectComponent} from "./components/selectComponent.ts";
-import type {PageObject} from "./types.ts";
+import type { Page } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { createDisplayComponent } from "./components/displayComponent.ts";
+import { createInputComponent } from "./components/inputComponent.ts";
+import { createKeyboardComponent } from "./components/keyboardComponent.ts";
+import { createLinkComponent } from "./components/linkComponent.ts";
+import { createSelectComponent } from "./components/selectComponent.ts";
+import type { PageObject } from "./types.ts";
 
 export function createColemakTutorPage(page: Page) {
 	// Component instances
@@ -30,12 +30,12 @@ export function createColemakTutorPage(page: Page) {
 		actions: {
 			layout: {
 				selectOption: async (value: string) => {
-					await (layoutSelect.actions).selectOption(value);
+					await layoutSelect.actions.selectOption(value);
 				},
 			},
 			keyboard: {
 				selectOption: async (value: string) => {
-					await (keyboardSelect.actions).selectOption(value);
+					await keyboardSelect.actions.selectOption(value);
 				},
 			},
 			input: {
@@ -43,64 +43,64 @@ export function createColemakTutorPage(page: Page) {
 					await userInput.actions.fill(text);
 				},
 				clear: async () => {
-					await (userInput.actions).clear();
+					await userInput.actions.clear();
 				},
 				focus: async () => {
-					await (userInput.actions).focus();
+					await userInput.actions.focus();
 				},
 			},
 			settings: {
 				wordLimit: {
 					fill: async (text: string) => {
-						await (wordLimitInput.actions).fill(text);
+						await wordLimitInput.actions.fill(text);
 					},
 					clear: async () => {
-						await (wordLimitInput.actions).clear();
+						await wordLimitInput.actions.clear();
 					},
 					focus: async () => {
-						await (wordLimitInput.actions).focus();
+						await wordLimitInput.actions.focus();
 					},
 				},
 				timeLimit: {
 					fill: async (text: string) => {
-						await (timeLimitInput.actions).fill(text);
+						await timeLimitInput.actions.fill(text);
 					},
 					clear: async () => {
-						await (timeLimitInput.actions).clear();
+						await timeLimitInput.actions.clear();
 					},
 					focus: async () => {
-						await (timeLimitInput.actions).focus();
+						await timeLimitInput.actions.focus();
 					},
 				},
 				customKey: {
 					fill: async (text: string) => {
-						await (customKeyInput.actions).fill(text);
+						await customKeyInput.actions.fill(text);
 					},
 					clear: async () => {
-						await (customKeyInput.actions).clear();
+						await customKeyInput.actions.clear();
 					},
 					focus: async () => {
-						await (customKeyInput.actions).focus();
+						await customKeyInput.actions.focus();
 					},
 				},
 			},
 			reset: {
 				tab: async () => {
-					await (keyboard.actions).tab();
+					await keyboard.actions.tab();
 				},
 				escape: async () => {
-					await (keyboard.actions).escape();
+					await keyboard.actions.escape();
 				},
 			},
 			links: {
 				github: {
 					click: async () => {
-						await (githubLink.actions).click();
+						await githubLink.actions.click();
 					},
 				},
 				petition: {
 					click: async () => {
-						await (petitionLink.actions).click();
+						await petitionLink.actions.click();
 					},
 				},
 			},
@@ -108,107 +108,105 @@ export function createColemakTutorPage(page: Page) {
 		assertions: {
 			layout: {
 				hasValue: async (expectedValue: string) => {
-					await (layoutSelect.assertions).hasValue(expectedValue);
+					await layoutSelect.assertions.hasValue(expectedValue);
 				},
 				hasOptionsCount: async (expectedCount: number) => {
-					await (layoutSelect.assertions).hasOptionsCount(expectedCount);
+					await layoutSelect.assertions.hasOptionsCount(expectedCount);
 				},
 				optionExists: async (value: string) => {
-					await (layoutSelect.assertions).optionExists(value);
+					await layoutSelect.assertions.optionExists(value);
 				},
 			},
 			keyboard: {
 				hasValue: async (expectedValue: string) => {
-					await (keyboardSelect.assertions).hasValue(expectedValue);
+					await keyboardSelect.assertions.hasValue(expectedValue);
 				},
 				hasOptionsCount: async (expectedCount: number) => {
-					await (keyboardSelect.assertions).hasOptionsCount(
-						expectedCount,
-					);
+					await keyboardSelect.assertions.hasOptionsCount(expectedCount);
 				},
 				optionExists: async (value: string) => {
-					await (keyboardSelect.assertions).optionExists(value);
+					await keyboardSelect.assertions.optionExists(value);
 				},
 			},
 			input: {
 				hasValue: async (expectedValue: string) => {
-					await (userInput.assertions).hasValue(expectedValue);
+					await userInput.assertions.hasValue(expectedValue);
 				},
 				isAttached: async () => {
-					await (userInput.assertions).isAttached();
+					await userInput.assertions.isAttached();
 				},
 				isVisible: async () => {
-					await (userInput.assertions).isVisible();
+					await userInput.assertions.isVisible();
 				},
 			},
 			settings: {
 				wordLimit: {
 					hasValue: async (expectedValue: string) => {
-						await (wordLimitInput.assertions).hasValue(expectedValue);
+						await wordLimitInput.assertions.hasValue(expectedValue);
 					},
 					isAttached: async () => {
-						await (wordLimitInput.assertions).isAttached();
+						await wordLimitInput.assertions.isAttached();
 					},
 					isVisible: async () => {
-						await (wordLimitInput.assertions).isVisible();
+						await wordLimitInput.assertions.isVisible();
 					},
 				},
 				timeLimit: {
 					hasValue: async (expectedValue: string) => {
-						await (timeLimitInput.assertions).hasValue(expectedValue);
+						await timeLimitInput.assertions.hasValue(expectedValue);
 					},
 					isAttached: async () => {
-						await (timeLimitInput.assertions).isAttached();
+						await timeLimitInput.assertions.isAttached();
 					},
 					isVisible: async () => {
-						await (timeLimitInput.assertions).isVisible();
+						await timeLimitInput.assertions.isVisible();
 					},
 				},
 				customKey: {
 					hasValue: async (expectedValue: string) => {
-						await (customKeyInput.assertions).hasValue(expectedValue);
+						await customKeyInput.assertions.hasValue(expectedValue);
 					},
 					isAttached: async () => {
-						await (customKeyInput.assertions).isAttached();
+						await customKeyInput.assertions.isAttached();
 					},
 					isVisible: async () => {
-						await (customKeyInput.assertions).isVisible();
+						await customKeyInput.assertions.isVisible();
 					},
 				},
 			},
 			display: {
 				score: {
 					containsText: async (expectedText: string) => {
-						await (scoreDisplay.assertions).containsText(expectedText);
+						await scoreDisplay.assertions.containsText(expectedText);
 					},
 					isVisible: async () => {
-						await (scoreDisplay.assertions).isVisible();
+						await scoreDisplay.assertions.isVisible();
 					},
 				},
 				time: {
 					containsText: async (expectedText: string) => {
-						await (timeDisplay.assertions).containsText(expectedText);
+						await timeDisplay.assertions.containsText(expectedText);
 					},
 					isVisible: async () => {
-						await (timeDisplay.assertions).isVisible();
+						await timeDisplay.assertions.isVisible();
 					},
 				},
 			},
 			links: {
 				github: {
 					hasHref: async (expectedHref: string) => {
-						await (githubLink.assertions).hasHref(expectedHref);
+						await githubLink.assertions.hasHref(expectedHref);
 					},
 					isVisible: async () => {
-						await (githubLink.assertions).isVisible();
+						await githubLink.assertions.isVisible();
 					},
 				},
 				petition: {
 					hasHref: async (expectedHref: string) => {
-						await (petitionLink.assertions).hasHref(expectedHref);
+						await petitionLink.assertions.hasHref(expectedHref);
 					},
 					isVisible: async () => {
-						await (petitionLink.assertions).isVisible();
+						await petitionLink.assertions.isVisible();
 					},
 				},
 			},
