@@ -15,8 +15,6 @@
 }
 
 body {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-align: center;
 	-ms-flex-align: center;
@@ -30,11 +28,6 @@ body {
 	padding: 0;
 }
 
-body *,
-#userInput {
-	font-family: "Lucida Console", Monaco, monospace;
-}
-
 * {
 	-webkit-transition:
 		border-color 0.1s linear,
@@ -43,20 +36,13 @@ body *,
 	transition:
 		border-color 0.1s linear,
 		opacity 0.15s linear,
-		-webkit-transform 0.07s linear;
-	-o-transition:
-		border-color 0.1s linear,
-		opacity 0.15s linear,
-		transform 0.07s linear;
-	transition:
-		border-color 0.1s linear,
-		opacity 0.15s linear,
-		transform 0.07s linear;
-	transition:
-		border-color 0.1s linear,
-		opacity 0.15s linear,
 		transform 0.07s linear,
 		-webkit-transform 0.07s linear;
+}
+
+body *,
+#userInput {
+	font-family: "Lucida Console", Monaco, monospace;
 }
 
 #selectors {
@@ -136,8 +122,6 @@ select {
 }
 
 .preferenceMenu ul {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
@@ -167,14 +151,6 @@ input[type="checkbox"] {
 	margin-left: 2vh;
 }
 
-li input {
-	font-size: 1.7vh;
-	width: 5vh;
-	height: 1.7vh;
-
-	margin: 0 1.5vh 0 auto;
-}
-
 h1 {
 	font-size: 3.5vmax;
 	text-transform: uppercase;
@@ -182,8 +158,6 @@ h1 {
 }
 
 nav {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
@@ -199,8 +173,6 @@ nav {
 }
 
 #main {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
@@ -220,6 +192,15 @@ nav {
 	flex: 2 1 1000px;
 }
 
+button {
+	letter-spacing: 3px;
+	background-color: transparent;
+	border: 0.2vmax solid var(--text-color);
+	color: var(--text-color);
+	/*text-transform: capitalize;*/
+	cursor: pointer;
+}
+
 nav button {
 	-webkit-box-flex: 1;
 	-ms-flex: 1 1 11vh;
@@ -235,18 +216,6 @@ nav button:hover {
 	border-color: var(--accent-color);
 }
 
-button {
-	letter-spacing: 3px;
-}
-
-button {
-	background-color: transparent;
-	border: 0.2vmax solid var(--text-color);
-	color: var(--text-color);
-	/*text-transform: capitalize;*/
-	cursor: pointer;
-}
-
 button:focus {
 	outline: none;
 }
@@ -260,8 +229,6 @@ button:focus {
 }
 
 .typingArea {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
@@ -326,9 +293,15 @@ input {
 	margin: 2.5vh auto 3vh auto;
 }
 
+li input {
+	font-size: 1.7vh;
+	width: 5vh;
+	height: 1.7vh;
+
+	margin: 0 1.5vh 0 auto;
+}
+
 #scoreAndClock {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
 	-ms-flex-pack: distribute;
 	justify-content: space-around;
@@ -342,8 +315,6 @@ input {
 }
 
 #testResults {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
@@ -424,7 +395,6 @@ a:link {
 	left: 0.75vmin;
 	bottom: 0.75vmin;
 	background-color: white;
-	-webkit-transition: 0.4s;
 	-webkit-transition: 0.2s;
 	-o-transition: 0.2s;
 	transition: 0.2s;
@@ -448,14 +418,10 @@ input:checked + .slider:before {
 /*___________cheatsheet___________*/
 
 .cheatsheetContainer {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
 }
 
 .row {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-pack: justify;
 	-ms-flex-pack: justify;
@@ -466,8 +432,6 @@ input:checked + .slider:before {
 
 .key,
 .cKey {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-pack: center;
 	-ms-flex-pack: center;
@@ -622,13 +586,7 @@ input:checked + .slider:before {
 	display: none;
 
 	-webkit-transition: -webkit-transform 0.15s linear;
-
-	transition: -webkit-transform 0.15s linear;
-
 	-o-transition: transform 0.15s linear;
-
-	transition: transform 0.15s linear;
-
 	transition:
 		transform 0.15s linear,
 		-webkit-transform 0.15s linear;
@@ -687,8 +645,6 @@ input:checked + .slider:before {
 }
 
 .buttonHolder {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-pack: justify;
 	-ms-flex-pack: justify;
@@ -716,8 +672,6 @@ input:checked + .slider:before {
 
 /*__________________custom level select________________*/
 #customUILevelSelect {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
 	margin: 2vmax auto 2vmax auto;
 	background: red 0.2;
