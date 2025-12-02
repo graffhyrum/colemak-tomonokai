@@ -22,5 +22,9 @@
 	},
 	"peerDependencies": {
 		"@typescript/native-preview": "^7.0.0-dev.20251202.1"
+	},
+	"dependencies": {
+		"arkenv": "^0.7.6",
+		"arktype": "^2.1.27"
 	}
 }
