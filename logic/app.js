@@ -3,9 +3,7 @@
 // the string of text that shows the words for the user to type
 var prompt 		= document.querySelector('.prompt'),
 //
-wordChain 		= document.querySelector('#wordChain'),
-//
-answer 			= document.querySelector('#answer'),
+
 //
 scoreText 		= document.querySelector('#scoreText'),
 //
@@ -29,7 +27,7 @@ customInput 	= document.querySelector('.customInput'),
 //
 buttons 		= document.querySelector('nav').children,
 //
-currentWord 	= document.querySelector('#currentWord'),
+
 // layout select menu
 select 			= document.querySelector('select'),
 //
