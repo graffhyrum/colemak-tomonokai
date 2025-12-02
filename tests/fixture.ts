@@ -12,3 +12,6 @@ export const test = base.extend<{
 		await use(colemakPage);
 	},
 });
+
+// Export test.step for use in tests
+export const step = test.step;
