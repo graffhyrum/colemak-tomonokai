@@ -10,8 +10,6 @@ bun run test
 
 # Run tests for specific browser
 bun run test --project=chromium
-bun run test --project=firefox  
-bun run test --project=webkit
 
 # Run tests with UI mode
 bun run test:ui
@@ -28,10 +26,7 @@ bun run test:headed
 
 ## Browser Support
 
-Tests run across three browsers:
-- Chromium (Chrome/Edge)
-- Firefox  
-- WebKit (Safari)
+Tests run on Chromium (Chrome/Edge)
 
 ## Writing New Tests
 

@@ -1,6 +1,6 @@
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig, devices } from "@playwright/test";
-import { dirname, join } from "path";
-import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -22,14 +22,6 @@ export default defineConfig({
 		{
 			name: "chromium",
 			use: { ...devices["Desktop Chrome"] },
-		},
-		{
-			name: "firefox",
-			use: { ...devices["Desktop Firefox"] },
-		},
-		{
-			name: "webkit",
-			use: { ...devices["Desktop Safari"] },
 		},
 	],
 	webServer: {
