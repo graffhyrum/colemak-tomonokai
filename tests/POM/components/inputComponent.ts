@@ -14,7 +14,9 @@ export function createInputComponent(page: Page, selector: string) {
 				await locators.input.fill(text);
 			},
 			clear: async () => {
-				await locators.input.fill("");
+				await locators.input.focus();
+				await locators.input.press("Control+a");
+				await locators.input.press("Delete");
 			},
 			focus: async () => {
 				await locators.input.focus();

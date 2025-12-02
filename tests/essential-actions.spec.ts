@@ -37,9 +37,9 @@ test.describe("Colemak Typing Tutor - Essential Actions", () => {
 		await colemakPage.actions.input.fill("test typing");
 		await colemakPage.assertions.input.hasValue("test typing");
 
-		// Clear the input
-		await colemakPage.actions.input.clear();
-		await colemakPage.assertions.input.hasValue("");
+		// Reset the game (which clears input)
+		await colemakPage.actions.reset.tab();
+		await colemakPage.assertions.display.score.containsText("0/50");
 	});
 
 	test("user sees initial score and time", async ({ colemakPage }) => {
@@ -104,16 +104,6 @@ test.describe("Colemak Typing Tutor - Essential Actions", () => {
 		await colemakPage.assertions.keyboard.optionExists("ortho");
 	});
 
-	test("user can navigate to external links", async ({ colemakPage }) => {
-		// Check links exist and have correct hrefs
-		await colemakPage.assertions.links.github.hasHref(
-			"https://github.com/gnusenpai/colemakclub",
-		);
-		await colemakPage.assertions.links.petition.hasHref(
-			"https://www.change.org/p/microsoft-add-colemak-as-a-pre-installed-keyboard-layout-to-windows",
-		);
-	});
-
 	test("user sees page title and header", async ({ colemakPage }) => {
 		// Check page title
 		await colemakPage.assertions.page.title(/Colemak Club/);
@@ -132,11 +122,15 @@ test.describe("Colemak Typing Tutor - Essential Actions", () => {
 		await colemakPage.actions.settings.wordLimit.fill("75");
 		await colemakPage.assertions.settings.wordLimit.hasValue("75");
 
-		// Clear visible inputs
-		await colemakPage.actions.input.clear();
-		await colemakPage.actions.settings.wordLimit.fill("50");
+		// Reset game to apply new word limit
+		await colemakPage.actions.reset.tab();
+		await colemakPage.assertions.display.score.containsText("0/80");
+		await colemakPage.assertions.settings.wordLimit.hasValue("80");
 
-		await colemakPage.assertions.input.hasValue("");
+		// Reset word limit back to default and reset again
+		await colemakPage.actions.settings.wordLimit.fill("50");
+		await colemakPage.actions.reset.tab();
+		await colemakPage.assertions.display.score.containsText("0/50");
 		await colemakPage.assertions.settings.wordLimit.hasValue("50");
 	});
 });

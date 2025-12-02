@@ -1,3 +1,5 @@
+import { dirname, join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { createDisplayComponent } from "./components/displayComponent.ts";
@@ -21,10 +23,14 @@ export function createColemakTutorPage(page: Page) {
 	const petitionLink = createLinkComponent(page, 'a[href*="change.org"]');
 	const keyboard = createKeyboardComponent(page);
 
+	const __filename = fileURLToPath(import.meta.url);
+	const __dirname = dirname(__filename);
+	const fileUrl = pathToFileURL(join(__dirname, "../../index.html")).href;
+
 	return {
 		page,
 		goto: async () => {
-			await page.goto("/");
+			await page.goto(fileUrl);
 			await page.waitForLoadState("networkidle");
 		},
 		actions: {
