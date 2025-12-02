@@ -3,6 +3,7 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "typecheck": "tsgo --noEmit --pretty",
     "dev": "bun index.html",
     "test": "playwright test",
     "test:ui": "playwright test --ui",

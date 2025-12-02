@@ -1,167 +1,146 @@
-import { test, expect } from '@playwright/test';
+import { test as base } from '@playwright/test';
+import { createColemakTutor } from './POM/colemakTutorPage.ts';
+
+type ColemakTutorPage = ReturnType<typeof createColemakTutor>;
+
+const test = base.extend<{
+  colemakPage: ColemakTutorPage;
+}>({
+  colemakPage: async ({ page }, use) => {
+    const colemakPage = createColemakTutor(page);
+    await colemakPage.goto();
+    await use(colemakPage);
+  },
+});
 
 test.describe('Colemak Typing Tutor - Essential Actions', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-    await page.waitForLoadState('networkidle');
-  });
 
-  test('user can select different keyboard layouts', async ({ page }) => {
-    const layoutSelect = page.locator('#layout');
-
+  test('user can select different keyboard layouts', async ({ colemakPage }) => {
     // Initial state
-    await expect(layoutSelect).toHaveValue('colemak');
+    await colemakPage.assertions.layout.hasValue('colemak');
 
     // Select different layouts
-    await layoutSelect.selectOption('colemakdh');
-    await expect(layoutSelect).toHaveValue('colemakdh');
+    await colemakPage.actions.layout.selectOption('colemakdh');
+    await colemakPage.assertions.layout.hasValue('colemakdh');
 
-    await layoutSelect.selectOption('qwerty');
-    await expect(layoutSelect).toHaveValue('qwerty');
+    await colemakPage.actions.layout.selectOption('qwerty');
+    await colemakPage.assertions.layout.hasValue('qwerty');
 
-    await layoutSelect.selectOption('dvorak');
-    await expect(layoutSelect).toHaveValue('dvorak');
+    await colemakPage.actions.layout.selectOption('dvorak');
+    await colemakPage.assertions.layout.hasValue('dvorak');
   });
 
-  test('user can select different keyboard formats', async ({ page }) => {
-    const keyboardSelect = page.locator('#keyboard');
-
+  test('user can select different keyboard formats', async ({ colemakPage }) => {
     // Initial state
-    await expect(keyboardSelect).toHaveValue('ansi');
+    await colemakPage.assertions.keyboard.hasValue('ansi');
 
     // Select different formats
-    await keyboardSelect.selectOption('iso');
-    await expect(keyboardSelect).toHaveValue('iso');
+    await colemakPage.actions.keyboard.selectOption('iso');
+    await colemakPage.assertions.keyboard.hasValue('iso');
 
-    await keyboardSelect.selectOption('ortho');
-    await expect(keyboardSelect).toHaveValue('ortho');
+    await colemakPage.actions.keyboard.selectOption('ortho');
+    await colemakPage.assertions.keyboard.hasValue('ortho');
   });
 
-  test('user can type in the input field', async ({ page }) => {
-    const userInput = page.locator('#userInput');
-
+  test('user can type in the input field', async ({ colemakPage }) => {
     // Type some text
-    await userInput.fill('test typing');
-    await expect(userInput).toHaveValue('test typing');
+    await colemakPage.actions.input.fill('test typing');
+    await colemakPage.assertions.input.hasValue('test typing');
 
     // Clear the input
-    await userInput.fill('');
-    await expect(userInput).toHaveValue('');
+    await colemakPage.actions.input.clear();
+    await colemakPage.assertions.input.hasValue('');
   });
 
-  test('user sees initial score and time', async ({ page }) => {
-    const scoreText = page.locator('#scoreText');
-    const timeText = page.locator('#timeText');
-
+  test('user sees initial score and time', async ({ colemakPage }) => {
     // Check initial values
-    await expect(scoreText).toContainText('0/50');
-    await expect(timeText).toContainText('0m :0 s');
+    await colemakPage.assertions.display.score.containsText('0/50');
+    await colemakPage.assertions.display.time.containsText('0m :0 s');
   });
 
-  test('user can adjust word limit input', async ({ page }) => {
-    const wordLimitModeInput = page.locator('.wordLimitModeInput');
-
+  test('user can adjust word limit input', async ({ colemakPage }) => {
     // Change word limit value
-    await wordLimitModeInput.fill('25');
-    await expect(wordLimitModeInput).toHaveValue('25');
+    await colemakPage.actions.settings.wordLimit.fill('25');
+    await colemakPage.assertions.settings.wordLimit.hasValue('25');
 
-    await wordLimitModeInput.fill('100');
-    await expect(wordLimitModeInput).toHaveValue('100');
+    await colemakPage.actions.settings.wordLimit.fill('100');
+    await colemakPage.assertions.settings.wordLimit.hasValue('100');
   });
 
-  test('user can see time limit input exists', async ({ page }) => {
-    const timeLimitModeInput = page.locator('.timeLimitModeInput');
-
+  test('user can see time limit input exists', async ({ colemakPage }) => {
     // Check that time limit input exists
-    await expect(timeLimitModeInput).toBeAttached();
-    await expect(timeLimitModeInput).toHaveValue('60');
+    await colemakPage.assertions.settings.timeLimit.isAttached();
+    await colemakPage.assertions.settings.timeLimit.hasValue('60');
   });
 
-  test('user can see custom key input exists', async ({ page }) => {
-    const customUIKeyInput = page.locator('#customUIKeyInput');
-
+  test('user can see custom key input exists', async ({ colemakPage }) => {
     // Check that custom key input exists
-    await expect(customUIKeyInput).toBeAttached();
-    await expect(customUIKeyInput).toHaveValue('');
+    await colemakPage.assertions.settings.customKey.isAttached();
+    await colemakPage.assertions.settings.customKey.hasValue('');
   });
 
-  test('user can use keyboard shortcuts', async ({ page }) => {
-    const userInput = page.locator('#userInput');
-    const scoreText = page.locator('#scoreText');
-
+  test('user can use keyboard shortcuts', async ({ colemakPage }) => {
     // Focus on input
-    await userInput.focus();
+    await colemakPage.actions.input.focus();
 
     // Test Tab key (should reset)
-    await page.keyboard.press('Tab');
-    await expect(scoreText).toContainText('0/50');
+    await colemakPage.actions.reset.tab();
+    await colemakPage.assertions.display.score.containsText('0/50');
 
     // Test Escape key (should reset)
-    await page.keyboard.press('Escape');
-    await expect(scoreText).toContainText('0/50');
+    await colemakPage.actions.reset.escape();
+    await colemakPage.assertions.display.score.containsText('0/50');
   });
 
-  test('user sees all layout options available', async ({ page }) => {
-    const layoutSelect = page.locator('#layout');
-    const options = layoutSelect.locator('option');
-
+  test('user sees all layout options available', async ({ colemakPage }) => {
     // Check that all expected layouts are present
-    await expect(options).toHaveCount(14);
-    
+    await colemakPage.assertions.layout.hasOptionsCount(14);
+
     // Check specific layouts exist
-    await expect(layoutSelect.locator('option[value="colemak"]')).toBeAttached();
-    await expect(layoutSelect.locator('option[value="colemakdh"]')).toBeAttached();
-    await expect(layoutSelect.locator('option[value="qwerty"]')).toBeAttached();
-    await expect(layoutSelect.locator('option[value="dvorak"]')).toBeAttached();
-    await expect(layoutSelect.locator('option[value="workman"]')).toBeAttached();
+    await colemakPage.assertions.layout.optionExists('colemak');
+    await colemakPage.assertions.layout.optionExists('colemakdh');
+    await colemakPage.assertions.layout.optionExists('qwerty');
+    await colemakPage.assertions.layout.optionExists('dvorak');
+    await colemakPage.assertions.layout.optionExists('workman');
   });
 
-  test('user sees all keyboard format options', async ({ page }) => {
-    const keyboardSelect = page.locator('#keyboard');
-    const options = keyboardSelect.locator('option');
-
+  test('user sees all keyboard format options', async ({ colemakPage }) => {
     // Check that all keyboard formats are present
-    await expect(options).toHaveCount(3);
-    
+    await colemakPage.assertions.keyboard.hasOptionsCount(3);
+
     // Check specific formats exist
-    await expect(keyboardSelect.locator('option[value="ansi"]')).toBeAttached();
-    await expect(keyboardSelect.locator('option[value="iso"]')).toBeAttached();
-    await expect(keyboardSelect.locator('option[value="ortho"]')).toBeAttached();
+    await colemakPage.assertions.keyboard.optionExists('ansi');
+    await colemakPage.assertions.keyboard.optionExists('iso');
+    await colemakPage.assertions.keyboard.optionExists('ortho');
   });
 
-  test('user can navigate to external links', async ({ page }) => {
-    const githubLink = page.locator('a[href*="github.com"]');
-    const petitionLink = page.locator('a[href*="change.org"]');
-
+  test('user can navigate to external links', async ({ colemakPage }) => {
     // Check links exist and have correct hrefs
-    await expect(githubLink).toHaveAttribute('href', 'https://github.com/gnusenpai/colemakclub');
-    await expect(petitionLink).toHaveAttribute('href', 'https://www.change.org/p/microsoft-add-colemak-as-a-pre-installed-keyboard-layout-to-windows');
+    await colemakPage.assertions.links.github.hasHref('https://github.com/gnusenpai/colemakclub');
+    await colemakPage.assertions.links.petition.hasHref('https://www.change.org/p/microsoft-add-colemak-as-a-pre-installed-keyboard-layout-to-windows');
   });
 
-  test('user sees page title and header', async ({ page }) => {
+  test('user sees page title and header', async ({ colemakPage }) => {
     // Check page title
-    await expect(page).toHaveTitle(/Colemak Club/);
-    
+    await colemakPage.assertions.page.title(/Colemak Club/);
+
     // Check main header
-    await expect(page.locator('h1')).toContainText('Colemak Club');
+    await colemakPage.assertions.page.header('Colemak Club');
   });
 
-  test('user can interact with visible form inputs', async ({ page }) => {
-    const userInput = page.locator('#userInput');
-    const wordLimitInput = page.locator('.wordLimitModeInput');
-
+  test('user can interact with visible form inputs', async ({ colemakPage }) => {
     // Test typing in visible inputs
-    await userInput.fill('test');
-    await expect(userInput).toHaveValue('test');
+    await colemakPage.actions.input.fill('test');
+    await colemakPage.assertions.input.hasValue('test');
 
-    await wordLimitInput.fill('75');
-    await expect(wordLimitInput).toHaveValue('75');
+    await colemakPage.actions.settings.wordLimit.fill('75');
+    await colemakPage.assertions.settings.wordLimit.hasValue('75');
 
     // Clear visible inputs
-    await userInput.fill('');
-    await wordLimitInput.fill('50');
+    await colemakPage.actions.input.clear();
+    await colemakPage.actions.settings.wordLimit.fill('50');
 
-    await expect(userInput).toHaveValue('');
-    await expect(wordLimitInput).toHaveValue('50');
+    await colemakPage.assertions.input.hasValue('');
+    await colemakPage.assertions.settings.wordLimit.hasValue('50');
   });
 });
