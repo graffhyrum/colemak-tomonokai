@@ -1,6 +1,6 @@
-import { dirname } from "node:path";
-import { fileURLToPath } from "node:url";
-import { defineConfig, devices } from "@playwright/test";
+import {dirname} from "node:path";
+import {fileURLToPath} from "node:url";
+import {defineConfig, devices} from "@playwright/test";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -12,7 +12,7 @@ export default defineConfig({
 	retries: process.env.CI ? 2 : 0,
 	workers: process.env.CI ? 1 : undefined,
 	timeout: 20 * 1000,
-	reporter: "html",
+	reporter: [["html", {open: "never"}], ["dot"]],
 	use: {
 		baseURL: "http://localhost:3000",
 		trace: "on-first-retry",
@@ -21,7 +21,7 @@ export default defineConfig({
 	projects: [
 		{
 			name: "chromium",
-			use: { ...devices["Desktop Chrome"] },
+			use: {...devices["Desktop Chrome"]},
 		},
 	],
 	webServer: {
