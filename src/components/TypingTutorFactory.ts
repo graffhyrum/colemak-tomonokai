@@ -1,23 +1,21 @@
 import type {
-	GameState,
-	KeyboardLayout,
+	LayoutMap,
 	LayoutName,
 	LevelDictionary,
-} from "../types";
+} from "../config/layouts.ts";
+import type { GameState } from "../types";
 import { DOMUtils } from "../utils/DOM";
 import type { LevelManager } from "../utils/levelManager";
 
-interface TypingTutorConfig {
+function createTypingTutor(config: {
 	layoutName: LayoutName;
-	keyboardMap: KeyboardLayout;
+	layoutMap: LayoutMap;
 	levelDictionary: LevelDictionary;
 	words: readonly string[];
 	keyboardLayout: readonly (readonly string[])[];
 	levelManager?: LevelManager;
 	className?: string;
-}
-
-function createTypingTutor(config: TypingTutorConfig) {
+}) {
 	const element = document.createElement("div");
 	element.className = config.className || "typing-tutor";
 
@@ -34,10 +32,10 @@ function createTypingTutor(config: TypingTutorConfig) {
 		letterIndex: 0,
 		onlyLower: true,
 		answerString: "",
-		keyboardMap: config.keyboardMap,
+		layoutMap: config.layoutMap,
 		letterDictionary: config.levelDictionary,
 		currentLayout: config.layoutName,
-		currentKeyboard: "ansi",
+		currentKeyboardShape: "ansi",
 		shiftDown: false,
 		fullSentenceMode: false,
 		fullSentenceModeEnabled: false,

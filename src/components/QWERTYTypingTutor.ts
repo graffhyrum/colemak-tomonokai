@@ -11,7 +11,7 @@ const QWERTY_KEYBOARD_LAYOUT = [
 function createQWERTYTypingTutor(levelManager: LevelManager) {
 	const tutor = TypingTutorFactory.create({
 		layoutName: "qwerty",
-		keyboardMap: LAYOUT_MAPS.qwerty,
+		layoutMap: LAYOUT_MAPS.qwerty,
 		levelDictionary: LAYOUT_DICTIONARIES,
 		words: [], // Will be handled by levelManager
 		keyboardLayout: QWERTY_KEYBOARD_LAYOUT,

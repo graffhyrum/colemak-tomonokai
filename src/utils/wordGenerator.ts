@@ -3,8 +3,8 @@
  * Handles word filtering by level, game modes, and randomization
  */
 
+import type { LayoutName } from "../config/layouts";
 import { filterWordsByLevel, masterWordList } from "../data/words";
-import type { LayoutName } from "../types";
 import { assertDefined } from "./validation.ts";
 
 export type GameMode = "all-words" | "full-sentences";

@@ -3,12 +3,12 @@
  * Handles level progression, word filtering, and level-based game logic
  */
 
+import type { LayoutName } from "../config/layouts";
 import {
 	filterWordsByLevel,
 	getCumulativeCharacters,
 	masterWordList,
 } from "../data/words";
-import type { LayoutName } from "../types";
 
 export interface LevelInfo {
 	number: number;
