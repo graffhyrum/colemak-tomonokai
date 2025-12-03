@@ -1,7 +1,6 @@
-import {expect, test} from "@playwright/test";
-import {LAYOUT_DICTIONARIES, LAYOUT_NAMES} from "../src/entities/layouts";
-import { LEVELS } from "../src/entities/levels";
-import {KEYBOARD_SHAPES} from "../src/entities/shapes";
+import { expect, test } from "@playwright/test";
+import { LAYOUT_DICTIONARIES, LAYOUT_NAMES } from "../src/entities/layouts";
+import { KEYBOARD_SHAPES } from "../src/entities/shapes";
 
 function getLevelLetters(layout: string, level: number): string {
 	const layoutDict =
