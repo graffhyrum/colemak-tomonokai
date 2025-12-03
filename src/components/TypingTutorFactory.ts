@@ -1,8 +1,5 @@
-import type {
-	LayoutMap,
-	LayoutName,
-	LevelDictionary,
-} from "../config/layouts.ts";
+import type { LayoutMap, LayoutName } from "../entities/layouts.ts";
+import type { LevelDictionary } from "../entities/levels.ts";
 import type { GameState } from "../types";
 import { DOMUtils } from "../utils/DOM";
 import type { LevelManager } from "../utils/levelManager";
@@ -12,7 +9,9 @@ function createTypingTutor(config: {
 	layoutMap: LayoutMap;
 	levelDictionary: LevelDictionary;
 	words: readonly string[];
-	keyboardLayout: readonly (readonly string[])[];
+	keyboardCharacters: Array<
+		Array<{ keyId: string; character: string; isEmpty: boolean }>
+	>;
 	levelManager?: LevelManager;
 	className?: string;
 }) {
@@ -131,6 +130,10 @@ function createTypingTutor(config: {
 				break;
 			case 27:
 				reset();
+				break;
+			case 16: // Shift key
+				gameState.shiftDown = event.type === "keydown";
+				renderKeyboard(); // Re-render keyboard with shift layer
 				break;
 		}
 	}
@@ -312,20 +315,107 @@ function createTypingTutor(config: {
 		inputElement.focus();
 	}
 
+	function getEnabledLetters(currentLevel: number): string {
+		const layoutDict = config.levelDictionary[config.layoutName];
+		if (!layoutDict) return "";
+
+		let enabledLetters = "";
+		for (let level = 1; level <= currentLevel; level++) {
+			const levelKey = `lvl${level}` as keyof typeof layoutDict;
+			enabledLetters += layoutDict[levelKey] || "";
+		}
+		return enabledLetters;
+	}
+
+	function getKeyHighlighting(
+		character: string,
+		currentLevel: number,
+	): {
+		isActive: boolean;
+		isHomeRow: boolean;
+		isInactive: boolean;
+	} {
+		if (!character || character.trim() === "") {
+			return { isActive: false, isHomeRow: false, isInactive: false };
+		}
+
+		const enabledLetters = getEnabledLetters(currentLevel);
+		const level1Letters = config.levelDictionary[config.layoutName]?.lvl1 || "";
+
+		// Level 7 special case: all keys active
+		if (currentLevel === 7) {
+			return {
+				isActive: true,
+				isHomeRow: level1Letters.includes(character),
+				isInactive: false,
+			};
+		}
+
+		const isInEnabled = enabledLetters.includes(character);
+		const isInCurrentLevel = (
+			(config.levelDictionary[config.layoutName]?.[
+				`lvl${currentLevel}` as keyof (typeof config.levelDictionary)[typeof config.layoutName]
+			] as string) || ""
+		).includes(character);
+		const isHomeRow = level1Letters.includes(character);
+
+		return {
+			isActive: isInCurrentLevel,
+			isHomeRow,
+			isInactive: isInEnabled && !isInCurrentLevel,
+		};
+	}
+
 	function renderKeyboard(): void {
+		// Regenerate keyboard characters based on current shift state
+		const currentKeyboardCharacters = regenerateKeyboardCharacters();
+
 		let keyboardHTML = "";
-		config.keyboardLayout.forEach((row) => {
+		currentKeyboardCharacters.forEach((row) => {
 			keyboardHTML += '<div class="keyboard-row">';
-			row.forEach((key: string) => {
-				const level1Letters =
-					config.levelDictionary[config.layoutName]?.lvl1 || "";
-				const isActive = level1Letters.includes(key);
-				keyboardHTML += `<span class="key ${isActive ? "active" : "inactive"}">${key}</span>`;
+			row.forEach((keyInfo) => {
+				const highlighting = getKeyHighlighting(
+					keyInfo.character,
+					gameState.currentLevel,
+				);
+
+				let classes = "key";
+				if (highlighting.isActive) classes += " active";
+				else if (highlighting.isInactive) classes += " inactive";
+				if (highlighting.isHomeRow) classes += " homeRow";
+
+				const displayChar = keyInfo.isEmpty ? "" : keyInfo.character;
+				keyboardHTML += `<span class="${classes}" data-key-id="${keyInfo.keyId}">${displayChar}</span>`;
 			});
 			keyboardHTML += "</div>";
 		});
 
 		keyboardElement.innerHTML = keyboardHTML;
+	}
+
+	function regenerateKeyboardCharacters(): Array<
+		Array<{ keyId: string; character: string; isEmpty: boolean }>
+	> {
+		return config.keyboardCharacters.map((row) =>
+			row.map((keyInfo) => {
+				if (keyInfo.isEmpty) return keyInfo;
+
+				// For shift layer, look up the shifted character
+				let character = keyInfo.character;
+				if (
+					gameState.shiftDown &&
+					config.layoutMap.shiftLayer &&
+					typeof config.layoutMap.shiftLayer === "object"
+				) {
+					const shifted = (
+						config.layoutMap.shiftLayer as Record<string, string>
+					)[keyInfo.keyId];
+					if (shifted) character = shifted;
+				}
+
+				return { ...keyInfo, character };
+			}),
+		);
 	}
 
 	function render(): void {
