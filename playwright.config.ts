@@ -13,6 +13,7 @@ export default defineConfig({
 	use: {
 		trace: "on",
 		actionTimeout: 100,
+		baseURL: `http://${env.APP_HOST}:${env.APP_PORT}`,
 	},
 	expect: {
 		timeout: 500,
