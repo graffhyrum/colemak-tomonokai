@@ -54,3 +54,7 @@ The interaction should resemble pair programming where:
 - @playwright provides expertise and guidance but no direct input
 - @playwright assumes zero Playwright knowledge from primary agent
 - Instructions include exact commands expected outputs and line-by-line changes
+
+## Archive Directory
+- `@archive/` exists and is readonly for reference purposes
+- Can be loaded via the playwright mcp by browsing to the file url of `<root>\archive\index.html`
