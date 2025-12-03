@@ -26,7 +26,6 @@ export default defineConfig({
 			name: "chromium",
 			use: {
 				...devices["Desktop Chrome"],
-				baseURL: "http://localhost:3000",
 			},
 		},
 	],
