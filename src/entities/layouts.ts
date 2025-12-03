@@ -1,3 +1,5 @@
+import type { LevelDictionary } from "./levels.ts";
+
 const ALPHABET = "abcdefghijklmnopqrstuvwxyz" as const;
 
 export const LAYOUT_DICTIONARIES = {
@@ -37,15 +39,7 @@ export const LAYOUT_DICTIONARIES = {
 		lvl6: "qxjz",
 		lvl7: ALPHABET,
 	},
-	custom: {
-		lvl1: "",
-		lvl2: "",
-		lvl3: "",
-		lvl4: "",
-		lvl5: "",
-		lvl6: "",
-		lvl7: ALPHABET,
-	},
+
 	dvorak: {
 		lvl1: "aoeuhtns",
 		lvl2: "id",
@@ -101,7 +95,6 @@ export const LAYOUT_DICTIONARIES = {
 		lvl7: ALPHABET,
 	},
 } as const satisfies LevelDictionary;
-
 export const LAYOUT_MAPS = {
 	azerty: {
 		Backslash: "\\",
@@ -257,45 +250,6 @@ export const LAYOUT_MAPS = {
 		Quote: "'",
 		Semicolon: "o",
 		Slash: "/",
-		shiftLayer: "default",
-	},
-	custom: {
-		Backslash: " ",
-		BracketLeft: " ",
-		BracketRight: " ",
-		Comma: " ",
-		Equal: " ",
-		KeyA: " ",
-		KeyB: " ",
-		KeyC: " ",
-		KeyD: " ",
-		KeyE: " ",
-		KeyF: " ",
-		KeyG: " ",
-		KeyH: " ",
-		KeyI: " ",
-		KeyJ: " ",
-		KeyK: " ",
-		KeyL: " ",
-		KeyM: " ",
-		KeyN: " ",
-		KeyO: " ",
-		KeyP: " ",
-		KeyQ: " ",
-		KeyR: " ",
-		KeyS: " ",
-		KeyT: " ",
-		KeyU: " ",
-		KeyV: " ",
-		KeyW: " ",
-		KeyX: " ",
-		KeyY: " ",
-		KeyZ: " ",
-		Minus: " ",
-		Period: " ",
-		Quote: " ",
-		Semicolon: " ",
-		Slash: " ",
 		shiftLayer: "default",
 	},
 	dvorak: {
@@ -580,7 +534,6 @@ export const LAYOUT_MAPS = {
 		shiftLayer: "default",
 	},
 } as const satisfies Record<LayoutName, LayoutMap>;
-
 export const LAYOUT_NAMES = [
 	"azerty",
 	"dvorak",
@@ -592,9 +545,7 @@ export const LAYOUT_NAMES = [
 	"tarmakdh",
 	"workman",
 	"canary",
-	"custom",
 ] as const;
-
 export type LayoutName = (typeof LAYOUT_NAMES)[number];
 export type LayoutMap = Partial<{
 	Backslash: string;
@@ -646,7 +597,3 @@ export type LayoutMap = Partial<{
 	Slash: string;
 	shiftLayer: "default" | Partial<Exclude<LayoutMap, "shiftLayer">>;
 }>;
-const levels = [1, 2, 3, 4, 5, 6, 7] as const;
-type Level = (typeof levels)[number];
-type LevelKey = `lvl${Level}`;
-export type LevelDictionary = Record<LayoutName, Record<LevelKey, string>>;
