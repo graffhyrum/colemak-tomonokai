@@ -44,13 +44,13 @@ export namespace DOMUtils {
 	export function querySelector<T extends HTMLElement = HTMLElement>(
 		selector: string,
 	): T | null {
-		return document.querySelector(selector) as T | null;
+		return document.querySelector(selector);
 	}
 
 	export function querySelectorAll<T extends HTMLElement = HTMLElement>(
 		selector: string,
 	): NodeListOf<T> {
-		return document.querySelectorAll(selector) as NodeListOf<T>;
+		return document.querySelectorAll(selector);
 	}
 
 	// Element manipulation
