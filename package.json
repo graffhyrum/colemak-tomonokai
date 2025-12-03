@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"typecheck": "tsgo --noEmit --pretty",
-		"dev": "bun --hot index.html",
+		"dev": "bun scripts/dev.ts",
 		"build": "bun build index.html --outdir dist --target browser",
 		"test": "playwright test",
 		"test:ui": "playwright test --ui",
