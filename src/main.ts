@@ -1,14 +1,14 @@
 // Main entry point for Colemak Typing Tutor
 
 import { TypingTutorFactory } from "./components/TypingTutorFactory";
+import { createLevelManager } from "./utils/levelManager";
+import "./styles/main.css";
 import {
 	LAYOUT_DICTIONARIES,
 	LAYOUT_MAPS,
 	type LayoutName,
-} from "./config/layouts";
-import { createLevelManager } from "./utils/levelManager";
-import "./styles/main.css";
-import type { KeyboardShape } from "./types";
+} from "./entities/layouts.ts";
+import type { KeyboardShape } from "./entities/shapes.ts";
 
 // Keyboard layouts for different physical formats
 const KEYBOARD_SHAPES = {
@@ -28,6 +28,95 @@ const KEYBOARD_SHAPES = {
 		["z", "x", "c", "v", "b", "n", "m", ",", ".", "/", "shift"],
 	] as const,
 } as const;
+
+// Key code to key name mapping for layout lookups
+const KEY_CODE_TO_NAME = {
+	q: "KeyQ",
+	w: "KeyW",
+	e: "KeyE",
+	r: "KeyR",
+	t: "KeyT",
+	y: "KeyY",
+	u: "KeyU",
+	i: "KeyI",
+	o: "KeyO",
+	p: "KeyP",
+	a: "KeyA",
+	s: "KeyS",
+	d: "KeyD",
+	f: "KeyF",
+	g: "KeyG",
+	h: "KeyH",
+	j: "KeyJ",
+	k: "KeyK",
+	l: "KeyL",
+	z: "KeyZ",
+	x: "KeyX",
+	c: "KeyC",
+	v: "KeyV",
+	b: "KeyB",
+	n: "KeyN",
+	m: "KeyM",
+	";": "Semicolon",
+	"'": "Quote",
+	",": "Comma",
+	".": "Period",
+	"/": "Slash",
+	"[": "BracketLeft",
+	"]": "BracketRight",
+	"-": "Minus",
+	"=": "Equal",
+	"`": "Backquote",
+	"1": "Digit1",
+	"2": "Digit2",
+	"3": "Digit3",
+	"4": "Digit4",
+	"5": "Digit5",
+	"6": "Digit6",
+	"7": "Digit7",
+	"8": "Digit8",
+	"9": "Digit9",
+	"0": "Digit0",
+	"\\": "Backslash",
+} as const;
+
+function getKeyboardCharacters(
+	keyboardFormat: KeyboardShape,
+	layoutName: LayoutName,
+	useShiftLayer: boolean = false,
+): Array<Array<{ keyId: string; character: string; isEmpty: boolean }>> {
+	const shape = KEYBOARD_SHAPES[keyboardFormat];
+	const layoutMap = LAYOUT_MAPS[layoutName];
+
+	return shape.map((row) =>
+		row.map((keyCode) => {
+			const keyName =
+				KEY_CODE_TO_NAME[keyCode as keyof typeof KEY_CODE_TO_NAME];
+			if (!keyName) {
+				return { keyId: keyCode, character: "", isEmpty: true };
+			}
+
+			let character = "";
+			let isEmpty = true;
+
+			if (
+				useShiftLayer &&
+				layoutMap.shiftLayer &&
+				typeof layoutMap.shiftLayer === "object"
+			) {
+				character =
+					(layoutMap.shiftLayer as Record<string, string>)[keyName] || "";
+			} else {
+				character = (layoutMap as Record<string, string>)[keyName] || "";
+			}
+
+			// Consider it empty if no character or only whitespace
+			isEmpty = !character || character.trim() === "";
+
+			return { keyId: keyName, character, isEmpty };
+		}),
+	);
+}
 
 // Initialize the application when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
@@ -92,12 +181,18 @@ function createTypingTutor(
 	keyboardShape: KeyboardShape,
 	levelManager: ReturnType<typeof createLevelManager>,
 ) {
+	const keyboardCharacters = getKeyboardCharacters(
+		keyboardShape,
+		layout,
+		false,
+	);
+
 	return TypingTutorFactory.create({
 		layoutName: layout,
 		layoutMap: LAYOUT_MAPS[layout],
 		levelDictionary: LAYOUT_DICTIONARIES,
 		words: [], // Will be handled by levelManager
-		keyboardLayout: KEYBOARD_SHAPES[keyboardShape],
+		keyboardCharacters,
 		levelManager,
 		className: `${layout}-typing-tutor`,
 	});
