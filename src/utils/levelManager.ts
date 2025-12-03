@@ -19,13 +19,21 @@ export interface LevelInfo {
 
 export interface LevelManager {
 	getCurrentLevel(): number;
+
 	setCurrentLevel(level: number): void;
+
 	getLevelInfo(level: number): LevelInfo;
+
 	getAvailableLevels(): number[];
+
 	getFilteredWords(level: number): string[];
+
 	canProgressToLevel(level: number): boolean;
+
 	getNextLevel(): number | null;
+
 	getPreviousLevel(): number | null;
+
 	validateLevel(level: number): boolean;
 }
 
@@ -104,9 +112,6 @@ export function createLevelManager(layout: LayoutName): LevelManager {
 	};
 }
 
-/**
- * Get a human-readable description for a level
- */
 function getLevelDescription(level: number): string {
 	const descriptions: Record<number, string> = {
 		1: "Basic home row keys",

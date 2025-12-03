@@ -52,6 +52,7 @@ export namespace DOMUtils {
 	): NodeListOf<T> {
 		return document.querySelectorAll(selector);
 	}
+
 	export function addClass(element: HTMLElement, className: string): void {
 		element.classList.add(className);
 	}
@@ -99,13 +100,6 @@ export namespace DOMUtils {
 		element.style.display = element.style.display === "none" ? "" : "none";
 	}
 
-	export function setAttribute(
-		element: HTMLElement,
-		name: string,
-		value: string,
-	): void {
-		element.setAttribute(name, value);
-	}
 	export function setStyle(
 		element: HTMLElement,
 		property: string,
@@ -126,6 +120,7 @@ export namespace DOMUtils {
 			(element.style as unknown as Record<string, string>)[property] = value;
 		});
 	}
+
 	export function addEventListener<K extends keyof HTMLElementEventMap>(
 		element: HTMLElement,
 		type: K,
@@ -143,6 +138,7 @@ export namespace DOMUtils {
 	): void {
 		element.removeEventListener(type, listener, options);
 	}
+
 	export function getFormValue(
 		element: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement,
 	): string {
@@ -166,6 +162,7 @@ export namespace DOMUtils {
 	): void {
 		element.checked = checked;
 	}
+
 	export function focus(element: HTMLElement): void {
 		element.focus();
 	}
@@ -173,6 +170,7 @@ export namespace DOMUtils {
 	export function blur(element: HTMLElement): void {
 		element.blur();
 	}
+
 	export function fadeIn(
 		element: HTMLElement,
 		duration: number = 300,
@@ -208,6 +206,7 @@ export namespace DOMUtils {
 			}, duration);
 		});
 	}
+
 	export function isVisible(element: HTMLElement): boolean {
 		return (
 			element.offsetWidth > 0 ||
@@ -232,5 +231,13 @@ export namespace DOMUtils {
 		options?: ScrollIntoViewOptions,
 	): void {
 		element.scrollIntoView(options);
+	}
+
+	export function setAttribute(
+		element: HTMLElement,
+		name: string,
+		value: string,
+	): void {
+		element.setAttribute(name, value);
 	}
 }

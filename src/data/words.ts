@@ -2114,6 +2114,28 @@ export const levelDictionaries: Record<string, Record<string, string>> = {
 /**
  * Get the character set for a specific layout and level
  */
+export function filterWordsByLevel(
+	words: string[],
+	layout: string,
+	level: number,
+): string[] {
+	const allowedChars = getCumulativeCharacters(layout, level);
+	const allowedSet = new Set(allowedChars.toLowerCase());
+
+	return words.filter((word) => {
+		return word.split("").every((char) => allowedSet.has(char.toLowerCase()));
+	});
+}
+export function getCumulativeCharacters(layout: string, level: number): string {
+	const layoutKey = layout.toLowerCase();
+	let characters = "";
+
+	for (let i = 1; i <= level; i++) {
+		characters += getLevelCharacters(layoutKey, i);
+	}
+
+	return characters;
+}
 export function getLevelCharacters(layout: string, level: number): string {
 	const layoutKey = layout.toLowerCase();
 	const levelKey = `lvl${level}`;
@@ -2127,34 +2149,4 @@ export function getLevelCharacters(layout: string, level: number): string {
 	}
 
 	return levelDictionaries[layoutKey][levelKey];
-}
-
-/**
- * Get all characters up to a specific level for a layout
- */
-export function getCumulativeCharacters(layout: string, level: number): string {
-	const layoutKey = layout.toLowerCase();
-	let characters = "";
-
-	for (let i = 1; i <= level; i++) {
-		characters += getLevelCharacters(layoutKey, i);
-	}
-
-	return characters;
-}
-
-/**
- * Filter words that only contain characters available at the specified level
- */
-export function filterWordsByLevel(
-	words: string[],
-	layout: string,
-	level: number,
-): string[] {
-	const allowedChars = getCumulativeCharacters(layout, level);
-	const allowedSet = new Set(allowedChars.toLowerCase());
-
-	return words.filter((word) => {
-		return word.split("").every((char) => allowedSet.has(char.toLowerCase()));
-	});
 }

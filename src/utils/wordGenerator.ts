@@ -5,7 +5,7 @@
 
 import { filterWordsByLevel, masterWordList } from "../data/words";
 import type { LayoutName } from "../types";
-import {assertDefined} from "./validation.ts";
+import { assertDefined } from "./validation.ts";
 
 export type GameMode = "all-words" | "full-sentences";
 
@@ -116,11 +116,6 @@ export function createWordGenerator(
 		getAvailableWords,
 	};
 }
-
-/**
- * Generate a sentence from available words
- * This is a basic implementation that could be enhanced
- */
 export function generateSentence(
 	wordGenerator: WordGenerator,
 	wordCount = 5,
@@ -131,24 +126,6 @@ export function generateSentence(
 	}
 	return `${words.join(" ")}.`;
 }
-
-/**
- * Shuffle an array in place using Fisher-Yates algorithm
- */
-function shuffleArray<T>(array: T[]): void {
-	for (let i = array.length - 1; i > 0; i--) {
-		const j = Math.floor(Math.random() * (i + 1));
-		const temp = array[i];
-		assertDefined(temp)
-		assertDefined(array[j])
-		array[i] = array[j];
-		array[j] = temp;
-	}
-}
-
-/**
- * Get statistics about word availability for a layout and level
- */
 export function getWordStats(
 	layout: LayoutName,
 	level: number,
@@ -170,4 +147,14 @@ export function getWordStats(
 		availableWords,
 		coverage: Math.round(coverage * 100) / 100, // Round to 2 decimal places
 	};
+}
+function shuffleArray<T>(array: T[]): void {
+	for (let i = array.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		const temp = array[i];
+		assertDefined(temp);
+		assertDefined(array[j]);
+		array[i] = array[j];
+		array[j] = temp;
+	}
 }
