@@ -11,6 +11,10 @@
 - `bun test:ui` - Playwright test UI mode
 - `bun test:headed` - Playwright headed mode
 - `bun vet` - Full check (lint fix + typecheck + test)
+- 
+## Error Handling Policy
+- **CRITICAL** Type, lint, or format errors are unacceptable and must be resolved
+- Any issues that the agent cannot fix **MUST** be escalated to the user with an explanation.
 
 ## Code Style
 - Use Biome for formatting/linting (tab indentation, double quotes)
