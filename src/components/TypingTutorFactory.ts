@@ -1,5 +1,9 @@
-import type { LayoutName } from "../config/layouts.ts";
-import type { GameState, KeyboardLayout, LevelDictionary } from "../types";
+import type {
+	GameState,
+	KeyboardLayout,
+	LayoutName,
+	LevelDictionary,
+} from "../types";
 import { DOMUtils } from "../utils/DOM";
 
 interface TypingTutorConfig {

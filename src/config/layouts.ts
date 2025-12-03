@@ -1,22 +1,6 @@
-import type { KeyboardLayout, LevelDictionary } from "../types";
+import type { KeyboardLayout, LayoutName, LevelDictionary } from "../types";
 
 const ALPHABET = "abcdefghijklmnopqrstuvwxyz" as const;
-
-export const LAYOUT_NAMES = [
-	"azerty",
-	"dvorak",
-	"colemak",
-	"colemakdh",
-	"lefthandeddvorak",
-	"qwerty",
-	"tarmak",
-	"tarmakdh",
-	"workman",
-	"canary",
-	"custom",
-] as const;
-
-export type LayoutName = (typeof LAYOUT_NAMES)[number];
 
 export const LAYOUT_DICTIONARIES = {
 	azerty: {

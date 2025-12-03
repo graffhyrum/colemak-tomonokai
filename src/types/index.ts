@@ -1,6 +1,20 @@
 // Core type definitions for Colemak Typing Tutor
 
-import type { LayoutName } from "../config/layouts.ts";
+export const LAYOUT_NAMES = [
+	"azerty",
+	"dvorak",
+	"colemak",
+	"colemakdh",
+	"lefthandeddvorak",
+	"qwerty",
+	"tarmak",
+	"tarmakdh",
+	"workman",
+	"canary",
+	"custom",
+] as const;
+
+export type LayoutName = (typeof LAYOUT_NAMES)[number];
 
 export interface GameState {
 	score: number;
@@ -49,11 +63,7 @@ export interface KeyboardLayout {
 	shiftLayer: string | Record<string, string>;
 }
 
-export type LevelDictionary = {
-	[K in LayoutName]: {
-		[level: string]: string;
-	};
-};
+export type LevelDictionary = Record<LayoutName, Record<string, string>>;
 
 export type KeyboardFormat = "ansi" | "iso" | "ortho";
 
