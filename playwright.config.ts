@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import { env } from "./config/env";
 
 export default defineConfig({
 	testDir: "./tests",
@@ -17,8 +18,8 @@ export default defineConfig({
 		timeout: 500,
 	},
 	webServer: {
-		command: "bun --hot index.html",
-		port: 3000,
+		command: "bun dev",
+		port: env.APP_PORT,
 		reuseExistingServer: !process.env.CI,
 	},
 	projects: [

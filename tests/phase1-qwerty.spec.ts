@@ -1,8 +1,9 @@
 import { expect, test } from "@playwright/test";
+import { env } from "../config/env";
 
 test("page loads and shows basic interface", async ({ page }) => {
 	// Navigate to the page
-	await page.goto("http://localhost:3000");
+	await page.goto(`http://${env.APP_HOST}:${env.APP_PORT}`);
 
 	// Just check that the page loads and has a title
 	await expect(page.locator("h1")).toContainText("Colemak Club");
