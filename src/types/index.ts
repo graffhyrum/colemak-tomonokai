@@ -1,5 +1,5 @@
 import type { LayoutMap, LayoutName } from "../entities/layouts.ts";
-import type { LevelDictionary } from "../entities/levels.ts";
+import type { Level, LevelDictionary } from "../entities/levels.ts";
 import type { KeyboardShape } from "../entities/shapes.ts";
 
 export interface GameState {
@@ -10,7 +10,7 @@ export interface GameState {
 	gameOn: boolean;
 	correct: number;
 	errors: number;
-	currentLevel: number;
+	currentLevel: Level;
 	correctAnswer: string;
 	letterIndex: number;
 	onlyLower: boolean;
@@ -58,5 +58,5 @@ export interface Settings {
 	punctuation: string;
 	currentLayout: LayoutName;
 	currentKeyboardShape: KeyboardShape;
-	currentLevel: number;
+	currentLevel: Level;
 }

@@ -1,5 +1,5 @@
 import type { LayoutMap, LayoutName } from "../entities/layouts.ts";
-import type { LevelDictionary } from "../entities/levels.ts";
+import type { Level, LevelDictionary } from "../entities/levels.ts";
 import type { GameState } from "../types";
 import { DOMUtils } from "../utils/DOM";
 import type { LevelManager } from "../utils/levelManager";
@@ -315,7 +315,7 @@ function createTypingTutor(config: {
 		inputElement.focus();
 	}
 
-	function getEnabledLetters(currentLevel: number): string {
+	function getEnabledLetters(currentLevel: Level): string {
 		const layoutDict = config.levelDictionary[config.layoutName];
 		if (!layoutDict) return "";
 
@@ -329,7 +329,7 @@ function createTypingTutor(config: {
 
 	function getKeyHighlighting(
 		character: string,
-		currentLevel: number,
+		currentLevel: Level,
 	): {
 		isActive: boolean;
 		isHomeRow: boolean;
@@ -433,11 +433,9 @@ function createTypingTutor(config: {
 	render();
 	reset();
 
-	function updateLevel(level: number): void {
-		if (config.levelManager?.validateLevel(level)) {
-			gameState.currentLevel = level;
-			reset();
-		}
+	function updateLevel(level: Level): void {
+		gameState.currentLevel = level;
+		reset();
 	}
 
 	return {

@@ -8,6 +8,7 @@ import {
 	LAYOUT_MAPS,
 	type LayoutName,
 } from "./entities/layouts.ts";
+import { assertLevel, type Level } from "./entities/levels.ts";
 import type { KeyboardShape } from "./entities/shapes.ts";
 
 // Keyboard layouts for different physical formats
@@ -96,7 +97,8 @@ function getKeyboardCharacters(
 				return { keyId: keyCode, character: "", isEmpty: true };
 			}
 
-			let character = "";
+			let character: string;
+			// noinspection JSUnusedAssignment: readabilty
 			let isEmpty = true;
 
 			if (
@@ -257,12 +259,11 @@ function setupLevelSelection(
 		button.addEventListener("click", () => {
 			const levelId = button.id;
 			if (levelId?.startsWith("lvl")) {
-				const levelNumber = parseInt(levelId.replace("lvl", ""), 10);
-				if (levelManager.validateLevel(levelNumber)) {
-					levelManager.setCurrentLevel(levelNumber);
-					updateLevelButtonStates(levelNumber);
-					typingTutorRef.current.updateLevel(levelNumber);
-				}
+				const levelNumber = Number.parseInt(levelId.replace("lvl", ""), 10);
+				assertLevel(levelNumber);
+				levelManager.setCurrentLevel(levelNumber);
+				updateLevelButtonStates(levelNumber);
+				typingTutorRef.current.updateLevel(levelNumber);
 			}
 		});
 	});
@@ -271,13 +272,13 @@ function setupLevelSelection(
 	updateLevelButtonStates(levelManager.getCurrentLevel());
 }
 
-function updateLevelButtonStates(currentLevel: number) {
+function updateLevelButtonStates(currentLevel: Level) {
 	const levelButtons = document.querySelectorAll('nav button[id^="lvl"]');
 
 	levelButtons.forEach((button) => {
 		const levelId = button.id;
 		if (levelId?.startsWith("lvl")) {
-			const levelNumber = parseInt(levelId.replace("lvl", ""), 10);
+			const levelNumber = Number.parseInt(levelId.replace("lvl", ""), 10);
 			button.classList.toggle("currentLevel", levelNumber === currentLevel);
 		}
 	});

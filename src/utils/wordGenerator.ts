@@ -3,18 +3,25 @@
  * Handles word filtering by level, game modes, and randomization
  */
 
-import { filterWordsByLevel, masterWordList } from "../data/words";
+import { masterWordList } from "../data/masterWordList.ts";
+import { filterWordsByLevel } from "../data/words";
 import type { LayoutName } from "../entities/layouts.ts";
+import type { Level } from "../entities/levels.ts";
 import { assertDefined } from "./validation.ts";
 
 export type GameMode = "all-words" | "full-sentences";
 
 export interface WordGenerator {
 	getNextWord(): string;
+
 	getWordList(): string[];
+
 	reset(): void;
-	setLevel(level: number): void;
+
+	setLevel(level: Level): void;
+
 	setGameMode(mode: GameMode): void;
+
 	getAvailableWords(): number;
 }
 
@@ -23,10 +30,10 @@ export interface WordGenerator {
  */
 export function createWordGenerator(
 	layout: LayoutName,
-	initialLevel = 1,
+	initialLevel: Level = 1,
 	gameMode: GameMode = "all-words",
 ): WordGenerator {
-	let currentLevel = initialLevel;
+	let currentLevel: typeof initialLevel = initialLevel;
 	let _currentGameMode = gameMode;
 	let availableWords: string[] = [];
 	const usedWords: Set<string> = new Set();
@@ -88,7 +95,7 @@ export function createWordGenerator(
 		shuffleArray(availableWords);
 	}
 
-	function setLevel(level: number): void {
+	function setLevel(level: Level): void {
 		if (level < 1 || level > 6) {
 			throw new Error(`Invalid level: ${level}`);
 		}
@@ -116,6 +123,7 @@ export function createWordGenerator(
 		getAvailableWords,
 	};
 }
+
 export function generateSentence(
 	wordGenerator: WordGenerator,
 	wordCount = 5,
@@ -126,9 +134,10 @@ export function generateSentence(
 	}
 	return `${words.join(" ")}.`;
 }
+
 export function getWordStats(
 	layout: LayoutName,
-	level: number,
+	level: Level,
 ): {
 	totalWords: number;
 	availableWords: number;
@@ -148,6 +157,7 @@ export function getWordStats(
 		coverage: Math.round(coverage * 100) / 100, // Round to 2 decimal places
 	};
 }
+
 function shuffleArray<T>(array: T[]): void {
 	for (let i = array.length - 1; i > 0; i--) {
 		const j = Math.floor(Math.random() * (i + 1));
