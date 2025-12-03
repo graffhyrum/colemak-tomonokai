@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	try {
 		// Create the main typing tutor component
-		const typingTutor = new QWERTYTypingTutor();
+		const typingTutor = QWERTYTypingTutor.create();
 		console.log("QWERTYTypingTutor component created");
 
 		// Find the main container and append the component
@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		// Clear existing content and add our new component
 		typingArea.innerHTML = "";
-		typingTutor.appendTo(typingArea);
+		typingArea.appendChild(typingTutor.element);
 
 		console.log("Colemak Typing Tutor Phase 1 initialized successfully");
 	} catch (error) {

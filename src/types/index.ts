@@ -1,5 +1,7 @@
 // Core type definitions for Colemak Typing Tutor
 
+import type { LayoutName } from "../config/layouts.ts";
+
 export interface GameState {
 	score: number;
 	scoreMax: number;
@@ -15,7 +17,7 @@ export interface GameState {
 	answerString: string;
 	keyboardMap: KeyboardLayout;
 	letterDictionary: LevelDictionary;
-	currentLayout: string;
+	currentLayout: LayoutName;
 	currentKeyboard: KeyboardFormat;
 	shiftDown: boolean;
 	fullSentenceMode: boolean;
@@ -47,11 +49,11 @@ export interface KeyboardLayout {
 	shiftLayer: string | Record<string, string>;
 }
 
-export interface LevelDictionary {
-	[layout: string]: {
+export type LevelDictionary = {
+	[K in LayoutName]: {
 		[level: string]: string;
 	};
-}
+};
 
 export type KeyboardFormat = "ansi" | "iso" | "ortho";
 
@@ -67,7 +69,7 @@ export interface Settings {
 	scoreMax: number;
 	timeLimitValue: number;
 	punctuation: string;
-	currentLayout: string;
+	currentLayout: LayoutName;
 	currentKeyboard: KeyboardFormat;
 	currentLevel: number;
 }
@@ -114,7 +116,7 @@ export interface EventHandlers {
 	onKeyDown: (event: KeyboardEvent) => void;
 	onReset: () => void;
 	onLevelChange: (level: number) => void;
-	onLayoutChange: (layout: string) => void;
+	onLayoutChange: (layout: LayoutName) => void;
 	onKeyboardChange: (format: KeyboardFormat) => void;
 	onSettingsChange: (settings: Partial<Settings>) => void;
 }
