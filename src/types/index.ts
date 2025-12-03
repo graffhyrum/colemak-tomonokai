@@ -1,8 +1,6 @@
-import type {
-	LayoutMap,
-	LayoutName,
-	LevelDictionary,
-} from "../config/layouts.ts";
+import type { LayoutMap, LayoutName } from "../entities/layouts.ts";
+import type { LevelDictionary } from "../entities/levels.ts";
+import type { KeyboardShape } from "../entities/shapes.ts";
 
 export interface GameState {
 	score: number;
@@ -45,8 +43,6 @@ export interface GameState {
 	initialCustomKeyboardState: Record<string, string>;
 	initialCustomLevelsState: Record<string, string>;
 }
-
-export type KeyboardShape = "ansi" | "iso" | "ortho";
 
 export interface Settings {
 	onlyLower: boolean;

@@ -3,17 +3,17 @@
  * Handles level progression, word filtering, and level-based game logic
  */
 
-import type { LayoutName } from "../config/layouts";
 import {
 	filterWordsByLevel,
 	getCumulativeCharacters,
 	masterWordList,
 } from "../data/words";
+import type { LayoutName } from "../entities/layouts.ts";
+import { LEVELS } from "../entities/levels.ts";
 
 export interface LevelInfo {
 	number: number;
 	characters: string;
-	description: string;
 	wordCount: number;
 }
 
@@ -63,7 +63,6 @@ export function createLevelManager(layout: LayoutName): LevelManager {
 		return {
 			number: level,
 			characters,
-			description: getLevelDescription(level),
 			wordCount: filteredWords.length,
 		};
 	};
@@ -112,26 +111,16 @@ export function createLevelManager(layout: LayoutName): LevelManager {
 	};
 }
 
-function getLevelDescription(level: number): string {
-	const descriptions: Record<number, string> = {
-		1: "Basic home row keys",
-		2: "Add common letters",
-		3: "Expand to more letters",
-		4: "Include remaining consonants",
-		5: "Add vowels and remaining keys",
-		6: "Master all remaining characters",
-		7: "All words - complete mastery",
-	};
-
-	return descriptions[level] || `Level ${level}`;
-}
-
 /**
  * Get the maximum level available
  */
-export const MAX_LEVEL = 7;
+export const MAX_LEVEL = LEVELS.reduce((max, level) => {
+	return Math.max(max, level);
+}, 0);
 
 /**
  * Get the minimum level available
  */
-export const MIN_LEVEL = 1;
+export const MIN_LEVEL = LEVELS.reduce((max, level) => {
+	return Math.min(max, level);
+}, 0);
