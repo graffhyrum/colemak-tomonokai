@@ -6,7 +6,7 @@ test("page loads and shows basic interface", async ({ page }) => {
 	await page.goto(`http://${env.APP_HOST}:${env.APP_PORT}`);
 
 	// Just check that the page loads and has a title
-	await expect(page.locator("h1")).toContainText("Colemak Club");
+	await expect(page.locator("h1")).toContainText("Colemak 友の会");
 
 	// Check that level navigation is present
 	await expect(page.locator("nav")).toBeVisible();
