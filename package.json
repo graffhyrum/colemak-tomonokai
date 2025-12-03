@@ -26,6 +26,6 @@
 	},
 	"dependencies": {
 		"arkenv": "^0.7.6",
-		"arktype": "^2.1.27"
+		"arktype": "^2.1.28"
 	}
 }
