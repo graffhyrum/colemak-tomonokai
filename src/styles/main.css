@@ -1,5 +1,15 @@
 /* Main stylesheet for Colemak Typing Tutor */
 
+/* CSS Variables for dark theme */
+:root {
+	--text-color: #fff;
+	--background-color: black;
+	--menu-background-color: #111;
+	--accent-color: #8727b8;
+	--secondary-accent-color: orange;
+	--tertiary-accent-color: green;
+}
+
 /* Reset and base styles */
 * {
 	box-sizing: border-box;
@@ -10,8 +20,8 @@
 body {
 	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 	line-height: 1.6;
-	color: #333;
-	background-color: #f5f5f5;
+	color: var(--text-color);
+	background-color: var(--background-color);
 }
 
 /* Main container */
@@ -28,13 +38,13 @@ header {
 }
 
 h1 {
-	color: #2c3e50;
+	color: var(--text-color);
 	margin-bottom: 10px;
 	font-size: 2.5rem;
 }
 
 .subtitle {
-	color: #7f8c8d;
+	color: var(--accent-color);
 	font-size: 1.1rem;
 }
 
@@ -49,9 +59,9 @@ nav {
 
 nav button {
 	padding: 8px 16px;
-	border: 2px solid #007bff;
+	border: 2px solid var(--text-color);
 	background: transparent;
-	color: #007bff;
+	color: var(--text-color);
 	border-radius: 4px;
 	cursor: pointer;
 	font-size: 0.9rem;
@@ -61,21 +71,22 @@ nav button {
 }
 
 nav button:hover {
-	background: #007bff;
-	color: white;
+	border-color: var(--accent-color);
+	color: var(--accent-color);
+	font-weight: bold;
 }
 
 nav button.currentLevel {
-	background: #007bff;
-	color: white;
+	border-color: var(--accent-color);
+	color: var(--accent-color);
 	font-weight: bold;
 }
 
 /* Game area */
 .game-area {
-	background: white;
+	background: var(--menu-background-color);
 	border-radius: 8px;
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	border: 1px solid var(--text-color);
 	padding: 30px;
 	margin-bottom: 30px;
 }
@@ -88,9 +99,10 @@ nav button.currentLevel {
 	margin-bottom: 20px;
 	min-height: 120px;
 	padding: 20px;
-	background: #f8f9fa;
+	background: var(--background-color);
 	border-radius: 4px;
-	border: 1px solid #e9ecef;
+	border: 1px solid var(--accent-color);
+	color: var(--text-color);
 }
 
 /* Word and letter styling */
@@ -105,16 +117,17 @@ nav button.currentLevel {
 }
 
 .word span.gray {
-	color: #6c757d;
+	color: var(--accent-color);
+	opacity: 0.5;
 }
 
 .word span.green {
-	color: #28a745;
+	color: var(--tertiary-accent-color);
 	font-weight: bold;
 }
 
 .word span.red {
-	color: #dc3545;
+	color: var(--secondary-accent-color);
 	font-weight: bold;
 }
 
@@ -123,29 +136,25 @@ nav button.currentLevel {
 	width: 100%;
 	padding: 12px 16px;
 	font-size: 1.1rem;
-	border: 2px solid #ced4da;
+	border: 2px solid var(--text-color);
 	border-radius: 4px;
 	margin-bottom: 20px;
 	transition: border-color 0.2s ease;
+	background-color: var(--background-color);
+	color: var(--text-color);
 }
 
 #userInput:focus {
 	outline: none;
-	border-color: #007bff;
-	box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+	border-color: var(--accent-color);
 }
 
 #userInput.error {
-	border-color: #dc3545;
-	box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.25);
+	border-color: var(--secondary-accent-color);
 }
 
 #userInput.correct {
-	border-color: #28a745;
-}
-
-#userInput.error {
-	border-color: #dc3545;
+	border-color: var(--tertiary-accent-color);
 }
 
 /* Stats display */
@@ -164,14 +173,14 @@ nav button.currentLevel {
 
 .stat-label {
 	font-size: 0.9rem;
-	color: #6c757d;
+	color: var(--accent-color);
 	margin-bottom: 5px;
 }
 
 .stat-value {
 	font-size: 1.5rem;
 	font-weight: bold;
-	color: #2c3e50;
+	color: var(--text-color);
 }
 
 /* Keyboard display */
@@ -180,13 +189,15 @@ nav button.currentLevel {
 }
 
 .keyboard {
-	background: #f8f9fa;
-	border: 1px solid #e9ecef;
+	background: var(--menu-background-color);
+	border: 1px solid var(--accent-color);
 	border-radius: 4px;
 	padding: 20px;
 	font-family: "Courier New", monospace;
 	font-size: 0.9rem;
 	line-height: 1.4;
+	color: var(--text-color);
+	text-align: center;
 }
 
 /* Key styling */
@@ -194,36 +205,41 @@ nav button.currentLevel {
 	display: inline-block;
 	padding: 8px 12px;
 	margin: 2px;
-	background: white;
-	border: 1px solid #dee2e6;
+	background: var(--background-color);
+	border: 1px solid var(--accent-color);
 	border-radius: 3px;
 	min-width: 30px;
 	text-align: center;
 	transition: all 0.2s ease;
+	color: var(--text-color);
 }
 
 .key.inactive {
-	opacity: 0.3;
+	border-color: var(--accent-color);
+	filter: brightness(0.5);
 }
 
 .key.active {
-	background: #e3f2fd;
-	border-color: #2196f3;
+	border-color: var(--accent-color);
+	color: var(--accent-color);
+	filter: brightness(1.5);
 }
 
 .key.homeRow {
-	background: #fff3cd;
-	border-color: #ffc107;
+	border-color: var(--secondary-accent-color);
+	color: var(--secondary-accent-color);
 }
 
 .key.currentLevelKeys {
-	background: #d1ecf1;
-	border-color: #17a2b8;
+	border-color: var(--tertiary-accent-color);
+	color: var(--tertiary-accent-color);
+	filter: brightness(1.2);
 }
 
 .key.punctuation {
-	background: #f8d7da;
-	border-color: #dc3545;
+	border-color: var(--text-color);
+	color: white;
+	filter: brightness(1.5);
 }
 
 /* Buttons */
@@ -239,53 +255,61 @@ nav button.currentLevel {
 }
 
 .btn-primary {
-	background: #007bff;
-	color: white;
+	background: var(--accent-color);
+	color: var(--text-color);
+	border: 1px solid var(--text-color);
 }
 
 .btn-primary:hover {
-	background: #0056b3;
+	background: var(--accent-color);
+	filter: brightness(1.2);
 }
 
 .btn-secondary {
-	background: #6c757d;
-	color: white;
+	background: var(--menu-background-color);
+	color: var(--text-color);
+	border: 1px solid var(--text-color);
 }
 
 .btn-secondary:hover {
-	background: #545b62;
+	background: var(--menu-background-color);
+	filter: brightness(1.2);
 }
 
 .btn-success {
-	background: #28a745;
-	color: white;
+	background: var(--tertiary-accent-color);
+	color: var(--text-color);
+	border: 1px solid var(--text-color);
 }
 
 .btn-success:hover {
-	background: #1e7e34;
+	background: var(--tertiary-accent-color);
+	filter: brightness(1.2);
 }
 
 .btn-danger {
-	background: #dc3545;
-	color: white;
+	background: var(--secondary-accent-color);
+	color: var(--text-color);
+	border: 1px solid var(--text-color);
 }
 
 .btn-danger:hover {
-	background: #bd2130;
+	background: var(--secondary-accent-color);
+	filter: brightness(1.2);
 }
 
 /* Settings panel */
 .settings-panel {
-	background: white;
+	background: var(--menu-background-color);
 	border-radius: 8px;
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	border: 1px solid var(--text-color);
 	padding: 30px;
 	margin-top: 30px;
 }
 
 .settings-panel h3 {
 	margin-bottom: 20px;
-	color: #2c3e50;
+	color: var(--text-color);
 }
 
 .setting-group {
@@ -296,7 +320,7 @@ nav button.currentLevel {
 	display: block;
 	margin-bottom: 8px;
 	font-weight: 500;
-	color: #495057;
+	color: var(--text-color);
 }
 
 .setting-group input[type="checkbox"] {
@@ -305,15 +329,17 @@ nav button.currentLevel {
 
 .setting-group input[type="number"] {
 	padding: 8px 12px;
-	border: 1px solid #ced4da;
+	border: 1px solid var(--text-color);
 	border-radius: 4px;
 	font-size: 1rem;
+	background-color: var(--background-color);
+	color: var(--text-color);
 }
 
 /* Results display */
 .results {
-	background: #d4edda;
-	border: 1px solid #c3e6cb;
+	background: var(--menu-background-color);
+	border: 1px solid var(--tertiary-accent-color);
 	border-radius: 4px;
 	padding: 20px;
 	margin-top: 20px;
@@ -321,12 +347,12 @@ nav button.currentLevel {
 }
 
 .results h3 {
-	color: #155724;
+	color: var(--tertiary-accent-color);
 	margin-bottom: 10px;
 }
 
 .results p {
-	color: #155724;
+	color: var(--text-color);
 	font-size: 1.1rem;
 	margin: 5px 0;
 }
