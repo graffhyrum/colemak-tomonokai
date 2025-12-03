@@ -16,10 +16,18 @@ export default defineConfig({
 	expect: {
 		timeout: 500,
 	},
+	webServer: {
+		command: "bun --hot index.html",
+		port: 3000,
+		reuseExistingServer: !process.env.CI,
+	},
 	projects: [
 		{
 			name: "chromium",
-			use: { ...devices["Desktop Chrome"] },
+			use: {
+				...devices["Desktop Chrome"],
+				baseURL: "http://localhost:3000",
+			},
 		},
 	],
 });

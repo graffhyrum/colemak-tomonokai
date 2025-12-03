@@ -1,15 +1,15 @@
 import { test as base } from "playwright/test";
-import { createColemakTutor } from "./POM/colemakTutorPage.ts";
+import { createQWERTYTypingTutorPage } from "./POM/qwertyTutorPage.ts";
 
-type ColemakTutorPage = ReturnType<typeof createColemakTutor>;
+type QWERTYTypingTutorPage = ReturnType<typeof createQWERTYTypingTutorPage>;
 // noinspection JSUnusedGlobalSymbols : false positive
 export const test = base.extend<{
-	colemakPage: ColemakTutorPage;
+	qwertyPage: QWERTYTypingTutorPage;
 }>({
-	colemakPage: async ({ page }, use) => {
-		const colemakPage = createColemakTutor(page);
-		await colemakPage.goto();
-		await use(colemakPage);
+	qwertyPage: async ({ page }, use) => {
+		const qwertyPage = createQWERTYTypingTutorPage(page);
+		await qwertyPage.goto();
+		await use(qwertyPage);
 	},
 });
 
