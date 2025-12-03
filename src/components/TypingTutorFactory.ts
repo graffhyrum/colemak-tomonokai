@@ -5,6 +5,7 @@ import type {
 	LevelDictionary,
 } from "../types";
 import { DOMUtils } from "../utils/DOM";
+import type { LevelManager } from "../utils/levelManager";
 
 interface TypingTutorConfig {
 	layoutName: LayoutName;
@@ -12,6 +13,7 @@ interface TypingTutorConfig {
 	levelDictionary: LevelDictionary;
 	words: readonly string[];
 	keyboardLayout: readonly (readonly string[])[];
+	levelManager?: LevelManager;
 	className?: string;
 }
 
@@ -191,8 +193,11 @@ function createTypingTutor(config: TypingTutorConfig) {
 	}
 
 	function nextWord(): void {
-		const randomIndex = Math.floor(Math.random() * config.words.length);
-		const randomWord = config.words[randomIndex] ?? config.words[0] ?? "";
+		const words = config.levelManager
+			? config.levelManager.getFilteredWords(gameState.currentLevel)
+			: config.words;
+		const randomIndex = Math.floor(Math.random() * words.length);
+		const randomWord = words[randomIndex] ?? words[0] ?? "";
 		gameState.correctAnswer = randomWord;
 		updatePrompt();
 	}
@@ -340,10 +345,18 @@ function createTypingTutor(config: TypingTutorConfig) {
 	render();
 	reset();
 
+	function updateLevel(level: number): void {
+		if (config.levelManager?.validateLevel(level)) {
+			gameState.currentLevel = level;
+			reset();
+		}
+	}
+
 	return {
 		element,
 		render,
 		destroy,
+		updateLevel,
 	};
 }
 

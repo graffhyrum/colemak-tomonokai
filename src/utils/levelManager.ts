@@ -69,7 +69,7 @@ export function createLevelManager(layout: LayoutName): LevelManager {
 	};
 
 	const getAvailableLevels = (): number[] => {
-		return [1, 2, 3, 4, 5, 6];
+		return [1, 2, 3, 4, 5, 6, 7];
 	};
 
 	const getFilteredWords = (level: number): string[] => {
@@ -96,7 +96,7 @@ export function createLevelManager(layout: LayoutName): LevelManager {
 	};
 
 	const validateLevel = (level: number): boolean => {
-		return Number.isInteger(level) && level >= 1 && level <= 6;
+		return Number.isInteger(level) && level >= 1 && level <= 7;
 	};
 
 	return {
@@ -120,6 +120,7 @@ function getLevelDescription(level: number): string {
 		4: "Include remaining consonants",
 		5: "Add vowels and remaining keys",
 		6: "Master all remaining characters",
+		7: "All words - complete mastery",
 	};
 
 	return descriptions[level] || `Level ${level}`;
@@ -128,7 +129,7 @@ function getLevelDescription(level: number): string {
 /**
  * Get the maximum level available
  */
-export const MAX_LEVEL = 6;
+export const MAX_LEVEL = 7;
 
 /**
  * Get the minimum level available
