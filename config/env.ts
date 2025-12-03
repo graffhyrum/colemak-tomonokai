@@ -1,4 +1,4 @@
-import arkenv, { type } from "arkenv";
+import arkenv from "arkenv";
 
 export const env = arkenv({
 	// Built-in validators
