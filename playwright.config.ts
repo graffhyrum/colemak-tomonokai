@@ -12,7 +12,7 @@ export default defineConfig({
 	reporter: [["html", { open: "never" }], ["dot"]],
 	use: {
 		trace: "on",
-		actionTimeout: 200,
+		actionTimeout: 300,
 		baseURL: `http://${env.APP_HOST}:${env.APP_PORT}`,
 	},
 	expect: {

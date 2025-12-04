@@ -544,7 +544,7 @@ export const LAYOUT_NAMES = [
 	"tarmakdh",
 	"workman",
 	"canary",
-] as const;
+] as const satisfies string[];
 export type LayoutName = (typeof LAYOUT_NAMES)[number];
 export type LayoutMap = Partial<{
 	Backslash: string;
