@@ -94,7 +94,7 @@ export const createTypingTutorPage = (page: Page) => {
 function getLevelLetters(layout: LayoutName, level: Level): string {
 	const layoutDict = LAYOUT_DICTIONARIES[layout];
 	if (!layoutDict) return "";
-	const levelKey = `lvl${level}` as keyof typeof layoutDict;
+	const levelKey = `lvl${level}` as const;
 	return layoutDict[levelKey] || "";
 }
 
