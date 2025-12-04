@@ -2,4 +2,4 @@
 "colemak-tomonokai": minor
 ---
 
-Improve Playwright test structure with step wrappers following arrange-act-assert pattern for better test organization and debugging capabilities.
+Add essential user flows test suite and refactor existing tests for improved coverage and maintainability.
