@@ -3,7 +3,7 @@ import type { ComponentObject } from "../types";
 
 export const createPageHeader = (page: Page) => {
 	const locators = {
-		header: page.locator("header"),
+		header: page.locator("header").filter({ hasText: "Colemak 友の会" }),
 		title: page.locator("h1"),
 	};
 
