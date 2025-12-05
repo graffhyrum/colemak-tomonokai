@@ -1,6 +1,5 @@
-import { defineConfig } from "@playwright/test";
+import { defineConfig, devices } from "@playwright/test";
 import { env } from "./config/env";
-import getProjects from "./tests/utils/getProjects";
 
 export default defineConfig({
 	testDir: "./tests",
@@ -12,16 +11,23 @@ export default defineConfig({
 	reporter: [["html", { open: "never" }], ["dot"]],
 	use: {
 		trace: "on",
-		actionTimeout: 300,
+		actionTimeout: 100,
 		baseURL: `http://${env.APP_HOST}:${env.APP_PORT}`,
 	},
 	expect: {
-		timeout: 1000,
+		timeout: 500,
 	},
 	webServer: {
 		command: "bun dev",
 		port: env.APP_PORT,
 		reuseExistingServer: !process.env.CI,
 	},
-	projects: getProjects(),
+	projects: [
+		{
+			name: "chromium",
+			use: {
+				...devices["Desktop Chrome"],
+			},
+		},
+	],
 });

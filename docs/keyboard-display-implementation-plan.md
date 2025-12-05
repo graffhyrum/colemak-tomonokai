@@ -28,8 +28,8 @@ function getKeyboardCharacters(
 
 ### 2. Level-Based Highlighting Logic (`src/components/TypingTutorFactory.ts`)
 ```typescript
-function getEnabledLetters(layoutName: LayoutName, currentLevel: Level): string
-function getKeyHighlighting(mappedChar: string, layoutName: LayoutName, currentLevel: Level): {
+function getEnabledLetters(layoutName: LayoutName, currentLevel: number): string
+function getKeyHighlighting(mappedChar: string, layoutName: LayoutName, currentLevel: number): {
   isActive: boolean;
   isHomeRow: boolean;
   isInactive: boolean;
