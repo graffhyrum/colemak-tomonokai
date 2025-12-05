@@ -17,7 +17,7 @@ export const createNavigation = (page: Page) => {
 				const levelButton = locators.levelButtons.filter({
 					hasText: levelText,
 				});
-				await levelButton.click();
+				await levelButton.click({ timeout: 500 });
 			},
 			getCurrentLevel: async (): Promise<Level> => {
 				const text = await locators.currentLevelButton.innerText();

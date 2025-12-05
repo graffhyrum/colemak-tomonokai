@@ -3,8 +3,8 @@ import type { ComponentObject } from "../types";
 
 export const createKeyboardDisplay = (page: Page) => {
 	const locators = {
-		keyboard: page.locator(".keyboard"),
-		activeKeys: page.locator(".key.active"),
+		keyboard: page.locator(".cheatsheet"),
+		activeKeys: page.locator(".key.currentLevelKeys"),
 	};
 
 	return {
@@ -23,7 +23,7 @@ export const createKeyboardDisplay = (page: Page) => {
 			},
 			hasHighlightedKey: async (letter: string) => {
 				const highlightedKey = locators.keyboard.locator(
-					`.key.active:has-text("${letter}")`,
+					`.key.currentLevelKeys:has-text("${letter}")`,
 				);
 				await expect(highlightedKey).toBeVisible();
 			},

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyboard Test</title>
+    <link rel="stylesheet" href="src/styles/main.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Keyboard Styling Test</h1>
+        <div class="keyboard-container">
+            <div class="keyboard">
+                <!-- Test ANSI layout -->
+                <div class="key key--span-4">1</div>
+                <div class="key key--span-4">2</div>
+                <div class="key key--span-4">3</div>
+                <div class="key key--span-4">4</div>
+                <div class="key key--span-8">Backspace</div>
+                
+                <!-- Test functional keys -->
+                <div class="key key--span-6 functional has-indicator">Shift</div>
+                <div class="key key--span-25 functional has-indicator">Space</div>
+                <div class="key key--span-6 functional has-indicator">Shift</div>
+                
+                <!-- Test different states -->
+                <div class="key key--span-4 active">A</div>
+                <div class="key key--span-4 inactive">S</div>
+                <div class="key key--span-4 homeRow resting-position">F</div>
+                <div class="key key--span-4 currentLevelKeys">D</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

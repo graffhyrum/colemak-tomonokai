@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyboard Shape Test</title>
+    <link rel="stylesheet" href="src/styles/main.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Keyboard Shape Test</h1>
+        <div id="menus">
+            <label>
+                <select name="layout">
+                    <option value="qwerty">QWERTY</option>
+                    <option value="colemak" selected>Colemak</option>
+                    <option value="colemakdh">Colemak DH</option>
+                    <option value="dvorak">Dvorak</option>
+                    <option value="workman">Workman</option>
+                </select>
+            </label>
+            <label>
+                <select name="shape">
+                    <option value="ansi" selected>ANSI</option>
+                    <option value="iso">ISO</option>
+                    <option value="ortho">Ortho</option>
+                </select>
+            </label>
+        </div>
+
+        <div class="cheatsheetContainer">
+            <div class="cheatsheet" id="testKeyboard">
+                <!-- Test ANSI layout structure -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple test to verify keyboard shapes
+        const shapes = {
+            ansi: `<div class="row">
+                <div class="key" id='Backquote'><span class="letter">\`</span></div>
+                <div class="key" id='Digit1'><span class="letter">1</span></div>
+                <div class="key" id='Digit2'><span class="letter">2</span></div>
+                <div class="key" id='Digit3'><span class="letter">3</span></div>
+                <div class="key" id='Digit4'><span class="letter">4</span></div>
+                <div class="key" id='Digit5'><span class="letter">5</span></div>
+                <div class="key" id='Digit6'><span class="letter">6</span></div>
+                <div class="key" id='Digit7'><span class="letter">7</span></div>
+                <div class="key" id='Digit8'><span class="letter">8</span></div>
+                <div class="key" id='Digit9'><span class="letter">9</span></div>
+                <div class="key" id='Digit0'><span class="letter">0</span></div>
+                <div class="key" id='Minus'><span class="letter">-</span></div>
+                <div class="key" id='Equal'><span class="letter">=</span></div>
+                <div class="key twou" id='Backspace'><span class="letter">⌫</span></div>
+            </div>
+            <div class="row">
+                <div class="key onepointfiveu"><span class="letter">⇥</span></div>
+                <div class="key" id='KeyQ'><span class="letter">q</span></div>
+                <div class="key" id='KeyW'><span class="letter">w</span></div>
+                <div class="key" id='KeyE'><span class="letter">e</span></div>
+                <div class="key" id='KeyR'><span class="letter">r</span></div>
+                <div class="key" id='KeyT'><span class="letter">t</span></div>
+                <div class="key" id='KeyY'><span class="letter">y</span></div>
+                <div class="key" id='KeyU'><span class="letter">u</span></div>
+                <div class="key" id='KeyI'><span class="letter">i</span></div>
+                <div class="key" id='KeyO'><span class="letter">o</span></div>
+                <div class="key" id='KeyP'><span class="letter">p</span></div>
+                <div class="key" id='BracketLeft'><span class="letter">[</span></div>
+                <div class="key" id='BracketRight'><span class="letter">]</span></div>
+                <div class="key onepointfiveu" id='Backslash'><span class="letter">\\</span></div>
+            </div>
+            <div class="row">
+                <div class="key onepointsevenfiveu"><span class="letter">⇪</span></div>
+                <div class="key" id='KeyA'><span class="letter">a</span></div>
+                <div class="key" id='KeyS'><span class="letter">s</span></div>
+                <div class="key" id='KeyD'><span class="letter">d</span></div>
+                <div class="key restingPosition" id='KeyF'><span class="letter">f</span></div>
+                <div class="key" id='KeyG'><span class="letter">g</span></div>
+                <div class="key" id='KeyH'><span class="letter">h</span></div>
+                <div class="key restingPosition" id='KeyJ'><span class="letter">j</span></div>
+                <div class="key" id='KeyK'><span class="letter">k</span></div>
+                <div class="key" id='KeyL'><span class="letter">l</span></div>
+                <div class="key" id='Semicolon'><span class="letter">;</span></div>
+                <div class="key" id='Quote'><span class="letter">'</span></div>
+                <div class="key twopointtwofiveu" id='Enter'><span class="letter">⏎</span></div>
+            </div>
+            <div class="row">
+                <div class="key twopointtwofiveu" id='ShiftLeft'><span class="letter">⇧</span></div>
+                <div class="key" id='KeyZ'><span class="letter">z</span></div>
+                <div class="key" id='KeyX'><span class="letter">x</span></div>
+                <div class="key" id='KeyC'><span class="letter">c</span></div>
+                <div class="key" id='KeyV'><span class="letter">v</span></div>
+                <div class="key" id='KeyB'><span class="letter">b</span></div>
+                <div class="key" id='KeyN'><span class="letter">n</span></div>
+                <div class="key" id='KeyM'><span class="letter">m</span></div>
+                <div class="key" id='Comma'><span class="letter">,</span></div>
+                <div class="key" id='Period'><span class="letter">.</span></div>
+                <div class="key" id='Slash'><span class="letter">/</span></div>
+                <div class="key twopointsevenfiveu" id='ShiftRight'><span class="letter">⇧</span></div>
+            </div>
+            <div class="row">
+                <div class="key onepointtwofiveu"><span class="letter">⌃</span></div>
+                <div class="key onepointtwofiveu"><span class="letter">⌥</span></div>
+                <div class="key onepointtwofiveu"><span class="letter">⌥</span></div>
+                <div class="key sixpointtwofiveu"><span class="letter"> </span></div>
+                <div class="key onepointtwofiveu"><span class="letter">⌥</span></div>
+                <div class="key onepointtwofiveu"><span class="letter">⌥</span></div>
+                <div class="key onepointtwofiveu"><span class="letter">⌥</span></div>
+            </div>`,
+            iso: `<div class="row">
+                <div class="key" id='Backquote'><span class="letter">\`</span></div>
+                <div class="key" id='Digit1'><span class="letter">1</span></div>
+                <div class="key" id='Digit2'><span class="letter">2</span></div>
+                <div class="key" id='Digit3'><span class="letter">3</span></div>
+                <div class="key" id='Digit4'><span class="letter">4</span></div>
+                <div class="key" id='Digit5'><span class="letter">5</span></div>
+                <div class="key" id='Digit6'><span class="letter">6</span></div>
+                <div class="key" id='Digit7'><span class="letter">7</span></div>
+                <div class="key" id='Digit8'><span class="letter">8</span></div>
+                <div class="key" id='Digit9'><span class="letter">9</span></div>
+                <div class="key" id='Digit0'><span class="letter">0</span></div>
+                <div class="key" id='Minus'><span class="letter">-</span></div>
+                <div class="key" id='Equal'><span class="letter">=</span></div>
+                <div class="key twou" id='Backspace'><span class="letter">⌫</span></div>
+            </div>
+            <div class="row">
+                <div class="key onepointfiveu"><span class="letter">⇥</span></div>
+                <div class="key" id='KeyQ'><span class="letter">q</span></div>
+                <div class="key" id='KeyW'><span class="letter">w</span></div>
+                <div class="key" id='KeyE'><span class="letter">e</span></div>
+                <div class="key" id='KeyR'><span class="letter">r</span></div>
+                <div class="key" id='KeyT'><span class="letter">t</span></div>
+                <div class="key" id='KeyY'><span class="letter">y</span></div>
+                <div class="key" id='KeyU'><span class="letter">u</span></div>
+                <div class="key" id='KeyI'><span class="letter">i</span></div>
+                <div class="key" id='KeyO'><span class="letter">o</span></div>
+                <div class="key" id='KeyP'><span class="letter">p</span></div>
+                <div class="key" id='BracketLeft'><span class="letter">[</span></div>
+                <div class="key" id='BracketRight'><span class="letter">]</span></div>
+                <div class="key twopointtwofiveu" id='Enter'><span class="letter">⏎</span></div>
+            </div>
+            <div class="row">
+                <div class="key onepointsevenfiveu"><span class="letter">⇪</span></div>
+                <div class="key" id='KeyA'><span class="letter">a</span></div>
+                <div class="key" id='KeyS'><span class="letter">s</span></div>
+                <div class="key" id='KeyD'><span class="letter">d</span></div>
+                <div class="key restingPosition" id='KeyF'><span class="letter">f</span></div>
+                <div class="key" id='KeyG'><span class="letter">g</span></div>
+                <div class="key" id='KeyH'><span class="letter">h</span></div>
+                <div class="key restingPosition" id='KeyJ'><span class="letter">j</span></div>
+                <div class="key" id='KeyK'><span class="letter">k</span></div>
+                <div class="key" id='KeyL'><span class="letter">l</span></div>
+                <div class="key" id='Semicolon'><span class="letter">;</span></div>
+                <div class="key" id='Quote'><span class="letter">'</span></div>
+                <div class="key"><span class="letter">\\</span></div>
+                <div class="key onepointtwofiveu"><span class="letter">⌥</span></div>
+            </div>
+            <div class="row">
+                <div class="key twopointtwofiveu" id='ShiftLeft'><span class="letter">⇧</span></div>
+                <div class="key" id='KeyZ'><span class="letter">z</span></div>
+                <div class="key" id='KeyX'><span class="letter">x</span></div>
+                <div class="key" id='KeyC'><span class="letter">c</span></div>
+                <div class="key" id='KeyV'><span class="letter">v</span></div>
+                <div class="key" id='KeyB'><span class="letter">b</span></div>
+                <div class="key" id='KeyN'><span class="letter">n</span></div>
+                <div class="key" id='KeyM'><span class="letter">m</span></div>
+                <div class="key" id='Comma'><span class="letter">,</span></div>
+                <div class="key" id='Period'><span class="letter">.</span></div>
+                <div class="key" id='Slash'><span class="letter">/</span></div>
+                <div class="key twopointsevenfiveu" id='ShiftRight'><span class="letter">⇧</span></div>
+            </div>
+            <div class="row">
+                <div class="key onepointtwofiveu"><span class="letter">⌃</span></div>
+                <div class="key onepointtwofiveu"><span class="letter">⌥</span></div>
+                <div class="key onepointtwofiveu"><span class="letter">⌥</span></div>
+                <div class="key sixpointtwofiveu"><span class="letter"> </span></div>
+                <div class="key onepointtwofiveu"><span class="letter">⌥</span></div>
+                <div class="key onepointtwofiveu"><span class="letter">⌥</span></div>
+                <div class="key onepointtwofiveu"><span class="letter">⌥</span></div>
+                <div class="key onepointtwofiveu"><span class="letter">⌥</span></div>
+            </div>`,
+            ortho: `<div class="row">
+                <div class="key" id='Backquote'><span class="letter">\`</span></div>
+                <div class="key" id='Digit1'><span class="letter">1</span></div>
+                <div class="key" id='Digit2'><span class="letter">2</span></div>
+                <div class="key" id='Digit3'><span class="letter">3</span></div>
+                <div class="key" id='Digit4'><span class="letter">4</span></div>
+                <div class="key" id='Digit5'><span class="letter">5</span></div>
+                <div class="key" id='Digit6'><span class="letter">6</span></div>
+                <div class="key" id='Digit7'><span class="letter">7</span></div>
+                <div class="key" id='Digit8'><span class="letter">8</span></div>
+                <div class="key" id='Digit9'><span class="letter">9</span></div>
+                <div class="key" id='Digit0'><span class="letter">0</span></div>
+                <div class="key" id='Minus'><span class="letter">-</span></div>
+                <div class="key" id='Equal'><span class="letter">=</span></div>
+                <div class="key twou" id='Backspace'><span class="letter">⌫</span></div>
+            </div>
+            <div class="row">
+                <div class="key" id='KeyQ'><span class="letter">q</span></div>
+                <div class="key" id='KeyW'><span class="letter">w</span></div>
+                <div class="key" id='KeyE'><span class="letter">e</span></div>
+                <div class="key" id='KeyR'><span class="letter">r</span></div>
+                <div class="key" id='KeyT'><span class="letter">t</span></div>
+                <div class="key" id='KeyY'><span class="letter">y</span></div>
+                <div class="key" id='KeyU'><span class="letter">u</span></div>
+                <div class="key" id='KeyI'><span class="letter">i</span></div>
+                <div class="key" id='KeyO'><span class="letter">o</span></div>
+                <div class="key" id='KeyP'><span class="letter">p</span></div>
+                <div class="key" id='BracketLeft'><span class="letter">[</span></div>
+                <div class="key" id='BracketRight'><span class="letter">]</span></div>
+                <div class="key" id='Backslash'><span class="letter">\\</span></div>
+            </div>
+            <div class="row">
+                <div class="key" id='KeyA'><span class="letter">a</span></div>
+                <div class="key" id='KeyS'><span class="letter">s</span></div>
+                <div class="key" id='KeyD'><span class="letter">d</span></div>
+                <div class="key restingPosition" id='KeyF'><span class="letter">f</span></div>
+                <div class="key" id='KeyG'><span class="letter">g</span></div>
+                <div class="key" id='KeyH'><span class="letter">h</span></div>
+                <div class="key restingPosition" id='KeyJ'><span class="letter">j</span></div>
+                <div class="key" id='KeyK'><span class="letter">k</span></div>
+                <div class="key" id='KeyL'><span class="letter">l</span></div>
+                <div class="key" id='Semicolon'><span class="letter">;</span></div>
+                <div class="key" id='Quote'><span class="letter">'</span></div>
+                <div class="key twou" id='Enter'><span class="letter">⏎</span></div>
+            </div>
+            <div class="row">
+                <div class="key twou" id='ShiftLeft'><span class="letter">⇧</span></div>
+                <div class="key" id='KeyZ'><span class="letter">z</span></div>
+                <div class="key" id='KeyX'><span class="letter">x</span></div>
+                <div class="key" id='KeyC'><span class="letter">c</span></div>
+                <div class="key" id='KeyV'><span class="letter">v</span></div>
+                <div class="key" id='KeyB'><span class="letter">b</span></div>
+                <div class="key" id='KeyN'><span class="letter">n</span></div>
+                <div class="key" id='KeyM'><span class="letter">m</span></div>
+                <div class="key" id='Comma'><span class="letter">,</span></div>
+                <div class="key" id='Period'><span class="letter">.</span></div>
+                <div class="key" id='Slash'><span class="letter">/</span></div>
+                <div class="key twou" id='ShiftRight'><span class="letter">⇧</span></div>
+            </div>
+            <div class="row">
+                <div class="key onepointtwofiveu"><span class="letter">⌃</span></div>
+                <div class="key onepointtwofiveu"><span class="letter">⌥</span></div>
+                <div class="key onepointtwofiveu"><span class="letter">⌥</span></div>
+                <div class="key sixpointtwofiveu"><span class="letter"> </span></div>
+                <div class="key onepointtwofiveu"><span class="letter">⌥</span></div>
+                <div class="key onepointtwofiveu"><span class="letter">⌥</span></div>
+                <div class="key onepointtwofiveu"><span class="letter">⌥</span></div>
+                <div class="key onepointtwofiveu"><span class="letter">⌥</span></div>
+            </div>`
+        };
+
+        const shapeSelect = document.querySelector('select[name="shape"]');
+        const testKeyboard = document.getElementById('testKeyboard');
+
+        function updateKeyboard() {
+            const selectedShape = shapeSelect.value;
+            testKeyboard.innerHTML = shapes[selectedShape] || shapes.ansi;
+        }
+
+        shapeSelect.addEventListener('change', updateKeyboard);
+        updateKeyboard(); // Initialize with ANSI
+    </script>
+</body>
+</html>

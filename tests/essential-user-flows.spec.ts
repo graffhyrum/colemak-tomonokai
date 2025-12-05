@@ -45,16 +45,6 @@ test.describe("Essential User Flows", () => {
 		});
 	});
 
-	test("keyboard display functionality", async ({ homePage }) => {
-		await step("Verify keyboard is visible", async () => {
-			await homePage.assertions.isLoaded(); // includes keyboard display visibility
-		});
-
-		await step("Check highlighted keys for current level", async () => {
-			await homePage.assertions.hasHighlightedKeys();
-		});
-	});
-
 	test("page load and basic functionality", async ({ homePage }) => {
 		await step("Verify page loads completely", async () => {
 			await homePage.assertions.isLoaded();

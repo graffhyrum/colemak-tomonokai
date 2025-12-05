@@ -1,12 +1,13 @@
 import { test as base } from "playwright/test";
+import type { LayoutName } from "../src/entities/layouts";
 import {
 	createTypingTutorPage,
 	type TypingTutorPage,
 } from "./POM/TypingTutorPage.ts";
-import type { ProjectOptions } from "./utils/getProjects.ts";
 
-type Fixtures = ProjectOptions & {
+type Fixtures = {
 	homePage: TypingTutorPage;
+	layout: LayoutName;
 };
 
 export const test = base.extend<Fixtures>({
