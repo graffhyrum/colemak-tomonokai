@@ -2,6 +2,7 @@
 	"name": "colemak-tomonokai",
 	"type": "module",
 	"private": true,
+	"version": "1.0.0",
 	"scripts": {
 		"typecheck": "tsgo --noEmit --pretty",
 		"dev": "bun scripts/dev.ts",
