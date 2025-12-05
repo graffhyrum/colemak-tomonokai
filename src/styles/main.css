@@ -183,12 +183,14 @@ nav button.currentLevel {
 	color: var(--text-color);
 }
 
-/* Keyboard display */
-.keyboard-container {
+/* Keyboard display - matches archive structure */
+.cheatsheetContainer {
+	display: flex;
 	margin-top: 30px;
+	justify-content: center;
 }
 
-.keyboard {
+.cheatsheet {
 	background: var(--menu-background-color);
 	border: 1px solid var(--accent-color);
 	border-radius: 4px;
@@ -200,23 +202,95 @@ nav button.currentLevel {
 	text-align: center;
 }
 
-/* Key styling */
-.key {
-	display: inline-block;
-	padding: 8px 12px;
-	margin: 2px;
-	background: var(--background-color);
-	border: 1px solid var(--accent-color);
-	border-radius: 3px;
-	min-width: 30px;
-	text-align: center;
-	transition: all 0.2s ease;
-	color: var(--text-color);
+/* Row structure matching archive */
+.row {
+	display: flex;
+	-webkit-box-pack: justify;
+	-ms-flex-pack: justify;
+	justify-content: space-between;
+	height: 5vh;
+	width: 75vh;
 }
 
+/* Key styling matching archive */
+.key,
+.cKey {
+	display: flex;
+	-webkit-box-pack: center;
+	-ms-flex-pack: center;
+	justify-content: center;
+	-webkit-box-align: center;
+	-ms-flex-align: center;
+	align-items: center;
+	background-color: var(--background-color);
+	border: 0.2vh solid var(--accent-color);
+	height: 75%;
+	width: 5%;
+	vertical-align: top;
+}
+
+.letter {
+	display: block;
+	font-size: 2.2vh;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+/* Key width classes matching archive */
+.oneu {
+	width: 5.4%;
+}
+
+.twou {
+	width: 11.75%;
+}
+
+.onepointfiveu {
+	width: 8.8125%;
+}
+
+.onepointsevenfiveu {
+	width: 10.28125%;
+}
+
+.twopointtwofiveu {
+	width: 13.21875%;
+}
+
+.twopointsevenfiveu {
+	width: 16.15625%;
+}
+
+.onepointtwofiveu {
+	width: 7.34375%;
+}
+
+.sixpointtwofiveu {
+	width: 36.71875%;
+}
+
+/* Base key styling */
+.key {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: var(--background-color);
+	border: 0.2vh solid var(--accent-color);
+	border-radius: 3px;
+	color: var(--text-color);
+	font-weight: bold;
+	text-transform: uppercase;
+	transition: all 0.15s ease;
+	position: relative;
+	min-height: 1.5rem;
+	user-select: none;
+}
+
+/* Key state styling */
 .key.inactive {
 	border-color: var(--accent-color);
 	filter: brightness(0.5);
+	opacity: 0.7;
 }
 
 .key.active {
@@ -242,6 +316,76 @@ nav button.currentLevel {
 	filter: brightness(1.5);
 }
 
+/* Functional keys styling */
+.key.functional {
+	border-color: #666;
+	color: #ccc;
+	background: #222;
+}
+
+.key.functional:hover {
+	border-color: var(--accent-color);
+	color: var(--text-color);
+	filter: brightness(1.2);
+}
+
+.key.functional.active {
+	border-color: var(--accent-color);
+	color: var(--accent-color);
+	background: var(--background-color);
+}
+
+/* Resting position styling */
+.key.resting-position {
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+/* LED-style indicators for modifier keys */
+.key.has-indicator::after {
+	content: "";
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	width: 6px;
+	height: 6px;
+	background: rgba(255, 255, 255, 0.3);
+	border-radius: 50%;
+	transition: all 0.2s ease;
+}
+
+.key.indicator-active::after {
+	background: var(--tertiary-accent-color);
+	box-shadow: 0 0 4px var(--tertiary-accent-color);
+}
+
+/* Empty key placeholders */
+.key.empty {
+	visibility: hidden;
+	pointer-events: none;
+}
+
+/* Responsive scaling */
+@media (max-width: 1200px) {
+	.keyboard {
+		transform: scale(0.9);
+	}
+}
+
+@media (max-width: 768px) {
+	.keyboard {
+		transform: scale(0.7);
+		padding: 15px;
+	}
+}
+
+@media (max-width: 480px) {
+	.keyboard {
+		transform: scale(0.5);
+		padding: 10px;
+	}
+}
+
 /* Buttons */
 .btn {
 	display: inline-block;
@@ -263,6 +407,143 @@ nav button.currentLevel {
 .btn-primary:hover {
 	background: var(--accent-color);
 	filter: brightness(1.2);
+}
+
+/* Archive-style keyboard display */
+.cheatsheetContainer {
+	display: flex;
+	margin-top: 30px;
+	justify-content: center;
+}
+
+.cheatsheet {
+	background: var(--menu-background-color);
+	border: 1px solid var(--accent-color);
+	border-radius: 4px;
+	padding: 20px;
+	font-family: "Courier New", monospace;
+	font-size: 0.9rem;
+	line-height: 1.4;
+	color: var(--text-color);
+	text-align: center;
+}
+
+/* Row structure matching archive */
+.row {
+	display: flex;
+	-webkit-box-pack: justify;
+	-ms-flex-pack: justify;
+	justify-content: space-between;
+	height: 5vh;
+	width: 75vh;
+}
+
+/* Key styling matching archive */
+.key,
+.cKey {
+	display: flex;
+	-webkit-box-pack: center;
+	-ms-flex-pack: center;
+	justify-content: center;
+	-webkit-box-align: center;
+	-ms-flex-align: center;
+	align-items: center;
+	background-color: var(--background-color);
+	border: 0.2vh solid var(--accent-color);
+	height: 75%;
+	width: 5%;
+	vertical-align: top;
+}
+
+.letter {
+	display: block;
+	font-size: 2.2vh;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+/* Key width classes matching archive */
+.oneu {
+	width: 5.4%;
+}
+
+.twou {
+	width: 11.75%;
+}
+
+.onepointfiveu {
+	width: 8.8125%;
+}
+
+.onepointsevenfiveu {
+	width: 10.28125%;
+}
+
+.twopointtwofiveu {
+	width: 13.21875%;
+}
+
+.twopointsevenfiveu {
+	width: 16.15625%;
+}
+
+.onepointtwofiveu {
+	width: 7.34375%;
+}
+
+.sixpointtwofiveu {
+	width: 36.71875%;
+}
+
+/* Key state styling matching archive */
+.inactive {
+	border-color: var(--accent-color);
+	-webkit-filter: brightness(0.5);
+	filter: brightness(0.5);
+}
+
+.currentLevelKeys {
+	border-color: var(--tertiary-accent-color);
+	color: var(--tertiary-accent-color);
+	-webkit-filter: brightness(1.2);
+	filter: brightness(1.2);
+}
+
+.homeRow {
+	border-color: var(--secondary-accent-color);
+	color: var(--secondary-accent-color);
+}
+
+.restingPosition {
+	text-decoration-line: underline;
+	text-underline-offset: 4px;
+}
+
+.active {
+	border-color: var(--accent-color);
+	color: var(--accent-color);
+	-webkit-filter: brightness(1.5);
+	filter: brightness(1.5);
+}
+
+.punctuation {
+	border-color: var(--text-color);
+	color: white;
+	-webkit-filter: brightness(1.5);
+	filter: brightness(1.5);
+}
+
+/* Responsive scaling */
+@media (max-width: 768px) {
+	.cheatsheet {
+		transform: scale(0.8);
+	}
+}
+
+@media (max-width: 480px) {
+	.cheatsheet {
+		transform: scale(0.6);
+	}
 }
 
 .btn-secondary {
