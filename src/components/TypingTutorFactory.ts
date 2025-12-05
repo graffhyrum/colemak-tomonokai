@@ -1,5 +1,7 @@
+import type { KeyboardTemplate } from "../entities/keyTemplates.ts";
+import { getKeyboardTemplate } from "../entities/keyTemplates.ts";
 import type { LayoutMap, LayoutName } from "../entities/layouts.ts";
-import type { Level, LevelDictionary } from "../entities/levels.ts";
+import type { LevelDictionary } from "../entities/levels.ts";
 import type { GameState } from "../types";
 import { DOMUtils } from "../utils/DOM";
 import type { LevelManager } from "../utils/levelManager";
@@ -36,6 +38,7 @@ function createTypingTutor(config: {
 		currentLayout: config.layoutName,
 		currentKeyboardShape: "ansi",
 		shiftDown: false,
+		capsLockOn: false,
 		fullSentenceMode: false,
 		fullSentenceModeEnabled: false,
 		requireBackspaceCorrection: true,
@@ -67,11 +70,12 @@ function createTypingTutor(config: {
 	let inputElement: HTMLInputElement;
 	let keyboardElement: HTMLElement;
 	let statsElement: HTMLElement;
+	let keyboardTemplate: KeyboardTemplate;
 
 	function initializeElements(): void {
 		promptElement = DOMUtils.createElement("div", {
 			className: "prompt",
-			textContent: "Type the words below...",
+			textContent: "Type words below...",
 		});
 
 		inputElement = DOMUtils.createElement("input", {
@@ -84,21 +88,31 @@ function createTypingTutor(config: {
 		});
 
 		keyboardElement = DOMUtils.createElement("div", {
-			className: "keyboard",
+			className: "cheatsheet",
 		});
 
 		statsElement = DOMUtils.createElement("div", {
 			className: "stats",
 		});
 
+		// Get keyboard template for current shape
+		keyboardTemplate = getKeyboardTemplate(gameState.currentKeyboardShape);
+
+		// Create cheatsheet container like archive
+		const cheatsheetContainer = DOMUtils.createElement("div", {
+			className: "cheatsheetContainer",
+		});
+		cheatsheetContainer.appendChild(keyboardElement);
+
 		element.appendChild(promptElement);
 		element.appendChild(inputElement);
 		element.appendChild(statsElement);
-		element.appendChild(keyboardElement);
+		element.appendChild(cheatsheetContainer);
 	}
 
 	function setupEventListeners(): void {
 		inputElement.addEventListener("keydown", handleKeyDown);
+		inputElement.addEventListener("keyup", handleKeyUp);
 		element.addEventListener("click", () => {
 			inputElement.focus();
 		});
@@ -110,6 +124,29 @@ function createTypingTutor(config: {
 			startTimer();
 		}
 
+		// Handle modifier keys
+		if (event.code === "ShiftLeft" || event.code === "ShiftRight") {
+			gameState.shiftDown = true;
+			updateModifierVisuals();
+			renderKeyboard();
+			return;
+		}
+
+		if (event.code === "CapsLock") {
+			event.preventDefault();
+			gameState.capsLockOn = !gameState.capsLockOn;
+			updateModifierVisuals();
+			renderKeyboard();
+			return;
+		}
+
+		// Handle functional keys
+		if (event.code === "Space") {
+			event.preventDefault();
+			handleSpacebar();
+			return;
+		}
+
 		if (gameState.specialKeyCodes.includes(event.keyCode)) {
 			handleSpecialKey(event);
 			return;
@@ -118,22 +155,62 @@ function createTypingTutor(config: {
 		handleTyping(event);
 	}
 
+	function handleKeyUp(event: KeyboardEvent): void {
+		if (event.code === "ShiftLeft" || event.code === "ShiftRight") {
+			gameState.shiftDown = false;
+			updateModifierVisuals();
+			renderKeyboard();
+		}
+	}
+
+	function handleSpacebar(): void {
+		const currentInput = inputElement.value;
+		const currentWord = gameState.correctAnswer.trim();
+
+		// Add space if it matches the expected word
+		if (currentInput.trim() === currentWord) {
+			inputElement.value = `${currentInput} `;
+			checkWordCompletion();
+		}
+	}
+
+	function updateModifierVisuals(): void {
+		// Update shift key visuals
+		const shiftKeys = keyboardElement.querySelectorAll(
+			'[data-key-id*="Shift"]',
+		);
+		shiftKeys.forEach((key) => {
+			if (gameState.shiftDown) {
+				key.classList.add("active", "indicator-active");
+			} else {
+				key.classList.remove("active", "indicator-active");
+			}
+		});
+
+		// Update caps lock visuals
+		const capsLockKey = keyboardElement.querySelector(
+			'[data-key-id="CapsLock"]',
+		);
+		if (capsLockKey) {
+			if (gameState.capsLockOn) {
+				capsLockKey.classList.add("indicator-active");
+			} else {
+				capsLockKey.classList.remove("indicator-active");
+			}
+		}
+	}
+
 	function handleSpecialKey(event: KeyboardEvent): void {
 		switch (event.keyCode) {
-			case 32:
-			case 13:
+			case 13: // Enter
 				event.preventDefault();
 				checkWordCompletion();
 				break;
-			case 8:
+			case 8: // Backspace
 				handleBackspace();
 				break;
-			case 27:
+			case 27: // Escape
 				reset();
-				break;
-			case 16: // Shift key
-				gameState.shiftDown = event.type === "keydown";
-				renderKeyboard(); // Re-render keyboard with shift layer
 				break;
 		}
 	}
@@ -315,7 +392,7 @@ function createTypingTutor(config: {
 		inputElement.focus();
 	}
 
-	function getEnabledLetters(currentLevel: Level): string {
+	function getEnabledLetters(currentLevel: number): string {
 		const layoutDict = config.levelDictionary[config.layoutName];
 		if (!layoutDict) return "";
 
@@ -329,7 +406,7 @@ function createTypingTutor(config: {
 
 	function getKeyHighlighting(
 		character: string,
-		currentLevel: Level,
+		currentLevel: number,
 	): {
 		isActive: boolean;
 		isHomeRow: boolean;
@@ -366,56 +443,112 @@ function createTypingTutor(config: {
 		};
 	}
 
+	function getCharacterForKey(keyId: string): string {
+		// Find the key in the keyboard characters array
+		for (const row of config.keyboardCharacters) {
+			for (const keyInfo of row) {
+				if (keyInfo.keyId === keyId) {
+					// Apply shift if needed
+					if (
+						gameState.shiftDown &&
+						config.layoutMap.shiftLayer &&
+						typeof config.layoutMap.shiftLayer === "object"
+					) {
+						const shifted = (
+							config.layoutMap.shiftLayer as Record<string, string>
+						)[keyId];
+						if (shifted) return shifted;
+					}
+					return keyInfo.character;
+				}
+			}
+		}
+		return "";
+	}
+
 	function renderKeyboard(): void {
-		// Regenerate keyboard characters based on current shift state
-		const currentKeyboardCharacters = regenerateKeyboardCharacters();
-
 		let keyboardHTML = "";
-		currentKeyboardCharacters.forEach((row) => {
-			keyboardHTML += '<div class="keyboard-row">';
-			row.forEach((keyInfo) => {
-				const highlighting = getKeyHighlighting(
-					keyInfo.character,
-					gameState.currentLevel,
-				);
 
+		keyboardTemplate.rows.forEach((row) => {
+			keyboardHTML += '<div class="row">';
+			row.forEach((keyTemplate) => {
 				let classes = "key";
-				if (highlighting.isActive) classes += " active";
-				else if (highlighting.isInactive) classes += " inactive";
-				if (highlighting.isHomeRow) classes += " homeRow";
+				let widthClass = "";
 
-				const displayChar = keyInfo.isEmpty ? "" : keyInfo.character;
-				keyboardHTML += `<span class="${classes}" data-key-id="${keyInfo.keyId}">${displayChar}</span>`;
+				// Add width classes based on template
+				switch (keyTemplate.width) {
+					case "1u":
+						widthClass = "";
+						break;
+					case "1.25u":
+						widthClass = " onepointtwofiveu";
+						break;
+					case "1.5u":
+						widthClass = " onepointfiveu";
+						break;
+					case "1.75u":
+						widthClass = " onepointsevenfiveu";
+						break;
+					case "2u":
+						widthClass = " twou";
+						break;
+					case "2.25u":
+						widthClass = " twopointtwofiveu";
+						break;
+					case "2.75u":
+						widthClass = " twopointsevenfiveu";
+						break;
+					case "6.25u":
+						widthClass = " sixpointtwofiveu";
+						break;
+				}
+
+				// Add custom classes
+				if (keyTemplate.classes) {
+					classes += ` ${keyTemplate.classes.join(" ")}`;
+				}
+
+				// Add functional class for modifier keys
+				if (keyTemplate.isFunctional) {
+					classes += " cKey";
+				}
+
+				// Add empty class for placeholders
+				if (keyTemplate.isEmpty) {
+					classes += " empty";
+				}
+
+				// Get character for highlighting
+				let character = "";
+				if (keyTemplate.id) {
+					character = getCharacterForKey(keyTemplate.id);
+				}
+
+				// Apply level highlighting for non-empty keys
+				if (!keyTemplate.isEmpty && character) {
+					const highlighting = getKeyHighlighting(
+						character,
+						gameState.currentLevel,
+					);
+					if (highlighting.isActive) classes += " currentLevelKeys";
+					else if (highlighting.isInactive) classes += " inactive";
+					if (highlighting.isHomeRow) classes += " homeRow";
+				}
+
+				// Add data attributes
+				const dataId = keyTemplate.id ? `id='${keyTemplate.id}'` : "";
+				const displayChar = keyTemplate.isEmpty
+					? ""
+					: `<span class="letter">${character}</span>`;
+
+				keyboardHTML += `<div class="${classes}${widthClass}" ${dataId}>${displayChar}</div>`;
 			});
 			keyboardHTML += "</div>";
 		});
 
 		keyboardElement.innerHTML = keyboardHTML;
-	}
-
-	function regenerateKeyboardCharacters(): Array<
-		Array<{ keyId: string; character: string; isEmpty: boolean }>
-	> {
-		return config.keyboardCharacters.map((row) =>
-			row.map((keyInfo) => {
-				if (keyInfo.isEmpty) return keyInfo;
-
-				// For shift layer, look up the shifted character
-				let character = keyInfo.character;
-				if (
-					gameState.shiftDown &&
-					config.layoutMap.shiftLayer &&
-					typeof config.layoutMap.shiftLayer === "object"
-				) {
-					const shifted = (
-						config.layoutMap.shiftLayer as Record<string, string>
-					)[keyInfo.keyId];
-					if (shifted) character = shifted;
-				}
-
-				return { ...keyInfo, character };
-			}),
-		);
+		keyboardElement.className = "cheatsheet";
+		updateModifierVisuals();
 	}
 
 	function render(): void {
@@ -428,21 +561,30 @@ function createTypingTutor(config: {
 		element.remove();
 	}
 
+	function updateLevel(level: number): void {
+		if (config.levelManager?.validateLevel(level)) {
+			gameState.currentLevel = level;
+			reset();
+		}
+	}
+
+	function updateKeyboardShape(shape: string): void {
+		gameState.currentKeyboardShape = shape as "ansi" | "iso" | "ortho";
+		keyboardTemplate = getKeyboardTemplate(gameState.currentKeyboardShape);
+		renderKeyboard();
+	}
+
 	initializeElements();
 	setupEventListeners();
 	render();
 	reset();
-
-	function updateLevel(level: Level): void {
-		gameState.currentLevel = level;
-		reset();
-	}
 
 	return {
 		element,
 		render,
 		destroy,
 		updateLevel,
+		updateKeyboardShape,
 	};
 }
 

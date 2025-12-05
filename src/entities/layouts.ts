@@ -39,6 +39,7 @@ export const LAYOUT_DICTIONARIES = {
 		lvl6: "qxjz",
 		lvl7: ALPHABET,
 	},
+
 	dvorak: {
 		lvl1: "aoeuhtns",
 		lvl2: "id",
@@ -534,17 +535,17 @@ export const LAYOUT_MAPS = {
 	},
 } as const satisfies Record<LayoutName, LayoutMap>;
 export const LAYOUT_NAMES = [
-	"qwerty",
-	"colemak",
 	"azerty",
 	"dvorak",
+	"colemak",
 	"colemakdh",
 	"lefthandeddvorak",
+	"qwerty",
 	"tarmak",
 	"tarmakdh",
 	"workman",
 	"canary",
-] as const satisfies string[];
+] as const;
 export type LayoutName = (typeof LAYOUT_NAMES)[number];
 export type LayoutMap = Partial<{
 	Backslash: string;

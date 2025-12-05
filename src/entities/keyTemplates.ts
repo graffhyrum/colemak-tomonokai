@@ -1,4 +1,12 @@
-export type KeyWidth = "1u" | "1.25u" | "1.5u" | "1.75u" | "2u" | "2.25u" | "2.75u" | "6.25u";
+export type KeyWidth =
+	| "1u"
+	| "1.25u"
+	| "1.5u"
+	| "1.75u"
+	| "2u"
+	| "2.25u"
+	| "2.75u"
+	| "6.25u";
 
 export interface KeyTemplate {
 	id?: string;
@@ -189,24 +197,7 @@ export const KEYBOARD_TEMPLATES: Record<string, KeyboardTemplate> = {
 		gridColumns: 74,
 		gridRows: 5,
 		rows: [
-			// Row 1: Number row + Backspace
-			[
-				{ id: "Backquote", width: "1u" },
-				{ id: "Digit1", width: "1u" },
-				{ id: "Digit2", width: "1u" },
-				{ id: "Digit3", width: "1u" },
-				{ id: "Digit4", width: "1u" },
-				{ id: "Digit5", width: "1u" },
-				{ id: "Digit6", width: "1u" },
-				{ id: "Digit7", width: "1u" },
-				{ id: "Digit8", width: "1u" },
-				{ id: "Digit9", width: "1u" },
-				{ id: "Digit0", width: "1u" },
-				{ id: "Minus", width: "1u" },
-				{ id: "Equal", width: "1u" },
-				{ id: "Backspace", width: "2u", isFunctional: true },
-			],
-			// Row 2: QWERTY row (ortho layout)
+			// Row 1: Number row + Backspace (ortho layout - 12 keys)
 			[
 				{ id: "KeyQ", width: "1u" },
 				{ id: "KeyW", width: "1u" },
@@ -222,7 +213,7 @@ export const KEYBOARD_TEMPLATES: Record<string, KeyboardTemplate> = {
 				{ id: "BracketRight", width: "1u" },
 				{ id: "Backslash", width: "1u" },
 			],
-			// Row 3: Home row (ortho layout)
+			// Row 2: Home row (ortho layout - 11 keys)
 			[
 				{ id: "KeyA", width: "1u" },
 				{ id: "KeyS", width: "1u" },
@@ -237,9 +228,8 @@ export const KEYBOARD_TEMPLATES: Record<string, KeyboardTemplate> = {
 				{ id: "Quote", width: "1u" },
 				{ id: "Enter", width: "2u", isFunctional: true },
 			],
-			// Row 4: Bottom row (ortho layout)
+			// Row 3: Bottom row (ortho layout - 11 keys)
 			[
-				{ id: "ShiftLeft", width: "2u", isFunctional: true },
 				{ id: "KeyZ", width: "1u" },
 				{ id: "KeyX", width: "1u" },
 				{ id: "KeyC", width: "1u" },
@@ -250,9 +240,10 @@ export const KEYBOARD_TEMPLATES: Record<string, KeyboardTemplate> = {
 				{ id: "Comma", width: "1u" },
 				{ id: "Period", width: "1u" },
 				{ id: "Slash", width: "1u" },
+				{ id: "ShiftLeft", width: "2u", isFunctional: true },
 				{ id: "ShiftRight", width: "2u", isFunctional: true },
 			],
-			// Row 5: Modifier row (ortho layout)
+			// Row 4: Modifier row (ortho layout - 13 keys)
 			[
 				{ width: "1.25u", isEmpty: true }, // Ctrl
 				{ width: "1.25u", isEmpty: true }, // Win/Cmd
@@ -268,7 +259,8 @@ export const KEYBOARD_TEMPLATES: Record<string, KeyboardTemplate> = {
 };
 
 export function getKeyboardTemplate(shape: string): KeyboardTemplate {
-	return (KEYBOARD_TEMPLATES[shape] ?? KEYBOARD_TEMPLATES.ansi) as KeyboardTemplate;
+	return (KEYBOARD_TEMPLATES[shape] ??
+		KEYBOARD_TEMPLATES.ansi) as KeyboardTemplate;
 }
 
 export function getKeySpanClass(width: KeyWidth): string {

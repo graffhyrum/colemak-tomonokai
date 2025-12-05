@@ -5,12 +5,8 @@ export type Level = (typeof LEVELS)[number];
 export type LevelKey = `lvl${Level}`;
 export type LevelDictionary = Record<LayoutName, Record<LevelKey, string>>;
 
-export function isLevel(x: unknown): x is Level {
-	return LEVELS.includes(x as Level);
-}
-
 export function assertLevel(x: unknown): asserts x is Level {
-	if (!isLevel(x)) {
-		throw new Error(`Invalid level: ${x}`);
+	if (!LEVELS.includes(x as Level)) {
+		throw new Error(`Expected level to be one of ${LEVELS}, got ${x}`);
 	}
 }

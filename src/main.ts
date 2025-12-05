@@ -8,7 +8,6 @@ import {
 	LAYOUT_MAPS,
 	type LayoutName,
 } from "./entities/layouts.ts";
-import { assertLevel, type Level } from "./entities/levels.ts";
 import type { KeyboardShape } from "./entities/shapes.ts";
 
 // Keyboard layouts for different physical formats
@@ -97,8 +96,7 @@ function getKeyboardCharacters(
 				return { keyId: keyCode, character: "", isEmpty: true };
 			}
 
-			let character: string;
-			// noinspection JSUnusedAssignment: readabilty
+			let character = "";
 			let isEmpty = true;
 
 			if (
@@ -130,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			'select[name="layout"]',
 		) as HTMLSelectElement;
 		const keyboardSelect = document.querySelector(
-			'select[name="keyboard"]',
+			'select[name="shape"]',
 		) as HTMLSelectElement;
 
 		const initialLayout = (layoutSelect?.value as LayoutName) || "colemak";
@@ -209,7 +207,7 @@ function setupLayoutAndKeyboardSelection(
 		'select[name="layout"]',
 	) as HTMLSelectElement;
 	const keyboardSelect = document.querySelector(
-		'select[name="keyboard"]',
+		'select[name="shape"]',
 	) as HTMLSelectElement;
 
 	function handleLayoutChange() {
@@ -238,6 +236,9 @@ function setupLayoutAndKeyboardSelection(
 		Object.assign(levelManager, newLevelManager);
 		typingTutorRef.current = newTypingTutor;
 
+		// Update keyboard shape
+		newTypingTutor.updateKeyboardShape(newKeyboardShape);
+
 		// Re-setup level selection with new references
 		setupLevelSelection(levelManager, typingTutorRef);
 
@@ -245,8 +246,12 @@ function setupLayoutAndKeyboardSelection(
 		updateLevelButtonStates(levelManager.getCurrentLevel());
 	}
 
-	layoutSelect.addEventListener("change", handleLayoutChange);
-	keyboardSelect.addEventListener("change", handleLayoutChange);
+	if (layoutSelect) {
+		layoutSelect.addEventListener("change", handleLayoutChange);
+	}
+	if (keyboardSelect) {
+		keyboardSelect.addEventListener("change", handleLayoutChange);
+	}
 }
 
 function setupLevelSelection(
@@ -259,11 +264,12 @@ function setupLevelSelection(
 		button.addEventListener("click", () => {
 			const levelId = button.id;
 			if (levelId?.startsWith("lvl")) {
-				const levelNumber = Number.parseInt(levelId.replace("lvl", ""), 10);
-				assertLevel(levelNumber);
-				levelManager.setCurrentLevel(levelNumber);
-				updateLevelButtonStates(levelNumber);
-				typingTutorRef.current.updateLevel(levelNumber);
+				const levelNumber = parseInt(levelId.replace("lvl", ""), 10);
+				if (levelManager.validateLevel(levelNumber)) {
+					levelManager.setCurrentLevel(levelNumber);
+					updateLevelButtonStates(levelNumber);
+					typingTutorRef.current.updateLevel(levelNumber);
+				}
 			}
 		});
 	});
@@ -272,13 +278,13 @@ function setupLevelSelection(
 	updateLevelButtonStates(levelManager.getCurrentLevel());
 }
 
-function updateLevelButtonStates(currentLevel: Level) {
+function updateLevelButtonStates(currentLevel: number) {
 	const levelButtons = document.querySelectorAll('nav button[id^="lvl"]');
 
 	levelButtons.forEach((button) => {
 		const levelId = button.id;
 		if (levelId?.startsWith("lvl")) {
-			const levelNumber = Number.parseInt(levelId.replace("lvl", ""), 10);
+			const levelNumber = parseInt(levelId.replace("lvl", ""), 10);
 			button.classList.toggle("currentLevel", levelNumber === currentLevel);
 		}
 	});
