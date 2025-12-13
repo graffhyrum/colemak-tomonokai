@@ -1,10 +1,16 @@
-import type { KeyboardTemplate } from "../entities/keyTemplates.ts";
 import { getKeyboardTemplate } from "../entities/keyTemplates.ts";
 import type { LayoutMap, LayoutName } from "../entities/layouts.ts";
 import type { LevelDictionary } from "../entities/levels.ts";
 import type { GameState } from "../types";
-import { DOMUtils } from "../utils/DOM";
 import type { LevelManager } from "../utils/levelManager";
+
+import { domElements } from "./domElements.ts";
+import { eventHandlers } from "./eventHandlers.ts";
+import { gameLogic } from "./gameLogic.ts";
+import { keyboardRenderer } from "./keyboardRenderer.ts";
+import { statsCalculator } from "./statsCalculator.ts";
+import { timerManager } from "./timerManager.ts";
+import { visualFeedback } from "./visualFeedback.ts";
 
 function createTypingTutor(config: {
 	layoutName: LayoutName;
@@ -17,9 +23,6 @@ function createTypingTutor(config: {
 	levelManager?: LevelManager;
 	className?: string;
 }) {
-	const element = document.createElement("div");
-	element.className = config.className || "typing-tutor";
-
 	const gameState: GameState = {
 		score: 0,
 		scoreMax: 10,
@@ -66,117 +69,62 @@ function createTypingTutor(config: {
 		initialCustomLevelsState: {},
 	};
 
-	let promptElement: HTMLElement;
-	let inputElement: HTMLInputElement;
-	let keyboardElement: HTMLElement;
-	let statsElement: HTMLElement;
-	let keyboardTemplate: KeyboardTemplate;
+	// Create DOM elements using the extracted module
+	const elements = domElements.createDOMElements({
+		layoutName: config.layoutName,
+		className: config.className,
+	});
 
-	function initializeElements(): void {
-		promptElement = DOMUtils.createElement("div", {
-			className: "prompt",
-			textContent: "Type words below...",
-		});
+	let keyboardTemplate = getKeyboardTemplate(gameState.currentKeyboardShape);
 
-		inputElement = DOMUtils.createElement("input", {
-			className: "user-input",
-			attributes: {
-				type: "text",
-				id: "userInput",
-				placeholder: "Start typing here...",
-			},
-		});
+	// Create action handlers that use extracted modules
+	const actions = {
+		handleTyping: handleTyping,
+		handleSpacebar: handleSpacebar,
+		handleBackspace: handleBackspace,
+		handleSpecialKey: handleSpecialKey,
+		updateModifierVisuals: updateModifierVisuals,
+		checkWordCompletion: checkWordCompletion,
+		nextWord: nextWord,
+		reset: reset,
+		endGame: endGame,
+	};
 
-		keyboardElement = DOMUtils.createElement("div", {
-			className: "cheatsheet",
-		});
+	// Setup event handlers using extracted module
+	const eventHandlerInstances = eventHandlers.createKeyDownHandler(
+		gameState,
+		actions,
+	);
+	const keyUpHandler = eventHandlers.createKeyUpHandler(gameState, actions);
+	const clickHandler = eventHandlers.createClickHandler(elements.input);
 
-		statsElement = DOMUtils.createElement("div", {
-			className: "stats",
-		});
+	const _cleanup = eventHandlers.setupEventListeners(
+		elements.container,
+		elements.input,
+		{
+			keyDown: eventHandlerInstances,
+			keyUp: keyUpHandler,
+			click: clickHandler,
+		},
+	);
 
-		// Get keyboard template for current shape
-		keyboardTemplate = getKeyboardTemplate(gameState.currentKeyboardShape);
-
-		// Create cheatsheet container like archive
-		const cheatsheetContainer = DOMUtils.createElement("div", {
-			className: "cheatsheetContainer",
-		});
-		cheatsheetContainer.appendChild(keyboardElement);
-
-		element.appendChild(promptElement);
-		element.appendChild(inputElement);
-		element.appendChild(statsElement);
-		element.appendChild(cheatsheetContainer);
-	}
-
-	function setupEventListeners(): void {
-		inputElement.addEventListener("keydown", handleKeyDown);
-		inputElement.addEventListener("keyup", handleKeyUp);
-		element.addEventListener("click", () => {
-			inputElement.focus();
-		});
-	}
-
-	function handleKeyDown(event: KeyboardEvent): void {
-		if (!gameState.gameOn) {
-			gameState.gameOn = true;
-			startTimer();
-		}
-
-		// Handle modifier keys
-		if (event.code === "ShiftLeft" || event.code === "ShiftRight") {
-			gameState.shiftDown = true;
-			updateModifierVisuals();
-			renderKeyboard();
-			return;
-		}
-
-		if (event.code === "CapsLock") {
-			event.preventDefault();
-			gameState.capsLockOn = !gameState.capsLockOn;
-			updateModifierVisuals();
-			renderKeyboard();
-			return;
-		}
-
-		// Handle functional keys
-		if (event.code === "Space") {
-			event.preventDefault();
-			handleSpacebar();
-			return;
-		}
-
-		if (gameState.specialKeyCodes.includes(event.keyCode)) {
-			handleSpecialKey(event);
-			return;
-		}
-
-		handleTyping(event);
-	}
-
-	function handleKeyUp(event: KeyboardEvent): void {
-		if (event.code === "ShiftLeft" || event.code === "ShiftRight") {
-			gameState.shiftDown = false;
-			updateModifierVisuals();
-			renderKeyboard();
-		}
-	}
+	// Timer management
+	let timerCleanup: (() => void) | null = null;
 
 	function handleSpacebar(): void {
-		const currentInput = inputElement.value;
+		const currentInput = elements.input.value;
 		const currentWord = gameState.correctAnswer.trim();
 
 		// Add space if it matches the expected word
 		if (currentInput.trim() === currentWord) {
-			inputElement.value = `${currentInput} `;
+			elements.input.value = `${currentInput} `;
 			checkWordCompletion();
 		}
 	}
 
 	function updateModifierVisuals(): void {
 		// Update shift key visuals
-		const shiftKeys = keyboardElement.querySelectorAll(
+		const shiftKeys = elements.keyboard.querySelectorAll(
 			'[data-key-id*="Shift"]',
 		);
 		shiftKeys.forEach((key) => {
@@ -188,7 +136,7 @@ function createTypingTutor(config: {
 		});
 
 		// Update caps lock visuals
-		const capsLockKey = keyboardElement.querySelector(
+		const capsLockKey = elements.keyboard.querySelector(
 			'[data-key-id="CapsLock"]',
 		);
 		if (capsLockKey) {
@@ -219,7 +167,7 @@ function createTypingTutor(config: {
 		event.preventDefault();
 
 		const typedChar = event.key;
-		const currentInput = inputElement.value;
+		const currentInput = elements.input.value;
 		const currentWord = gameState.correctAnswer;
 		const currentPosition = currentInput.length;
 
@@ -228,17 +176,25 @@ function createTypingTutor(config: {
 
 			if (typedChar === expectedChar) {
 				gameState.correct++;
-				inputElement.value += typedChar;
-				inputElement.classList.remove("error");
-				updateVisualFeedback(currentPosition, "correct");
+				elements.input.value += typedChar;
+				elements.input.classList.remove("error");
+				visualFeedback.updateVisualFeedback(
+					elements.prompt,
+					currentPosition,
+					"correct",
+				);
 			} else {
 				gameState.errors++;
-				updateVisualFeedback(currentPosition, "error");
-				inputElement.classList.add("error");
+				visualFeedback.updateVisualFeedback(
+					elements.prompt,
+					currentPosition,
+					"error",
+				);
+				elements.input.classList.add("error");
 				if (gameState.requireBackspaceCorrection) {
 					return;
 				} else {
-					inputElement.value += typedChar;
+					elements.input.value += typedChar;
 				}
 			}
 		}
@@ -247,134 +203,63 @@ function createTypingTutor(config: {
 	}
 
 	function handleBackspace(): void {
-		const input = inputElement.value;
+		const input = elements.input.value;
 		if (input.length > 0) {
-			inputElement.value = input.slice(0, -1);
-			updateVisualFeedback(input.length - 1, "neutral");
+			elements.input.value = gameLogic.handleBackspace(input);
+			visualFeedback.updateVisualFeedback(
+				elements.prompt,
+				input.length - 1,
+				"neutral",
+			);
 		}
 	}
 
 	function checkWordCompletion(): void {
-		const input = inputElement.value.trim();
+		const input = elements.input.value.trim();
 		const expected = gameState.correctAnswer.trim();
 
-		if (input === expected) {
+		if (gameLogic.checkWordCompletion(input, expected)) {
 			gameState.score++;
 			nextWord();
-			inputElement.value = "";
+			elements.input.value = "";
 			updateStats();
 
-			if (gameState.score >= gameState.scoreMax) {
+			if (gameLogic.shouldEndGame(gameState.score, gameState.scoreMax)) {
 				endGame();
 			}
 		}
 	}
 
 	function nextWord(): void {
-		const words = config.levelManager
-			? config.levelManager.getFilteredWords(gameState.currentLevel)
-			: config.words;
-		const randomIndex = Math.floor(Math.random() * words.length);
-		const randomWord = words[randomIndex] ?? words[0] ?? "";
-		gameState.correctAnswer = randomWord;
-		updatePrompt();
+		gameState.correctAnswer = gameLogic.calculateNextWordForLevel(
+			{ words: config.words, levelManager: config.levelManager },
+			gameState.currentLevel,
+		);
+		visualFeedback.updatePrompt(elements.prompt, gameState.correctAnswer);
 	}
 
-	function updatePrompt(): void {
-		const word = gameState.correctAnswer;
-		const spans = word
-			.split("")
-			.map((char: string) => `<span class="letter">${char}</span>`)
-			.join("");
+	// updatePrompt is now handled by visualFeedback.updatePrompt
 
-		promptElement.innerHTML = `<div class="word">${spans}</div>`;
-	}
-
-	function updateVisualFeedback(
-		position: number,
-		status: "correct" | "error" | "neutral",
-	): void {
-		const letters = promptElement.querySelectorAll(".letter");
-		if (letters[position]) {
-			letters[position].className = "letter";
-
-			switch (status) {
-				case "correct":
-					letters[position].classList.add("green");
-					break;
-				case "error":
-					letters[position].classList.add("red");
-					break;
-				case "neutral":
-					letters[position].classList.add("gray");
-					break;
-			}
-		}
-	}
+	// updateVisualFeedback is now handled by visualFeedback.updateVisualFeedback
 
 	function updateStats(): void {
-		const accuracy =
-			gameState.correct + gameState.errors > 0
-				? Math.round(
-						(gameState.correct / (gameState.correct + gameState.errors)) * 100,
-					)
-				: 100;
-
-		statsElement.innerHTML = `
-			<div class="stat">
-				<div class="stat-label">Score</div>
-				<div class="stat-value">${gameState.score}/${gameState.scoreMax}</div>
-			</div>
-			<div class="stat">
-				<div class="stat-label">Accuracy</div>
-				<div class="stat-value">${accuracy}%</div>
-			</div>
-			<div class="stat">
-				<div class="stat-label">Time</div>
-				<div class="stat-value">${gameState.minutes}:${gameState.seconds.toString().padStart(2, "0")}</div>
-			</div>
-		`;
-	}
-
-	function startTimer(): void {
-		const timer = setInterval(() => {
-			if (!gameState.gameOn) {
-				clearInterval(timer);
-				return;
-			}
-
-			gameState.seconds++;
-			if (gameState.seconds >= 60) {
-				gameState.seconds = 0;
-				gameState.minutes++;
-			}
-			updateStats();
-		}, 1000);
+		elements.stats.innerHTML = statsCalculator.generateStatsHTML({
+			correct: gameState.correct,
+			errors: gameState.errors,
+			minutes: gameState.minutes,
+			seconds: gameState.seconds,
+			score: gameState.score,
+			scoreMax: gameState.scoreMax,
+		});
 	}
 
 	function endGame(): void {
 		gameState.gameOn = false;
-		const totalKeystrokes = gameState.correct + gameState.errors;
-		const accuracy =
-			totalKeystrokes > 0
-				? Math.round((gameState.correct / totalKeystrokes) * 100)
-				: 100;
-		const totalTimeInMinutes =
-			(gameState.minutes * 60 + gameState.seconds) / 60;
-		const wpm =
-			totalTimeInMinutes > 0
-				? Math.round(totalKeystrokes / 5 / totalTimeInMinutes)
-				: 0;
-
-		promptElement.innerHTML = `
-			<div class="results">
-				<h3>Game Complete!</h3>
-				<p>Words Typed: ${gameState.score}</p>
-				<p>Accuracy: ${accuracy}%</p>
-				<p>WPM: ${wpm}</p>
-				<p>Time: ${gameState.minutes}:${gameState.seconds.toString().padStart(2, "0")}</p>
-			</div>
-		`;
+		if (timerCleanup) {
+			timerManager.stopTimer(timerCleanup);
+			timerCleanup = null;
+		}
+		visualFeedback.showGameResults(elements.prompt, gameState);
 	}
 
 	function reset(): void {
@@ -386,168 +271,31 @@ function createTypingTutor(config: {
 		gameState.errors = 0;
 		gameState.letterIndex = 0;
 
-		inputElement.value = "";
+		if (timerCleanup) {
+			timerManager.stopTimer(timerCleanup);
+			timerCleanup = null;
+		}
+
+		elements.input.value = "";
 		nextWord();
 		updateStats();
-		inputElement.focus();
-	}
-
-	function getEnabledLetters(currentLevel: number): string {
-		const layoutDict = config.levelDictionary[config.layoutName];
-		if (!layoutDict) return "";
-
-		let enabledLetters = "";
-		for (let level = 1; level <= currentLevel; level++) {
-			const levelKey = `lvl${level}` as keyof typeof layoutDict;
-			enabledLetters += layoutDict[levelKey] || "";
-		}
-		return enabledLetters;
-	}
-
-	function getKeyHighlighting(
-		character: string,
-		currentLevel: number,
-	): {
-		isActive: boolean;
-		isHomeRow: boolean;
-		isInactive: boolean;
-	} {
-		if (!character || character.trim() === "") {
-			return { isActive: false, isHomeRow: false, isInactive: false };
-		}
-
-		const enabledLetters = getEnabledLetters(currentLevel);
-		const level1Letters = config.levelDictionary[config.layoutName]?.lvl1 || "";
-
-		// Level 7 special case: all keys active
-		if (currentLevel === 7) {
-			return {
-				isActive: true,
-				isHomeRow: level1Letters.includes(character),
-				isInactive: false,
-			};
-		}
-
-		const isInEnabled = enabledLetters.includes(character);
-		const isInCurrentLevel = (
-			(config.levelDictionary[config.layoutName]?.[
-				`lvl${currentLevel}` as keyof (typeof config.levelDictionary)[typeof config.layoutName]
-			] as string) || ""
-		).includes(character);
-		const isHomeRow = level1Letters.includes(character);
-
-		return {
-			isActive: isInCurrentLevel,
-			isHomeRow,
-			isInactive: isInEnabled && !isInCurrentLevel,
-		};
-	}
-
-	function getCharacterForKey(keyId: string): string {
-		// Find the key in the keyboard characters array
-		for (const row of config.keyboardCharacters) {
-			for (const keyInfo of row) {
-				if (keyInfo.keyId === keyId) {
-					// Apply shift if needed
-					if (
-						gameState.shiftDown &&
-						config.layoutMap.shiftLayer &&
-						typeof config.layoutMap.shiftLayer === "object"
-					) {
-						const shifted = (
-							config.layoutMap.shiftLayer as Record<string, string>
-						)[keyId];
-						if (shifted) return shifted;
-					}
-					return keyInfo.character;
-				}
-			}
-		}
-		return "";
+		elements.input.focus();
 	}
 
 	function renderKeyboard(): void {
-		let keyboardHTML = "";
+		const keyboardHTML = keyboardRenderer.generateKeyboardHTML(
+			keyboardTemplate,
+			gameState,
+			{
+				layoutName: config.layoutName,
+				levelDictionary: config.levelDictionary,
+				keyboardCharacters: config.keyboardCharacters,
+				layoutMap: config.layoutMap,
+			},
+		);
 
-		keyboardTemplate.rows.forEach((row) => {
-			keyboardHTML += '<div class="row">';
-			row.forEach((keyTemplate) => {
-				let classes = "key";
-				let widthClass = "";
-
-				// Add width classes based on template
-				switch (keyTemplate.width) {
-					case "1u":
-						widthClass = "";
-						break;
-					case "1.25u":
-						widthClass = " onepointtwofiveu";
-						break;
-					case "1.5u":
-						widthClass = " onepointfiveu";
-						break;
-					case "1.75u":
-						widthClass = " onepointsevenfiveu";
-						break;
-					case "2u":
-						widthClass = " twou";
-						break;
-					case "2.25u":
-						widthClass = " twopointtwofiveu";
-						break;
-					case "2.75u":
-						widthClass = " twopointsevenfiveu";
-						break;
-					case "6.25u":
-						widthClass = " sixpointtwofiveu";
-						break;
-				}
-
-				// Add custom classes
-				if (keyTemplate.classes) {
-					classes += ` ${keyTemplate.classes.join(" ")}`;
-				}
-
-				// Add functional class for modifier keys
-				if (keyTemplate.isFunctional) {
-					classes += " cKey";
-				}
-
-				// Add empty class for placeholders
-				if (keyTemplate.isEmpty) {
-					classes += " empty";
-				}
-
-				// Get character for highlighting
-				let character = "";
-				if (keyTemplate.id) {
-					character = getCharacterForKey(keyTemplate.id);
-				}
-
-				// Apply level highlighting for non-empty keys
-				if (!keyTemplate.isEmpty && character) {
-					const highlighting = getKeyHighlighting(
-						character,
-						gameState.currentLevel,
-					);
-					if (highlighting.isActive) classes += " currentLevelKeys";
-					else if (highlighting.isInactive) classes += " inactive";
-					if (highlighting.isHomeRow) classes += " homeRow";
-				}
-
-				// Add data attributes
-				const dataId = keyTemplate.id ? `id='${keyTemplate.id}'` : "";
-				const displayChar = keyTemplate.isEmpty
-					? ""
-					: `<span class="letter">${character}</span>`;
-
-				keyboardHTML += `<div class="${classes}${widthClass}" ${dataId}>${displayChar}</div>`;
-			});
-			keyboardHTML += "</div>";
-		});
-
-		keyboardElement.innerHTML = keyboardHTML;
-		keyboardElement.className = "cheatsheet";
+		elements.keyboard.innerHTML = keyboardHTML;
+		elements.keyboard.className = "cheatsheet";
 		updateModifierVisuals();
 	}
 
@@ -558,11 +306,15 @@ function createTypingTutor(config: {
 
 	function destroy(): void {
 		gameState.gameOn = false;
-		element.remove();
+		if (timerCleanup) {
+			timerManager.stopTimer(timerCleanup);
+			timerCleanup = null;
+		}
+		elements.container.remove();
 	}
 
 	function updateLevel(level: number): void {
-		if (config.levelManager?.validateLevel(level)) {
+		if (gameLogic.validateLevel(config.levelManager, level)) {
 			gameState.currentLevel = level;
 			reset();
 		}
@@ -574,13 +326,11 @@ function createTypingTutor(config: {
 		renderKeyboard();
 	}
 
-	initializeElements();
-	setupEventListeners();
 	render();
 	reset();
 
 	return {
-		element,
+		element: elements.container,
 		render,
 		destroy,
 		updateLevel,
