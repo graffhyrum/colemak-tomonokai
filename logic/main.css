@@ -1,10 +1,4 @@
-/*
-* Prefixed by https://autoprefixer.github.io
-* PostCSS: v7.0.29,
-* Autoprefixer: v9.7.6
-* Browsers: last 4 version
-*/
-
+/* Global Variables & Reset */
 :root {
 	--text-color: #fff;
 	--background-color: black;
@@ -14,20 +8,23 @@
 	--tertiary-accent-color: green;
 }
 
-body {
-	display: -webkit-box;
-	display: -ms-flexbox;
-	display: flex;
-	-webkit-box-align: center;
-	-ms-flex-align: center;
-	align-items: center;
+* {
+	transition:
+		border-color 0.1s linear,
+		opacity 0.15s linear,
+		transform 0.07s linear;
+}
 
+body {
+	display: flex;
+	align-items: center;
 	background-color: var(--background-color);
 	color: var(--text-color);
 	height: 100vh;
 	overflow: hidden;
 	margin: 0;
 	padding: 0;
+	font-family: "Lucida Console", Monaco, monospace;
 }
 
 body *,
@@ -35,30 +32,7 @@ body *,
 	font-family: "Lucida Console", Monaco, monospace;
 }
 
-* {
-	-webkit-transition:
-		border-color 0.1s linear,
-		opacity 0.15s linear,
-		-webkit-transform 0.07s linear;
-	transition:
-		border-color 0.1s linear,
-		opacity 0.15s linear,
-		-webkit-transform 0.07s linear;
-	-o-transition:
-		border-color 0.1s linear,
-		opacity 0.15s linear,
-		transform 0.07s linear;
-	transition:
-		border-color 0.1s linear,
-		opacity 0.15s linear,
-		transform 0.07s linear;
-	transition:
-		border-color 0.1s linear,
-		opacity 0.15s linear,
-		transform 0.07s linear,
-		-webkit-transform 0.07s linear;
-}
-
+/* Header & Selectors */
 #selectors {
 	position: absolute;
 	top: 2vmax;
@@ -71,30 +45,20 @@ select {
 	background-color: var(--menu-background-color);
 }
 
+/* Preference Menu */
 .preferenceButton {
 	background-image: url("../img/settingsIcon.webp");
 	background-size: cover;
-	-webkit-filter: invert(1);
 	filter: invert(1);
 	background-repeat: no-repeat;
 	border: none;
-
 	opacity: 0.8;
 	margin: 0;
 	position: absolute;
 	top: 2vmax;
 	right: 2vmax;
-
 	width: 3vmax;
 	height: 3vmax;
-}
-
-.preferenceButton:hover,
-.closePreferenceButton:hover {
-	opacity: 1;
-	-webkit-transform: scale(1.1);
-	-ms-transform: scale(1.1);
-	transform: scale(1.1);
 }
 
 .closePreferenceButton {
@@ -102,56 +66,39 @@ select {
 	position: relative;
 	top: 1vh;
 	left: 1vh;
-
 	background-image: url("../img/x.webp");
 	background-size: cover;
 	background-repeat: no-repeat;
-
 	height: 2vh;
 	width: 2vh;
-
-	-webkit-filter: invert(1);
-
 	filter: invert(1);
-
 	border: none;
+}
+
+.preferenceButton:hover,
+.closePreferenceButton:hover {
+	opacity: 1;
+	transform: scale(1.1);
 }
 
 .preferenceMenu {
 	position: absolute;
 	right: -37vh;
 	z-index: 105;
-
 	background: #111;
 	height: 100vh;
 	width: 33vh;
-
 	border-left: 0.1vh solid var(--text-color);
-
-	-webkit-transition: right 0.08s linear;
-
-	-o-transition: right 0.08s linear;
-
 	transition: right 0.08s linear;
 }
 
 .preferenceMenu ul {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
-	-webkit-box-orient: vertical;
-	-webkit-box-direction: normal;
-	-ms-flex-direction: column;
 	flex-direction: column;
-	-ms-flex-pack: distribute;
 	justify-content: space-around;
-	-ms-flex-wrap: nowrap;
 	flex-wrap: nowrap;
-	-webkit-box-align: end;
-	-ms-flex-align: end;
 	align-items: flex-end;
 	padding: 0 1vh 0 0;
-
 	height: 55vh;
 }
 
@@ -171,58 +118,38 @@ li input {
 	font-size: 1.7vh;
 	width: 5vh;
 	height: 1.7vh;
-
 	margin: 0 1.5vh 0 auto;
 }
 
+/* Typography */
 h1 {
 	font-size: 3.5vmax;
 	text-transform: uppercase;
 	letter-spacing: 1vw;
 }
 
+/* Layout */
 nav {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
-	-webkit-box-orient: vertical;
-	-webkit-box-direction: normal;
-	-ms-flex-direction: column;
 	flex-direction: column;
-	-webkit-box-pack: justify;
-	-ms-flex-pack: justify;
 	justify-content: space-between;
-
 	width: 10vw;
 	height: 84vh;
 	margin-left: 4vmin;
 }
 
 #main {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
-	-webkit-box-orient: vertical;
-	-webkit-box-direction: normal;
-	-ms-flex-direction: column;
 	flex-direction: column;
-	-webkit-box-align: center;
-	-ms-flex-align: center;
 	align-items: center;
 	height: 90%;
 	margin-right: 10vmax;
 	margin-bottom: 3vh;
-
-	-webkit-box-flex: 2;
-
-	-ms-flex: 2 1 1000px;
-
 	flex: 2 1 1000px;
 }
 
+/* Navigation Buttons */
 nav button {
-	-webkit-box-flex: 1;
-	-ms-flex: 1 1 11vh;
 	flex: 1 1 11vh;
 	margin: 0.5vh auto;
 	width: 11vh;
@@ -230,71 +157,52 @@ nav button {
 	color: var(--text-color);
 }
 
-nav button:hover {
-	font-weight: bold;
-	border-color: var(--accent-color);
-}
-
-button {
-	letter-spacing: 3px;
-}
-
+/* Buttons */
 button {
 	background-color: transparent;
 	border: 0.2vmax solid var(--text-color);
 	color: var(--text-color);
-	/*text-transform: capitalize;*/
 	cursor: pointer;
+	letter-spacing: 3px;
+}
+
+button:hover {
+	font-weight: bold;
+	border-color: var(--accent-color);
 }
 
 button:focus {
 	outline: none;
 }
 
+/* Level System */
 .lvl8 {
 	display: none;
 	font-size: 1.1vh;
-
 	color: orange;
 	border-color: orange;
 }
 
+/* Typing Area */
 .typingArea {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
-	-webkit-box-orient: vertical;
-	-webkit-box-direction: normal;
-	-ms-flex-direction: column;
 	flex-direction: column;
-	/*justify-content: center;*/
 	width: 67vmin;
-	/*height: 30vmin;*/
 }
 
+/* Text Display */
 .fade {
-	-webkit-mask-image: linear-gradient(
-		to right,
-		rgba(0, 0, 0, 1) 75%,
-		rgba(0, 0, 0, 0)
-	);
-	/*height: 20%;*/
+	mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 75%, rgba(0, 0, 0, 0));
 }
 
 .prompt {
 	position: relative;
 	font-size: 2.5em;
-	/*padding: 0 20vh 0 0;*/
-	/*width: 100%;*/
-	/*color: white;*/
 	margin: 10vh 0 0 0;
-
 	letter-spacing: 0.1vmax;
 }
 
 .smoothScroll {
-	-webkit-transition: left 0.1s linear;
-	-o-transition: left 0.1s linear;
 	transition: left 0.1s linear;
 }
 
@@ -313,6 +221,34 @@ button:focus {
 	display: block;
 }
 
+.prompt {
+	position: relative;
+	font-size: 2.5em;
+	margin: 10vh 0 0 0;
+
+	letter-spacing: 0.1vmax;
+}
+
+.smoothScroll {
+	transition: left 0.1s linear;
+}
+
+.paragraph {
+	word-wrap: break-word;
+	width: 100%;
+	margin: 6.5vmin auto 0 auto;
+}
+
+.line {
+	white-space: nowrap;
+}
+
+.paragraph .line {
+	margin-left: 1.6vmin;
+	display: block;
+}
+
+/* Input Elements */
 #resetButton {
 	margin: 6vmin auto 4vmin auto;
 	width: 30%;
@@ -326,13 +262,10 @@ input {
 	margin: 2.5vh auto 3vh auto;
 }
 
+/* Score Display */
 #scoreAndClock {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
-	-ms-flex-pack: distribute;
 	justify-content: space-around;
-
 	font-size: 5vmin;
 }
 
@@ -341,28 +274,16 @@ input {
 	font-family: "Verdana", sans-serif;
 }
 
+/* Test Results */
 #testResults {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
-	-webkit-box-orient: vertical;
-	-webkit-box-direction: normal;
-	-ms-flex-direction: column;
 	flex-direction: column;
-	-webkit-box-align: center;
-	-ms-flex-align: center;
 	align-items: center;
-	-webkit-box-pack: center;
-	-ms-flex-pack: center;
 	justify-content: center;
-
-	-webkit-box-flex: 1;
-
-	-ms-flex: 1 1 8vh;
-
 	flex: 0.8 1 7vh;
 }
 
+/* Footer & Links */
 .bottomText {
 	position: absolute;
 	font-size: 1vmin;
@@ -374,8 +295,7 @@ a:link {
 	color: var(--accent-color);
 }
 
-/*____________________Slider________________________*/
-
+/* Slider Toggle */
 #mappingToggle {
 	position: absolute;
 	bottom: 3vh;
@@ -390,7 +310,6 @@ a:link {
 	margin: 0 0 2vmin 0;
 }
 
-/* The switch - the box around the slider */
 .switch {
 	position: relative;
 	display: inline-block;
@@ -398,14 +317,12 @@ a:link {
 	height: 4.5vmin;
 }
 
-/* Hide default HTML checkbox */
 .switch input {
 	opacity: 0;
 	width: 0;
 	height: 0;
 }
 
-/* The slider */
 .slider {
 	position: absolute;
 	cursor: pointer;
@@ -424,9 +341,6 @@ a:link {
 	left: 0.75vmin;
 	bottom: 0.75vmin;
 	background-color: white;
-	-webkit-transition: 0.4s;
-	-webkit-transition: 0.2s;
-	-o-transition: 0.2s;
 	transition: 0.2s;
 }
 
@@ -435,30 +349,20 @@ input:checked + .slider {
 }
 
 input:focus + .slider {
-	-webkit-box-shadow: 0 0 1px purple;
 	box-shadow: 0 0 1px purple;
 }
 
 input:checked + .slider:before {
-	-webkit-transform: translateX(3vmin);
-	-ms-transform: translateX(3vmin);
 	transform: translateX(3vmin);
 }
 
-/*___________cheatsheet___________*/
-
+/* Keyboard Cheatsheet */
 .cheatsheetContainer {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
 }
 
 .row {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
-	-webkit-box-pack: justify;
-	-ms-flex-pack: justify;
 	justify-content: space-between;
 	height: 5vh;
 	width: 75vh;
@@ -466,23 +370,13 @@ input:checked + .slider:before {
 
 .key,
 .cKey {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
-	-webkit-box-pack: center;
-	-ms-flex-pack: center;
 	justify-content: center;
-	-webkit-box-align: center;
-	-ms-flex-align: center;
 	align-items: center;
 	background-color: var(--background-color);
 	border: 0.2vh solid var(--accent-color);
 	height: 75%;
 	width: 5%;
-
-	/*border-bottom-right-radius: 7%;
-	border-bottom-left-radius: 7%;*/
-
 	vertical-align: top;
 }
 
@@ -490,38 +384,31 @@ input:checked + .slider:before {
 	display: block;
 	font-size: 2.2vh;
 	font-weight: bold;
-
 	text-transform: uppercase;
 }
 
+/* Key Sizes */
 .oneu {
 	width: 5.4%;
 }
-
 .twou {
 	width: 11.75%;
 }
-
 .onepointfiveu {
 	width: 8.8125%;
 }
-
 .onepointsevenfiveu {
 	width: 10.28125%;
 }
-
 .twopointtwofiveu {
 	width: 13.21875%;
 }
-
 .twopointsevenfiveu {
 	width: 16.15625%;
 }
-
 .onepointtwofiveu {
 	width: 7.34375%;
 }
-
 .sixpointtwofiveu {
 	width: 36.71875%;
 }
@@ -539,16 +426,15 @@ input:checked + .slider:before {
 	border-style: none solid solid solid;
 }
 
+/* Key States */
 .inactive {
 	border-color: var(--accent-color);
-	-webkit-filter: brightness(0.5);
 	filter: brightness(0.5);
 }
 
 .currentLevelKeys {
 	border-color: var(--tertiary-accent-color);
 	color: var(--tertiary-accent-color);
-	-webkit-filter: brightness(1.2);
 	filter: brightness(1.2);
 }
 
@@ -565,73 +451,47 @@ input:checked + .slider:before {
 .active {
 	border-color: var(--accent-color);
 	color: var(--accent-color);
-	-webkit-filter: brightness(1.5);
 	filter: brightness(1.5);
 }
 
 .punctuation {
 	border-color: var(--text-color);
 	color: white;
-	-webkit-filter: brightness(1.5);
 	filter: brightness(1.5);
 }
 
+/* UI Buttons */
 .openUIButton {
 	background-image: url("https://upload.wikimedia.org/wikipedia/commons/c/cc/Edit_Notepad_Icon.svg");
 	background-size: cover;
-	-webkit-filter: invert(1);
 	filter: invert(1);
-
 	position: relative;
 	top: -0.3vmax;
 	margin: 0 0 0 1vmin;
-
 	border: none;
-
 	height: 2.5vmax;
 	width: 2.5vmax;
-
 	display: none;
 }
 
 .openUIButton:hover {
-	-webkit-transform: scale(1.2);
-	-ms-transform: scale(1.2);
 	transform: scale(1.2);
 }
 
-/*__________________custom ui keyboard________________*/
-
+/* Custom Input Keyboard */
 .customInput {
 	position: absolute;
-	-webkit-box-orient: vertical;
-	-webkit-box-direction: normal;
-	-ms-flex-direction: column;
 	flex-direction: column;
 	left: 23vw;
 	top: 23vh;
 	z-index: 100;
-
 	border: 0.2vmax solid var(--text-color);
 	background-color: var(--menu-background-color);
 	height: 37vmax;
 	width: 60vmax;
-	-webkit-transform: scaleX(0);
-	-ms-transform: scaleX(0);
 	transform: scaleX(0);
 	display: none;
-
-	-webkit-transition: -webkit-transform 0.15s linear;
-
-	transition: -webkit-transform 0.15s linear;
-
-	-o-transition: transform 0.15s linear;
-
 	transition: transform 0.15s linear;
-
-	transition:
-		transform 0.15s linear,
-		-webkit-transform 0.15s linear;
 }
 
 #inputKeyboard {
@@ -671,7 +531,6 @@ input:checked + .slider:before {
 }
 
 .pulse {
-	-webkit-animation: pulse 0.8s infinite;
 	animation: pulse 0.8s infinite;
 }
 
@@ -687,20 +546,14 @@ input:checked + .slider:before {
 }
 
 .buttonHolder {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
-	-webkit-box-pack: justify;
-	-ms-flex-pack: justify;
 	justify-content: space-between;
-
 	width: 90%;
 }
 
 .saveButton,
 .discardButton {
 	font-size: 2.3vmax;
-
 	height: 1vmax;
 	width: 1vmax;
 	padding: 1vmax;
@@ -709,19 +562,14 @@ input:checked + .slider:before {
 
 .saveButton:hover,
 .discardButton:hover {
-	-webkit-transform: scale(1.05);
-	-ms-transform: scale(1.05);
 	transform: scale(1.05);
 }
 
-/*__________________custom level select________________*/
+/* Custom Level Select */
 #customUILevelSelect {
-	display: -webkit-box;
-	display: -ms-flexbox;
 	display: flex;
 	margin: 2vmax auto 2vmax auto;
 	background: red 0.2;
-
 	height: 8vmax;
 	width: 100%;
 }
@@ -730,13 +578,11 @@ input:checked + .slider:before {
 	font-size: 2vmax;
 	margin: 2vmax auto;
 	opacity: 0.8;
-
 	background-color: #191919;
 }
 
 .customUILevelButton:hover {
 	opacity: 1;
-	-webkit-filter: brightness(1.5);
 	filter: brightness(1.5);
 }
 
@@ -747,16 +593,13 @@ input:checked + .slider:before {
 	opacity: 1;
 }
 
-/*____________________Toggle-able classes______________*/
-
+/* Utility Classes */
 .noDisplay {
 	display: none;
 }
-
 .visible {
 	display: block;
 }
-
 .transparent {
 	opacity: 0;
 }
@@ -767,49 +610,19 @@ input:checked + .slider:before {
 	font-weight: bold;
 }
 
-/*.hide-me {
-	z-index: -100;
-  animation: hideme .5s linear forwards;
-}
-
-@keyframes hideme {
-  0% {
-  	left: 0;
-  }
-  100% {
-  }
-}*/
-
-/*___________________________ANIMATIONS________________________*/
-
+/* Animations */
 .slideLeft {
 	position: relative;
 	color: blue;
-	-webkit-animation: slideLeft 0.2s 1 linear;
 	animation: slideLeft 0.2s 1 linear;
-	-webkit-animation-fill-mode: forwards;
 	animation-fill-mode: forwards;
 }
 
 .slideOff {
 	position: relative;
 	color: blue;
-	-webkit-animation: slideOff 0.2s 1 linear;
 	animation: slideOff 0.2s 1 linear;
-	-webkit-animation-fill-mode: forwards;
 	animation-fill-mode: forwards;
-}
-
-@-webkit-keyframes pulse {
-	0% {
-		opacity: 1;
-	}
-	60% {
-		opacity: 1;
-	}
-	100% {
-		opacity: 0;
-	}
 }
 
 @keyframes pulse {
