@@ -3,8 +3,14 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "typecheck": "tsgo --noEmit --pretty",
     "dev": "bun index.html",
-    "test": "bunx playwright test"
+    "test": "playwright test",
+    "lint": "biome lint",
+    "format": "bunx biome format",
+    "check": "bunx biome check",
+    "check:fix": "bunx biome check --fix",
+    "vet": "bun check:fix && bun typecheck && bun run test"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.8",
