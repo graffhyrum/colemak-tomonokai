@@ -40,6 +40,7 @@ function getScoreComponent(page: Page) {
 
 test("complete a perfect game", async ({page}) => {
 	const inputLocator = page.locator('#userInput');
+	await setWordLimit(page,10);
 
 	// Focus on input field
 	await expect(inputLocator).toBeVisible();
@@ -106,3 +107,10 @@ function assertDefined<T>(x: T): asserts x is NonNullable<T> {
 	expect(x).toBeDefined();
 }
 
+async function setWordLimit(page: Page, wordLimit: number) {
+	await page.getByRole('button').first().click();
+	await page.getByRole('spinbutton').click();
+	await page.getByRole('spinbutton').fill(wordLimit.toString());
+	await page.getByRole('spinbutton').press('Enter');
+	await page.locator('div').filter({hasText: 'Capital Letters Allowed'}).getByRole('button').click();
+}
