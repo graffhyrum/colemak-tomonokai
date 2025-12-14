@@ -14,48 +14,52 @@
 	--tertiary-accent-color: green;
 }
 
-
-
 body {
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-align: center;
-	    -ms-flex-align: center;
-	        align-items: center;
+	-ms-flex-align: center;
+	align-items: center;
 
 	background-color: var(--background-color);
 	color: var(--text-color);
 	height: 100vh;
 	overflow: hidden;
-	margin: 0; 
+	margin: 0;
 	padding: 0;
 }
 
-body *, #userInput {
+body *,
+#userInput {
 	font-family: "Lucida Console", Monaco, monospace;
 }
 
 * {
-	-webkit-transition: border-color .1s linear,
-		opacity .15s linear,
-		-webkit-transform .07s linear;
-	transition: border-color .1s linear,
-		opacity .15s linear,
-		-webkit-transform .07s linear;
-	-o-transition: border-color .1s linear,
-		opacity .15s linear,
-		transform .07s linear;
-	transition: border-color .1s linear,
-		opacity .15s linear,
-		transform .07s linear;
-	transition: border-color .1s linear,
-		opacity .15s linear,
-		transform .07s linear,
-		-webkit-transform .07s linear;
+	-webkit-transition:
+		border-color 0.1s linear,
+		opacity 0.15s linear,
+		-webkit-transform 0.07s linear;
+	transition:
+		border-color 0.1s linear,
+		opacity 0.15s linear,
+		-webkit-transform 0.07s linear;
+	-o-transition:
+		border-color 0.1s linear,
+		opacity 0.15s linear,
+		transform 0.07s linear;
+	transition:
+		border-color 0.1s linear,
+		opacity 0.15s linear,
+		transform 0.07s linear;
+	transition:
+		border-color 0.1s linear,
+		opacity 0.15s linear,
+		transform 0.07s linear,
+		-webkit-transform 0.07s linear;
 }
 
-#selectors{
+#selectors {
 	position: absolute;
 	top: 2vmax;
 	right: 7vmax;
@@ -68,14 +72,14 @@ select {
 }
 
 .preferenceButton {
-	background-image: url('../img/settingsIcon.webp');
+	background-image: url("../img/settingsIcon.webp");
 	background-size: cover;
 	-webkit-filter: invert(1);
-	        filter: invert(1);
+	filter: invert(1);
 	background-repeat: no-repeat;
 	border: none;
 
-	opacity: .8;
+	opacity: 0.8;
 	margin: 0;
 	position: absolute;
 	top: 2vmax;
@@ -85,11 +89,12 @@ select {
 	height: 3vmax;
 }
 
-.preferenceButton:hover, .closePreferenceButton:hover {
+.preferenceButton:hover,
+.closePreferenceButton:hover {
 	opacity: 1;
 	-webkit-transform: scale(1.1);
-	    -ms-transform: scale(1.1);
-	        transform: scale(1.1);
+	-ms-transform: scale(1.1);
+	transform: scale(1.1);
 }
 
 .closePreferenceButton {
@@ -98,7 +103,7 @@ select {
 	top: 1vh;
 	left: 1vh;
 
-	background-image: url('../img/x.webp');
+	background-image: url("../img/x.webp");
 	background-size: cover;
 	background-repeat: no-repeat;
 
@@ -107,7 +112,7 @@ select {
 
 	-webkit-filter: invert(1);
 
-	        filter: invert(1);
+	filter: invert(1);
 
 	border: none;
 }
@@ -121,13 +126,13 @@ select {
 	height: 100vh;
 	width: 33vh;
 
-	border-left: .1vh solid var(--text-color);
+	border-left: 0.1vh solid var(--text-color);
 
-	-webkit-transition: right .08s linear;
+	-webkit-transition: right 0.08s linear;
 
-	-o-transition: right .08s linear;
+	-o-transition: right 0.08s linear;
 
-	transition: right .08s linear;
+	transition: right 0.08s linear;
 }
 
 .preferenceMenu ul {
@@ -136,15 +141,15 @@ select {
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	    -ms-flex-direction: column;
-	        flex-direction: column;
+	-ms-flex-direction: column;
+	flex-direction: column;
 	-ms-flex-pack: distribute;
-	    justify-content: space-around;
+	justify-content: space-around;
 	-ms-flex-wrap: nowrap;
-	    flex-wrap: nowrap;
+	flex-wrap: nowrap;
 	-webkit-box-align: end;
-	    -ms-flex-align: end;
-	        align-items: flex-end;
+	-ms-flex-align: end;
+	align-items: flex-end;
 	padding: 0 1vh 0 0;
 
 	height: 55vh;
@@ -154,10 +159,9 @@ select {
 	color: var(--accent-color);
 	font-size: 1.5vh;
 	list-style: none;
-
 }
 
-input[type=checkbox] {
+input[type="checkbox"] {
 	width: 2vh;
 	height: 2vh;
 	margin-left: 2vh;
@@ -171,12 +175,11 @@ li input {
 	margin: 0 1.5vh 0 auto;
 }
 
-h1	{
+h1 {
 	font-size: 3.5vmax;
 	text-transform: uppercase;
 	letter-spacing: 1vw;
 }
-
 
 nav {
 	display: -webkit-box;
@@ -184,17 +187,16 @@ nav {
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	    -ms-flex-direction: column;
-	        flex-direction: column;
+	-ms-flex-direction: column;
+	flex-direction: column;
 	-webkit-box-pack: justify;
-	    -ms-flex-pack: justify;
-	        justify-content: space-between;
+	-ms-flex-pack: justify;
+	justify-content: space-between;
 
 	width: 10vw;
 	height: 84vh;
 	margin-left: 4vmin;
 }
-
 
 #main {
 	display: -webkit-box;
@@ -202,27 +204,27 @@ nav {
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	    -ms-flex-direction: column;
-	        flex-direction: column;
+	-ms-flex-direction: column;
+	flex-direction: column;
 	-webkit-box-align: center;
-	    -ms-flex-align: center;
-	        align-items: center;
+	-ms-flex-align: center;
+	align-items: center;
 	height: 90%;
 	margin-right: 10vmax;
 	margin-bottom: 3vh;
 
 	-webkit-box-flex: 2;
 
-	    -ms-flex: 2 1 1000px;
+	-ms-flex: 2 1 1000px;
 
-	        flex: 2 1 1000px;
+	flex: 2 1 1000px;
 }
 
 nav button {
 	-webkit-box-flex: 1;
-	    -ms-flex: 1 1 11vh;
-	        flex: 1 1 11vh;
-	margin: .5vh auto;
+	-ms-flex: 1 1 11vh;
+	flex: 1 1 11vh;
+	margin: 0.5vh auto;
 	width: 11vh;
 	font-size: 1.5vh;
 	color: var(--text-color);
@@ -239,7 +241,7 @@ button {
 
 button {
 	background-color: transparent;
-	border: .2vmax solid var(--text-color);
+	border: 0.2vmax solid var(--text-color);
 	color: var(--text-color);
 	/*text-transform: capitalize;*/
 	cursor: pointer;
@@ -257,23 +259,26 @@ button:focus {
 	border-color: orange;
 }
 
-
 .typingArea {
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	    -ms-flex-direction: column;
-	        flex-direction: column;
+	-ms-flex-direction: column;
+	flex-direction: column;
 	/*justify-content: center;*/
 	width: 67vmin;
 	/*height: 30vmin;*/
 }
 
 .fade {
-    -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 75%, rgba(0,0,0,0));
-    /*height: 20%;*/
+	-webkit-mask-image: linear-gradient(
+		to right,
+		rgba(0, 0, 0, 1) 75%,
+		rgba(0, 0, 0, 0)
+	);
+	/*height: 20%;*/
 }
 
 .prompt {
@@ -284,13 +289,13 @@ button:focus {
 	/*color: white;*/
 	margin: 10vh 0 0 0;
 
-	letter-spacing: .1vmax;
+	letter-spacing: 0.1vmax;
 }
 
 .smoothScroll {
-	-webkit-transition: left .1s linear;
-	-o-transition: left .1s linear;
-	transition: left .1s linear;
+	-webkit-transition: left 0.1s linear;
+	-o-transition: left 0.1s linear;
+	transition: left 0.1s linear;
 }
 
 .paragraph {
@@ -299,7 +304,7 @@ button:focus {
 	margin: 6.5vmin auto 0 auto;
 }
 
-.line{
+.line {
 	white-space: nowrap;
 }
 
@@ -321,20 +326,19 @@ input {
 	margin: 2.5vh auto 3vh auto;
 }
 
-
-
 #scoreAndClock {
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: flex;
 	-ms-flex-pack: distribute;
-	    justify-content: space-around;
+	justify-content: space-around;
 
 	font-size: 5vmin;
 }
 
-#scoreText, #timeText {
-	font-family: 'Verdana', sans-serif;
+#scoreText,
+#timeText {
+	font-family: "Verdana", sans-serif;
 }
 
 #testResults {
@@ -343,20 +347,20 @@ input {
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	    -ms-flex-direction: column;
-	        flex-direction: column;
+	-ms-flex-direction: column;
+	flex-direction: column;
 	-webkit-box-align: center;
-	    -ms-flex-align: center;
-	        align-items: center;
+	-ms-flex-align: center;
+	align-items: center;
 	-webkit-box-pack: center;
-	    -ms-flex-pack: center;
-	        justify-content: center;
+	-ms-flex-pack: center;
+	justify-content: center;
 
 	-webkit-box-flex: 1;
 
-	    -ms-flex: 1 1 8vh;
+	-ms-flex: 1 1 8vh;
 
-	        flex: .8 1 7vh;
+	flex: 0.8 1 7vh;
 }
 
 .bottomText {
@@ -369,7 +373,6 @@ input {
 a:link {
 	color: var(--accent-color);
 }
-
 
 /*____________________Slider________________________*/
 
@@ -389,59 +392,58 @@ a:link {
 
 /* The switch - the box around the slider */
 .switch {
-  position: relative;
-  display: inline-block;
-  width: 7.5vmin;
-  height: 4.5vmin;
+	position: relative;
+	display: inline-block;
+	width: 7.5vmin;
+	height: 4.5vmin;
 }
 
 /* Hide default HTML checkbox */
 .switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
+	opacity: 0;
+	width: 0;
+	height: 0;
 }
 
 /* The slider */
 .slider {
- 	position: absolute;
- 	cursor: pointer;
- 	top: 0;
- 	left: 0;
- 	right: 0;
- 	bottom: 0;
- 	background-color: #444;
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #444;
 }
 
 .slider:before {
-  position: absolute;
-  content: "";
-  height: 3vmin;
-  width: 3vmin;
-  left: .75vmin;
-  bottom: .75vmin;
-  background-color: white;
-  -webkit-transition: .4s;
-  -webkit-transition: .2s;
-  -o-transition: .2s;
-  transition: .2s;
+	position: absolute;
+	content: "";
+	height: 3vmin;
+	width: 3vmin;
+	left: 0.75vmin;
+	bottom: 0.75vmin;
+	background-color: white;
+	-webkit-transition: 0.4s;
+	-webkit-transition: 0.2s;
+	-o-transition: 0.2s;
+	transition: 0.2s;
 }
 
 input:checked + .slider {
-  background-color: var(--accent-color);
+	background-color: var(--accent-color);
 }
 
 input:focus + .slider {
-  -webkit-box-shadow: 0 0 1px purple;
-          box-shadow: 0 0 1px purple;
+	-webkit-box-shadow: 0 0 1px purple;
+	box-shadow: 0 0 1px purple;
 }
 
 input:checked + .slider:before {
-  -webkit-transform: translateX(3vmin);
-  -ms-transform: translateX(3vmin);
-  transform: translateX(3vmin);
+	-webkit-transform: translateX(3vmin);
+	-ms-transform: translateX(3vmin);
+	transform: translateX(3vmin);
 }
-
 
 /*___________cheatsheet___________*/
 
@@ -456,24 +458,25 @@ input:checked + .slider:before {
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-pack: justify;
-	    -ms-flex-pack: justify;
-	        justify-content: space-between;
+	-ms-flex-pack: justify;
+	justify-content: space-between;
 	height: 5vh;
 	width: 75vh;
 }
 
-.key, .cKey {
+.key,
+.cKey {
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-pack: center;
-	    -ms-flex-pack: center;
-	        justify-content: center;
+	-ms-flex-pack: center;
+	justify-content: center;
 	-webkit-box-align: center;
-	    -ms-flex-align: center;
-	        align-items: center;
+	-ms-flex-align: center;
+	align-items: center;
 	background-color: var(--background-color);
-	border: .2vh solid var(--accent-color);
+	border: 0.2vh solid var(--accent-color);
 	height: 75%;
 	width: 5%;
 
@@ -539,14 +542,14 @@ input:checked + .slider:before {
 .inactive {
 	border-color: var(--accent-color);
 	-webkit-filter: brightness(0.5);
-	        filter: brightness(0.5);
+	filter: brightness(0.5);
 }
 
 .currentLevelKeys {
 	border-color: var(--tertiary-accent-color);
 	color: var(--tertiary-accent-color);
 	-webkit-filter: brightness(1.2);
-	        filter: brightness(1.2);
+	filter: brightness(1.2);
 }
 
 .homeRow {
@@ -563,27 +566,24 @@ input:checked + .slider:before {
 	border-color: var(--accent-color);
 	color: var(--accent-color);
 	-webkit-filter: brightness(1.5);
-	        filter: brightness(1.5);
+	filter: brightness(1.5);
 }
-
-
 
 .punctuation {
 	border-color: var(--text-color);
 	color: white;
 	-webkit-filter: brightness(1.5);
-	        filter: brightness(1.5);
+	filter: brightness(1.5);
 }
 
-
 .openUIButton {
-	background-image: url('https://upload.wikimedia.org/wikipedia/commons/c/cc/Edit_Notepad_Icon.svg');
+	background-image: url("https://upload.wikimedia.org/wikipedia/commons/c/cc/Edit_Notepad_Icon.svg");
 	background-size: cover;
 	-webkit-filter: invert(1);
-	        filter: invert(1);
+	filter: invert(1);
 
 	position: relative;
-	top: -.3vmax;
+	top: -0.3vmax;
 	margin: 0 0 0 1vmin;
 
 	border: none;
@@ -596,8 +596,8 @@ input:checked + .slider:before {
 
 .openUIButton:hover {
 	-webkit-transform: scale(1.2);
-	    -ms-transform: scale(1.2);
-	        transform: scale(1.2);
+	-ms-transform: scale(1.2);
+	transform: scale(1.2);
 }
 
 /*__________________custom ui keyboard________________*/
@@ -606,30 +606,32 @@ input:checked + .slider:before {
 	position: absolute;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	    -ms-flex-direction: column;
-	        flex-direction: column;
+	-ms-flex-direction: column;
+	flex-direction: column;
 	left: 23vw;
 	top: 23vh;
 	z-index: 100;
 
-	border: .2vmax solid var(--text-color);
+	border: 0.2vmax solid var(--text-color);
 	background-color: var(--menu-background-color);
 	height: 37vmax;
 	width: 60vmax;
 	-webkit-transform: scaleX(0);
-	    -ms-transform: scaleX(0);
-	        transform: scaleX(0);
+	-ms-transform: scaleX(0);
+	transform: scaleX(0);
 	display: none;
 
-	-webkit-transition: -webkit-transform .15s linear;
+	-webkit-transition: -webkit-transform 0.15s linear;
 
-	transition: -webkit-transform .15s linear;
+	transition: -webkit-transform 0.15s linear;
 
-	-o-transition: transform .15s linear;
+	-o-transition: transform 0.15s linear;
 
-	transition: transform .15s linear;
+	transition: transform 0.15s linear;
 
-	transition: transform .15s linear, -webkit-transform .15s linear;
+	transition:
+		transform 0.15s linear,
+		-webkit-transform 0.15s linear;
 }
 
 #inputKeyboard {
@@ -662,16 +664,16 @@ input:checked + .slider:before {
 	border-color: #777;
 }
 
-.selectedInputKey, .selectedInputKey:hover {
+.selectedInputKey,
+.selectedInputKey:hover {
 	border-color: white;
-	opacity: .9;
+	opacity: 0.9;
 }
 
 .pulse {
-	-webkit-animation: pulse .8s infinite;
-	        animation: pulse .8s infinite;
+	-webkit-animation: pulse 0.8s infinite;
+	animation: pulse 0.8s infinite;
 }
-
 
 #selectedInputKey {
 	background: var(--accent-color);
@@ -689,13 +691,14 @@ input:checked + .slider:before {
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-pack: justify;
-	    -ms-flex-pack: justify;
-	        justify-content: space-between;
+	-ms-flex-pack: justify;
+	justify-content: space-between;
 
 	width: 90%;
 }
 
-.saveButton, .discardButton {
+.saveButton,
+.discardButton {
 	font-size: 2.3vmax;
 
 	height: 1vmax;
@@ -704,11 +707,11 @@ input:checked + .slider:before {
 	border: none;
 }
 
-
-.saveButton:hover, .discardButton:hover {
+.saveButton:hover,
+.discardButton:hover {
 	-webkit-transform: scale(1.05);
-	    -ms-transform: scale(1.05);
-	        transform: scale(1.05);
+	-ms-transform: scale(1.05);
+	transform: scale(1.05);
 }
 
 /*__________________custom level select________________*/
@@ -717,17 +720,16 @@ input:checked + .slider:before {
 	display: -ms-flexbox;
 	display: flex;
 	margin: 2vmax auto 2vmax auto;
-	background: red .2;
+	background: red 0.2;
 
 	height: 8vmax;
 	width: 100%;
 }
 
-
 .customUILevelButton {
 	font-size: 2vmax;
 	margin: 2vmax auto;
-	opacity: .8;
+	opacity: 0.8;
 
 	background-color: #191919;
 }
@@ -735,7 +737,7 @@ input:checked + .slider:before {
 .customUILevelButton:hover {
 	opacity: 1;
 	-webkit-filter: brightness(1.5);
-	        filter: brightness(1.5);
+	filter: brightness(1.5);
 }
 
 .currentCustomUILevel {
@@ -743,11 +745,9 @@ input:checked + .slider:before {
 	color: var(--tertiary-accent-color);
 	background-color: #2f3f2f;
 	opacity: 1;
-} 
-
+}
 
 /*____________________Toggle-able classes______________*/
-
 
 .noDisplay {
 	display: none;
@@ -785,56 +785,41 @@ input:checked + .slider:before {
 .slideLeft {
 	position: relative;
 	color: blue;
-	-webkit-animation: slideLeft .2s 1 linear;
-	        animation: slideLeft .2s 1 linear;
+	-webkit-animation: slideLeft 0.2s 1 linear;
+	animation: slideLeft 0.2s 1 linear;
 	-webkit-animation-fill-mode: forwards;
-	        animation-fill-mode: forwards;
+	animation-fill-mode: forwards;
 }
 
 .slideOff {
 	position: relative;
 	color: blue;
-	-webkit-animation: slideOff .2s 1 linear;
-	        animation: slideOff .2s 1 linear;
+	-webkit-animation: slideOff 0.2s 1 linear;
+	animation: slideOff 0.2s 1 linear;
 	-webkit-animation-fill-mode: forwards;
-	        animation-fill-mode: forwards;
+	animation-fill-mode: forwards;
 }
 
 @-webkit-keyframes pulse {
-	0%   { 
+	0% {
 		opacity: 1;
 	}
-	60% { 
+	60% {
 		opacity: 1;
 	}
-	100% { 
+	100% {
 		opacity: 0;
 	}
 }
 
 @keyframes pulse {
-	0%   { 
+	0% {
 		opacity: 1;
 	}
-	60% { 
+	60% {
 		opacity: 1;
 	}
-	100% { 
+	100% {
 		opacity: 0;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
