@@ -3,7 +3,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun index.html"
+    "dev": "bun index.html",
+    "test": "bunx playwright test"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.8",
