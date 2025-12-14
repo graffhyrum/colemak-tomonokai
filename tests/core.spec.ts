@@ -1,13 +1,10 @@
-import {expect, type Page, test} from "@playwright/test";
+import {expect, type Locator, type Page, test} from "@playwright/test";
 
 test.beforeEach(async ({page}) => {
-	await page.goto(
-		"file:///C:/Users/graff/WebstormProjects/colemak-tomonokai/index.html",
-	);
+	await navigateToHomePage(page);
 });
 
 test("has title", async ({page}) => {
-	// Expect a title "to contain" a substring.
 	await expect(page).toHaveTitle(/Colemak/);
 });
 
@@ -17,7 +14,113 @@ test("screenshot", async ({page}) => {
 	});
 });
 
-function getScoreComponent(page: Page) {
+test("complete a perfect game", async ({page}) => {
+	const inputLocator = page.locator("#userInput");
+
+	await setWordLimit(page, 10);
+	await focusInputField(inputLocator);
+
+	const {getCurrentScore, getTargetScore} = createScoreComponent(page);
+	const targetScore = await getTargetScore();
+
+	await completeAllWords(page, inputLocator, targetScore);
+	await validateFinalGameState(page, getCurrentScore);
+});
+
+// Entry Point Functions (Highest Abstraction)
+async function navigateToHomePage(page: Page) {
+	await page.goto(
+		"file:///C:/Users/graff/WebstormProjects/colemak-tomonokai/index.html",
+	);
+}
+
+async function focusInputField(inputLocator: Locator) {
+	await expect(inputLocator).toBeVisible();
+	await inputLocator.focus();
+}
+
+// Orchestrator Functions (Medium Abstraction)
+async function completeAllWords(
+	page: Page,
+	inputLocator: Locator,
+	targetScore: number,
+) {
+	for (let i = 0; i < targetScore; i++) {
+		const word = await getWord(page, i);
+		assertDefined(word);
+
+		await typeWord(page, word);
+
+		const notLastWord = i < targetScore - 1;
+		if (notLastWord) {
+			await assertWordCompletion(inputLocator, page, i, word);
+		}
+	}
+}
+
+async function validateFinalGameState(
+	page: Page,
+	getCurrentScore: () => Promise<number>,
+) {
+	const testResultsLocator = page.locator("#testResults");
+	await expect(testResultsLocator).toBeVisible();
+
+	const finalScore = await getCurrentScore();
+	const finalAccuracyText = await page.locator("#accuracyText").textContent();
+	const finalWpmText = await page.locator("#wpmText").textContent();
+
+	assertPerfectGameResults(finalScore, finalAccuracyText, finalWpmText);
+}
+
+// Business Logic Functions (Core Functionality)
+async function typeWord(page: Page, word: string) {
+	await test.step(`input word "${word}"`, async () => {
+		await page.keyboard.type(word, {delay: 10});
+	});
+}
+
+async function assertWordCompletion(
+	inputLocator: Locator,
+	page: Page,
+	wordIndex: number,
+	currentWord: string,
+) {
+	await test.step("assert", async () => {
+		await expect(inputLocator).toHaveValue(currentWord);
+		await expect(async () => {
+			await page.keyboard.press("Space", {delay: 10});
+			await expect(inputLocator).toHaveValue("", {timeout: 30});
+		}).toPass({timeout: 130});
+
+		const nextWord = await getWord(page, wordIndex + 1);
+		expect(nextWord).not.toBe(currentWord);
+	});
+}
+
+function assertPerfectGameResults(
+	finalScore: number,
+	finalAccuracyText: string | null,
+	finalWpmText: string | null,
+) {
+	expect(finalScore).toBeGreaterThan(0);
+
+	if (finalAccuracyText?.trim()) {
+		expect(finalAccuracyText).toContain("100.00%");
+	}
+
+	if (finalWpmText?.trim()) {
+		expect(finalWpmText).toMatch(/WPM: \d+\.\d+/);
+	}
+}
+
+// Helper/Utility Functions (Lowest Abstraction)
+async function getWord(page: Page, id: number) {
+	const nextWordLocator = page.locator(`.prompt #id${id}.word`);
+	const nextWordContent = await nextWordLocator.textContent();
+	return nextWordContent?.trim();
+}
+
+function createScoreComponent(page: Page) {
 	const scoreTextLocator = page.locator("#scoreText");
 
 	return {
@@ -34,83 +137,19 @@ function getScoreComponent(page: Page) {
 			const [_currentScore, targetScore] = scoreText.split("/").map(Number);
 			assertDefined(targetScore);
 			return targetScore;
-		}
-	}
+		},
+	};
 }
 
-test("complete a perfect game", async ({page}) => {
-	const inputLocator = page.locator('#userInput');
-	await setWordLimit(page,10);
-
-	// Focus on input field
-	await expect(inputLocator).toBeVisible();
-	await inputLocator.focus();
-
-	// Get initial score and target
-	const {getCurrentScore, getTargetScore} = getScoreComponent(page);
-	const targetScore = await getTargetScore();
-
-	const getWord = async (id: number) => {
-		const nextWordLocator = page.locator(`.prompt #id${id}.word`);
-		const nextWordContent = await nextWordLocator.textContent();
-		// assertDefined(nextWordContent);
-		const word = nextWordContent?.trim();
-		// assertDefined(word);
-		return word;
-	}
-
-	for (let i = 0; i < targetScore; i++) {
-		// Get current word to type
-		const word = await getWord(i);
-		assertDefined(word);
-		await test.step(`input word "${word}"`, async () => {
-			// Type word perfectly
-			await page.keyboard.type(word, {delay: 10});
-		})
-		const notLastWord = i < targetScore - 1;
-		if (notLastWord) {
-			await test.step("assert", async () => {
-				await expect(inputLocator).toHaveValue(word);
-				await expect(async () => {
-					// Press space to complete the word
-					await page.keyboard.press("Space", {delay: 10});
-					await expect(inputLocator).toHaveValue("", {timeout: 30});
-				}).toPass({timeout: 130});
-				const nextWord = await getWord(i + 1);
-				expect(nextWord).not.toBe(word);
-			})
-		}
-	}
-
-	// Get final game state
-	const testResultsLocator = page.locator("#testResults");
-	await expect(testResultsLocator).toBeVisible();
-	const finalScore = await getCurrentScore();
-	const finalAccuracyText = await page.locator("#accuracyText").textContent();
-	const finalWpmText = await page.locator("#wpmText").textContent();
-
-	// Core assertions for perfect game completion
-	expect(finalScore).toBeGreaterThan(0);
-
-	// If accuracy statistics are available, they should show 100% for perfect typing
-	if (finalAccuracyText?.trim()) {
-		expect(finalAccuracyText).toContain("100.00%");
-	}
-
-	// If WPM statistics are available, they should be calculated
-	if (finalWpmText?.trim()) {
-		expect(finalWpmText).toMatch(/WPM: \d+\.\d+/);
-	}
-});
-
-function assertDefined<T>(x: T): asserts x is NonNullable<T> {
-	expect(x).toBeDefined();
+function assertDefined<T>(value: T): asserts value is NonNullable<T> {
+	expect(value).toBeDefined();
 }
 
 async function setWordLimit(page: Page, wordLimit: number) {
-	await page.getByRole('button').first().click();
-	await page.getByRole('spinbutton').click();
-	await page.getByRole('spinbutton').fill(wordLimit.toString());
-	await page.getByRole('spinbutton').press('Enter');
-	await page.locator('div').filter({hasText: 'Capital Letters Allowed'}).getByRole('button').click();
+	await page.locator('button.preferenceButton').click();
+	const spinButton = page.getByRole("spinbutton");
+	await spinButton.click();
+	await spinButton.fill(wordLimit.toString());
+	await spinButton.press("Enter");
+	await page.locator('button.closePreferenceButton').click();
 }
