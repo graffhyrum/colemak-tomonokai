@@ -1,7 +1,7 @@
 # Agent Guidelines for Colemak Club
 
 ## Agent Best Practices
-- In all interactions, be extremely concise and sacrifice grammar for brevity.
+- In **ALL** interactions, be extremely concise and sacrifice grammar for brevity.
 - At the end of each plan, give me a list of unresolved questions you have about the task, if any. Make questions extremely concise and sacrifice grammar for brevity.
 
 ## Build & Test Commands
@@ -65,4 +65,4 @@
 - **Validation**: `bun vet` must pass before commits
 - **Screenshots**: Update snapshots when UI changes
 - **Isolation**: Tests should be independent and parallel</content>
-<parameter name="filePath">C:\Users\graff\WebstormProjects\colemak-tomonokai\AGENTS.md
+
