@@ -1,7 +1,7 @@
 /*_____________dom elements_________*/
 
-// the string of text that shows the words for the user to type
-var prompt = document.querySelector(".prompt"),
+
+const prompt = document.querySelector(".prompt"),
 	//
 
 	//
@@ -25,6 +25,7 @@ var prompt = document.querySelector(".prompt"),
 	// the dom element representing the shift keys in customization ui
 	customInput = document.querySelector(".customInput"),
 	//
+
 	buttons = document.querySelector("nav").children,
 	//
 
@@ -44,56 +45,56 @@ var prompt = document.querySelector(".prompt"),
 	customUIKeyInput = document.querySelector("#customUIKeyInput");
 
 // Game state variables managed by StateManager
-var promptOffset = 0;
-var score;
-var seconds = 0;
-var minutes = 0;
-var gameOn = false;
-var correct = 0;
-var errors = 0;
-var correctAnswer;
-var letterIndex = 0;
-var answerString = "";
-var shiftDown = false;
-var fullSentenceMode = false;
-var deleteFirstLine = false;
-var deleteLatestWord = false;
-var sentenceStartIndex = -1;
-var sentenceEndIndex;
-var lineLength = 23;
-var lineIndex = 0;
-var wordIndex = 0;
-var idCount = 0;
-var answerWordArray = [];
-var specialKeyCodes = [
+let promptOffset = 0;
+let score;
+let seconds = 0;
+let minutes = 0;
+let gameOn = false;
+let correct = 0;
+let errors = 0;
+let correctAnswer;
+let letterIndex = 0;
+let answerString = "";
+let shiftDown = false;
+let fullSentenceMode = false;
+let deleteFirstLine = false;
+let deleteLatestWord = false;
+let sentenceStartIndex = -1;
+let sentenceEndIndex;
+let lineLength = 23;
+let lineIndex = 0;
+let wordIndex = 0;
+let idCount = 0;
+let answerWordArray = [];
+let specialKeyCodes = [
 	27, 9, 20, 17, 18, 93, 36, 37, 38, 39, 40, 144, 36, 8, 16, 30, 32, 13, 91, 92,
 	224, 225,
 ];
-var requiredLetters = "";
+
 
 // Get state from StateManager
-var scoreMax = StateManager.get('scoreMax') || 50;
-var currentLevel = StateManager.get('currentLevel') || 1;
-var onlyLower = StateManager.get('onlyLower') !== false;
-var currentLayout = StateManager.get('currentLayout') || "colemak";
-var currentKeyboard = StateManager.get('currentKeyboard') || "ansi";
-var fullSentenceModeEnabled = StateManager.get('fullSentenceModeEnabled') === "true";
-var requireBackspaceCorrection = StateManager.get('requireBackspaceCorrection') !== false;
-var timeLimitMode = StateManager.get('timeLimitMode') === "true";
-var wordScrollingMode = StateManager.get('wordScrollingMode') !== false;
-var showCheatsheet = StateManager.get('showCheatsheet') !== false;
-var playSoundOnClick = StateManager.get('playSoundOnClick') === "true";
-var playSoundOnError = StateManager.get('playSoundOnError') === "true";
-var punctuation = StateManager.get('punctuation') || "";
+let scoreMax = StateManager.get('scoreMax') || 50;
+let currentLevel = StateManager.get('currentLevel') || 1;
+let onlyLower = StateManager.get('onlyLower') !== false;
+let currentLayout = StateManager.get('currentLayout') || "colemak";
+let currentKeyboard = StateManager.get('currentKeyboard') || "ansi";
+let fullSentenceModeEnabled = StateManager.get('fullSentenceModeEnabled') === "true";
+let requireBackspaceCorrection = StateManager.get('requireBackspaceCorrection') !== false;
+let timeLimitMode = StateManager.get('timeLimitMode') === "true";
+let wordScrollingMode = StateManager.get('wordScrollingMode') !== false;
+let showCheatsheet = StateManager.get('showCheatsheet') !== false;
+let playSoundOnClick = StateManager.get('playSoundOnClick') === "true";
+let playSoundOnError = StateManager.get('playSoundOnError') === "true";
+let punctuation = StateManager.get('punctuation') || "";
 
 // Get layout and dictionary from LayoutService
-var keyboardMap = layoutMaps["colemak"];
-var letterDictionary = levelDictionaries["colemak"];
-var initialCustomKeyboardState = "";
-var initialCustomLevelsState = "";
+let keyboardMap = layoutMaps["colemak"];
+let letterDictionary = levelDictionaries["colemak"];
+let initialCustomKeyboardState = "";
+let initialCustomLevelsState = "";
 
 // preference menu dom elements
-var preferenceButton = document.querySelector(".preferenceButton"),
+let preferenceButton = document.querySelector(".preferenceButton"),
 	preferenceMenu = document.querySelector(".preferenceMenu"),
 	closePreferenceButton = document.querySelector(".closePreferenceButton"),
 	capitalLettersAllowed = document.querySelector(".capitalLettersAllowed"),
@@ -453,7 +454,7 @@ function playErrorSound() {
 /*___________________________________________________________*/
 /*______________listeners for custom ui input________________*/
 
-function updateLayoutUI() {
+function updateKeyboardMappingsForLayout() {
 	switch (currentKeyboard) {
 		case "ansi":
 			document.querySelector(".cheatsheet").innerHTML = ansiDivs;
@@ -540,35 +541,43 @@ function updateLayoutUI() {
 			layoutMaps.canary.KeyU = "f";
 			break;
 	}
+}
 
+function setupCustomLayoutUI() {
 	// if custom input is selected, show the ui for custom keyboards
 	if (currentLayout === "custom") {
 		openUIButton.style.display = "block";
 		startCustomKeyboardEditing();
+		customUIKeyInput.focus();
 	} else {
 		customInput.style.transform = "scaleX(0)";
 		openUIButton.style.display = "none";
 	}
+}
 
+function updateLevelLabelsForLayout() {
 	// level labels
 	for (let i = 1; i <= 6; i++) {
 		if (currentLayout === "tarmak" || currentLayout === "tarmakdh") {
-			document.querySelector(".lvl" + i).innerHTML = "Step " + (i - 1);
+			document.querySelector(`.lvl${i}`).innerHTML = `Step ${i - 1}`;
 		} else {
-			document.querySelector(".lvl" + i).innerHTML = "Level " + i;
+			document.querySelector(`.lvl${i}`).innerHTML = `Level ${i}`;
 		}
 	}
+}
 
+function updateKeyboardReferences() {
 	// change keyboard map and key dictionary
 	LayoutService.setLayout(currentLayout);
 	keyboardMap = LayoutService.getKeyboardMap();
-	console.log(currentLayout);
-	console.log(currentKeyboard);
 	letterDictionary = LayoutService.getLevelDictionary();
+}
 
-	if (currentLayout === "custom") {
-		customUIKeyInput.focus();
-	}
+function updateLayoutUI() {
+	updateKeyboardMappingsForLayout();
+	setupCustomLayoutUI();
+	updateLevelLabelsForLayout();
+	updateKeyboardReferences();
 }
 
 // listens for layout change
@@ -722,80 +731,12 @@ customUIKeyInput.addEventListener("keydown", (e) => {
 		removeKeyFromLevels(k);
 	}
 
-	// if key entered is not shift, control, space, caps, enter, backspace, escape,
-	// or delete, left or right arrows, update dom element and key mapping value
-	if (
-		e.keyCode !== 16 &&
-		e.keyCode !== 17 &&
-		e.keyCode !== 27 &&
-		e.keyCode !== 46 &&
-		e.keyCode !== 32 &&
-		e.keyCode !== 8 &&
-		e.keyCode !== 20 &&
-		e.keyCode !== 13 &&
-		e.keyCode !== 37 &&
-		e.keyCode !== 39 &&
-		e.keyCode !== 38 &&
-		e.keyCode !== 40
-	) {
-		const currentUILev = document.querySelector(
-			".currentCustomUILevel",
-		).innerHTML;
-		k.children[0].innerHTML = e.key;
-
-		// // if we are not already on shift layer, add to dom element shift layer
-		// if(!shiftDown) {
-		// 	// document.querySelector('#shift' + k.id).children[0].innerHTML = e.key.toUpperCase();
-		// }
-		k.classList.add("active");
-
-		// new keyMapping Data
-		if (k.id) {
-			let keyCode = k.id.toString().replace("custom", "");
-			keyCode = keyCode.toString().replace("shift", "");
-			if (!shiftDown) {
-				layoutMaps.custom[keyCode] = e.key;
-			}
-
-			layoutMaps.custom.shiftLayer[keyCode] = e.key.toUpperCase();
-		}
-
-		//new levels data
-		levelDictionaries["custom"][currentUILev] += e.key;
-		levelDictionaries["custom"]["lvl7"] += e.key;
-		//console.log('new key ' + currentUILev + e.key);
-
-		// associate the key element with the current selected level
-
-		// this updates the main keyboard in real time. Could be ommited if performance needs a boost
-		updateCheatsheetStyling(currentLevel);
-
-		// switch to next input key
-		switchSelectedInputKey("right");
+	if (isValidCustomKeyInput(e.keyCode)) {
+		handleCustomKeyAddition(e, k);
 	} else if (e.keyCode === 8 || e.keyCode === 46) {
-		// switchSelectedInputKey('left');
-		// if backspace, remove letter from the ui element and the keyboard map
-		k.children[0].innerHTML = "_";
-		k.classList.remove("active");
-		layoutMaps.custom.shiftLayer[k.id] = " ";
-
-		// remove deleted letter from keymapping and levels
-		if (k.id) {
-			//console.log('key added to mapping ' + e.key);
-			layoutMaps.custom[k.id] = " ";
-			removeKeyFromLevels(k);
-		}
-	} else if (e.keyCode === 37) {
-		switchSelectedInputKey("left");
-	} else if (e.keyCode === 39) {
-		console.log("right");
-		switchSelectedInputKey("right");
-	} else if (e.keyCode === 38) {
-		console.log("up");
-		switchSelectedInputKey("up");
-	} else if (e.keyCode === 40) {
-		console.log("down");
-		switchSelectedInputKey("down");
+		handleCustomKeyDeletion(k);
+	} else {
+		handleCustomKeyNavigation(e);
 	}
 
 	// clear input field
@@ -820,7 +761,6 @@ function removeKeyFromLevels(k) {
 
 // sets the custom keyboard layout to be equal to the json parameter passed in
 function loadCustomLayout(newCustomLayout) {
-	console.log("new layout");
 	layoutMaps.custom = Object.assign({}, newCustomLayout);
 	keyboardMap = layoutMaps.custom;
 
@@ -828,7 +768,6 @@ function loadCustomLayout(newCustomLayout) {
 	// load letters onto the custom ui input keyboard
 	customKeys.forEach((cKey) => {
 		const currentKeyName = cKey.id.substring(6);
-		// console.log(currentKeyName);
 
 		// if the value of the new layout key is not undefined, set it to the corresponding dom element
 		if (keyboardMap[currentKeyName]) {
@@ -929,6 +868,22 @@ function clearSelectedInput() {
 
 // input key listener
 input.addEventListener("keydown", (e) => {
+	handleLineDeletion();
+	handleKeyMapping(e);
+	handleWordCompletion(e);
+	handleResetKeys(e);
+	handleAccuracyChecking(e);
+}); // end input key listner
+
+// returns true if the letters typed SO FAR are correct
+function checkAnswerToIndex() {
+	// user input
+	const inputVal = input.value;
+
+	return inputVal.slice(0, letterIndex) === correctAnswer.slice(0, letterIndex);
+}
+
+function handleLineDeletion() {
 	// removes first line on the first letter of the first word of a new line
 	if (deleteLatestWord) {
 		prompt.classList.remove("smoothScroll");
@@ -938,62 +893,12 @@ input.addEventListener("keydown", (e) => {
 			prompt.removeChild(prompt.firstChild);
 		}
 		promptOffset = 0;
-		prompt.style.left = "-" + promptOffset + "px";
+		prompt.style.left = `-${promptOffset}px`;
 		deleteLatestWord = false;
 	}
+}
 
-	/*___________________________________________________*/
-	/*____________________key mapping____________________*/
-
-	// get rid of default key press. We'll handle it ourselves
-	e.preventDefault();
-
-	// this is the actual character typed by the user
-	const char = e.code;
-
-	// prevent default char from being typed and replace new char from keyboard map
-	if (StateManager.get('keyRemapping') === "true") {
-		if (char in keyboardMap && gameOn) {
-			if (!e.shiftKey) {
-				input.value += keyboardMap[char];
-			} else {
-				// if shift key is pressed, get final input from
-				// keymap shift layer. If shiftlayer doesn't exist
-				// use a simple toUpperCase
-				if (keyboardMap.shiftLayer === "default") {
-					input.value += keyboardMap[char].toUpperCase();
-				} else {
-					// get char from shiftLayer
-					input.value += keyboardMap.shiftLayer[char];
-				}
-			}
-		}
-	} else {
-		//console.log(e.keyCode);
-		//console.log(specialKeyCodes.includes(e.keyCode));
-		// there is a bug on firefox that occassionally reads e.key as process, hence the boolean expression below
-		if (!specialKeyCodes.includes(e.keyCode) && e.key !== "Process") {
-			//console.log('Key: ' +e.key);
-			//console.log('Code: ' +e.code);
-			if (e.key !== "Process") {
-				input.value += e.key;
-			} else {
-				letterIndex--;
-			}
-		} else {
-			//console.log('special Key');
-		}
-		if (e.keyCode === 32) {
-			//console.log('space bar');
-			//input.value += " ";
-		}
-	}
-
-	/*____________________key mapping____________________*/
-	/*___________________________________________________*/
-
-	/*________________________________________________________________________________________*/
-	/*____________________listener for space and enter keys and reset keys____________________*/
+function handleWordCompletion(e) {
 	// listens for the enter  and space key. Checks to see if input contains the
 	// correct word. If yes, generate new word. If no, give user
 	// negative feedback
@@ -1027,7 +932,9 @@ input.addEventListener("keydown", (e) => {
 			letterIndex++;
 		}
 	} // end keyEvent if statement
+}
 
+function handleResetKeys(e) {
 	if (e.keyCode === 9 || e.keyCode === 27) {
 		// 9 = Tab, 27 = Esc
 		reset();
@@ -1035,13 +942,9 @@ input.addEventListener("keydown", (e) => {
 		// F5 does not reload page because of the input area without this if-else
 		window.location.reload();
 	} // end of reset key check
+}
 
-	/*____________________listener for space and enter keys and reset keys____________________*/
-	/*________________________________________________________________________________________*/
-
-	/*_________________________________________________________*/
-	/*____________________accuracy checking____________________*/
-
+function handleAccuracyChecking(e) {
 	// if we have a backspace, decrement letter index and role back the input value
 	if (e.keyCode === 8) {
 		//console.log('backspace');
@@ -1100,24 +1003,7 @@ input.addEventListener("keydown", (e) => {
 		input.style.color = "red";
 		// no points awarded for backspace
 		if (e.keyCode === 8) {
-			playClickSound();
-			// if backspace, color it grey again
-			if (e.ctrlKey) {
-				for (let i = 0; i < letterIndex; i++) {
-					if (prompt.children[0].children[wordIndex].children[i]) {
-						prompt.children[0].children[wordIndex].children[i].style.color =
-							"gray";
-					}
-				}
-				input.value = "";
-				letterIndex = 0;
-			} else {
-				if (prompt.children[0].children[wordIndex].children[letterIndex]) {
-					prompt.children[0].children[wordIndex].children[
-						letterIndex
-					].style.color = "gray";
-				}
-			}
+			handleKeycodeEight(e);
 		} else if (!specialKeyCodes.includes(e.keyCode) || e.keyCode === 32) {
 			playErrorSound();
 			errors++;
@@ -1146,21 +1032,26 @@ input.addEventListener("keydown", (e) => {
 		endGame();
 	}
 
-	//console.log('errors: ' + errors + ' \n correct: ' + correct);
-	//console.log("accuracy: " + correct/(errors+correct));
-
-	/*____________________accuracy checking____________________*/
-	/*_________________________________________________________*/
-}); // end input key listner
-
-// returns true if the letters typed SO FAR are correct
-function checkAnswerToIndex() {
-	// user input
-	const inputVal = input.value;
-
-	// console.log('checking input ' +inputVal.slice(0,letterIndex) + "!");
-	// console.log(correctAnswer.slice(0,letterIndex)+ "!");
-	return inputVal.slice(0, letterIndex) === correctAnswer.slice(0, letterIndex);
+	function handleKeycodeEight(e) {
+		playClickSound();
+		// if backspace, color it grey again
+		if (e.ctrlKey) {
+			for (let i = 0; i < letterIndex; i++) {
+				if (prompt.children[0].children[wordIndex].children[i]) {
+					prompt.children[0].children[wordIndex].children[i].style.color =
+						"gray";
+				}
+			}
+			input.value = "";
+			letterIndex = 0;
+		} else {
+			if (prompt.children[0].children[wordIndex].children[letterIndex]) {
+				prompt.children[0].children[wordIndex].children[
+					letterIndex
+					].style.color = "gray";
+			}
+		}
+	}
 }
 
 // add event listeners to level buttons
@@ -1185,7 +1076,6 @@ for (button of buttons) {
 // switches to level
 function switchLevel(lev) {
 	StateManager.set("currentLevel", lev);
-	console.log(lev);
 	// stop timer
 	gameOn = false;
 
@@ -1194,7 +1084,6 @@ function switchLevel(lev) {
 
 	// clear highlighted buttons
 	clearCurrentLevelStyle();
-	// console.log('.lvl'+lev);
 	document.querySelector(".lvl" + lev).classList.add("currentLevel");
 
 	// set full sentence mode to true
@@ -1246,7 +1135,8 @@ function updateCheatsheetStyling(level) {
 
 			const lettersToCheck = letterDictionary[objKeys[i]] + punctuation;
 
-			if (lettersToCheck.includes(letter)) {
+			const containsLetter = lettersToCheck.includes(letter);
+			if (containsLetter) {
 				n.innerHTML =
 					`
 					<span class='letter'>` +
@@ -1315,7 +1205,6 @@ function reset() {
 	// stop the timer
 	gameOn = false;
 
-	console.log("reset called");
 	// set current letter index back to 0
 	letterIndex = 0;
 	wordIndex = 0;
@@ -1391,7 +1280,7 @@ function convertLineToHTML(letters) {
 	let promptString = "";
 
 	promptString =
-		"<span class='line'><span class='word' id='id" + idCount + "'>";
+		`<span class='line'><span class='word' id='id${idCount}'>`;
 	// loop through all letters in prompt
 	for (i = 0; i <= letters.length; i++) {
 		//console.log(letters[i]);
@@ -1405,7 +1294,7 @@ function convertLineToHTML(letters) {
 			//console.log('new word');
 			idCount++;
 			promptString += " </span>";
-			promptString += "<span class='word' id='id" + idCount + "'>";
+			promptString += `<span class='word' id='id${idCount}'>`;
 		} else {
 			promptString += `<span>` + letters[i] + `</span>`;
 		}
@@ -1414,7 +1303,6 @@ function convertLineToHTML(letters) {
 }
 
 function checkAnswer() {
-	// console.log('correct answer: ' + correctAnswer);
 	// user input
 	const inputVal = input.value;
 
@@ -1440,8 +1328,8 @@ function endGame() {
 	}
 	// set accuracyText
 	accuracyText.innerHTML =
-		"Accuracy: " + ((100 * correct) / (correct + errors)).toFixed(2) + "%";
-	wpmText.innerHTML = "WPM: " + wpm;
+		`Accuracy: ${((100 * correct) / (correct + errors)).toFixed(2)}%`;
+	wpmText.innerHTML = `WPM: ${wpm}`;
 	// make accuracy visible
 	testResults.classList.toggle("transparent");
 
@@ -1464,152 +1352,99 @@ function endGame() {
 // generates a single line to be appended to the answer array
 // if a line with a maximum number of words is desired, pass it in as a parameter
 function generateLine(maxWords) {
-	let str = "";
-
 	if (fullSentenceMode) {
-		// let rand = Math.floor(Math.random()*35);
-		const rand = 0;
-		if (sentenceStartIndex === -1) {
-			sentenceStartIndex = getPosition(sentence, ".", rand) + 1;
-			sentenceEndIndex =
-				sentence.substring(sentenceStartIndex + lineLength + 2).indexOf(" ") +
-				sentenceStartIndex +
-				lineLength +
-				1;
-			str = sentence.substring(sentenceStartIndex, sentenceEndIndex + 1);
-		} else {
-			sentenceStartIndex = sentenceEndIndex + 1;
-			sentenceEndIndex =
-				sentence.substring(sentenceStartIndex + lineLength + 2).indexOf(" ") +
-				sentenceStartIndex +
-				lineLength +
-				1;
-			str = sentence.substring(sentenceStartIndex, sentenceEndIndex + 1);
-			console.log(sentenceStartIndex);
-			console.log(sentenceEndIndex);
-		}
-		str = str.substring(1);
-		return str;
+		return generateSentenceLine();
 	}
 
-	const words = WordService.getWordList(currentLevel);
-	if (words && words.length > 0) {
-		const startingLetters =
-			(LayoutService.getLevelLetters(currentLevel) || '') + punctuation;
-
-		//requiredLetters = startingLetters.split('');
-
-		// if this counter hits a high enough number, there are likely no words matching the search
-		// criteria. If that happens, reset required letters
-		let circuitBreaker = 0;
-
-		let wordsCreated = 0;
-
-		for (let i = 0; i < lineLength; i = i) {
-			if (wordsCreated >= maxWords) {
-				break;
-			}
-
-			const rand = Math.floor(Math.random() * words.length);
-			let wordToAdd = words[rand];
-
-			//console.log('in circuit ' + circuitBreaker);
-			if (circuitBreaker > 12000) {
-				if (circuitBreaker > 30000) {
-					str += levelDictionaries[currentLayout]["lvl" + currentLevel] + " ";
-					i += wordToAdd.length;
-					wordsCreated++;
-					circuitBreaker = 0;
-					requiredLetters = startingLetters.split("");
-					console.log("taking too long to find proper word");
-				} else {
-					requiredLetters = startingLetters.split("");
-				}
-			}
-
-			// if the word does not contain any required letters, throw it out and choose again
-			if (!contains(wordToAdd, requiredLetters)) {
-				// console.log(wordToAdd + ' doesnt have any required letters from ' + requiredLetters);
-			} else if (onlyLower && containsUpperCase(wordToAdd)) {
-				// if only lower case is allowed and the word to add contains an uppercase,
-				// throw out the word and try again
-			} else {
-				// if last word of the line, don't add a space
-				str += wordToAdd + " ";
-				i += wordToAdd.length;
-				wordsCreated++;
-
-				// remove any new key letters from our required list
-				removeIncludedLetters(requiredLetters, wordToAdd);
-				// if we have used all required letters, reset it
-				if (requiredLetters.length === 0) {
-					requiredLetters = startingLetters.split("");
-				}
-			}
-
-			circuitBreaker++;
-			// if we're having trouble finding a word with a require letter, reset 'required letters'
-			if (circuitBreaker > 7000) {
-				// console.log('couldnt find word with ' + requiredLetters);
-				wordToAdd = randomLetterJumble();
-				str += wordToAdd + " ";
-				i += wordToAdd.length;
-				wordsCreated++;
-				requiredLetters = startingLetters.split("");
-			}
-		}
-	} else {
-		const startingLetters =
-			levelDictionaries[currentLayout]["lvl" + currentLevel] + punctuation;
-		// if there are no words with the required letters, all words should be set to the
-		// current list of required letters
-		let wordsCreated = 0;
-		if (levelDictionaries[currentLayout]["lvl" + currentLevel].length === 0) {
-			str = "";
-		} else {
-			for (let i = 0; i < lineLength; i = i) {
-				wordToAdd = randomLetterJumble();
-				str += wordToAdd + " ";
-				i += wordToAdd.length;
-				console.log("i: " + i);
-				wordsCreated++;
-				if (wordsCreated >= maxWords) {
-					break;
-				}
-			}
-		}
-	}
+	let str = generateWordBasedLine(maxWords);
 
 	// line should not end in a space. Remove the final space char
 	str = str.substring(0, str.length - 1);
 	return str;
 }
 
-// creates a random jumble of letters to be used when no words are found for a target letter
-function randomLetterJumble() {
-	const randWordLength = Math.floor(Math.random() * 5) + 1;
-	let jumble = "";
-	for (let i = 0; i < randWordLength; i++) {
-		const rand = Math.floor(
-			Math.random() *
-				levelDictionaries[currentLayout]["lvl" + currentLevel].length,
-		);
-		jumble += levelDictionaries[currentLayout]["lvl" + currentLevel][rand];
+function generateSentenceLine() {
+	// let rand = Math.floor(Math.random()*35);
+	const rand = 0;
+	let str = "";
+	if (sentenceStartIndex === -1) {
+		sentenceStartIndex = getPosition(sentence, ".", rand) + 1;
+		sentenceEndIndex =
+			sentence.substring(sentenceStartIndex + lineLength + 2).indexOf(" ") +
+			sentenceStartIndex +
+			lineLength +
+			1;
+		str = sentence.substring(sentenceStartIndex, sentenceEndIndex + 1);
+	} else {
+		sentenceStartIndex = sentenceEndIndex + 1;
+		sentenceEndIndex =
+			sentence.substring(sentenceStartIndex + lineLength + 2).indexOf(" ") +
+			sentenceStartIndex +
+			lineLength +
+			1;
+		str = sentence.substring(sentenceStartIndex, sentenceEndIndex + 1);
+		console.log(sentenceStartIndex);
+		console.log(sentenceEndIndex);
 	}
+	str = str.substring(1);
+	return str;
+}
 
-	return jumble;
+function selectValidWord(words, startingLetters, circuitBreaker) {
+	const rand = Math.floor(Math.random() * words.length);
+	let wordToAdd = words[rand];
+
+	// if the word does not contain any required letters, throw it out and choose again
+	if (!contains(wordToAdd, requiredLetters)) {
+		return null;
+	} else if (onlyLower && containsUpperCase(wordToAdd)) {
+		// if only lower case is allowed and the word to add contains an uppercase,
+		// throw out the word and try again
+		return null;
+	} else {
+		return wordToAdd;
+	}
+}
+
+function shouldUseCircuitBreakerFallback(circuitBreaker) {
+	return circuitBreaker > 7000;
+}
+
+function addWordToLine(str, wordToAdd, startingLetters) {
+	str += wordToAdd + " ";
+	// remove any new key letters from our required list
+	removeIncludedLetters(requiredLetters, wordToAdd);
+	// if we have used all required letters, reset it
+	if (requiredLetters.length === 0) {
+		requiredLetters = startingLetters.split("");
+	}
+	return str;
+}
+
+function handleCircuitBreakerLogic(circuitBreaker, startingLetters, str, wordToAdd) {
+	if (circuitBreaker > 12000) {
+		if (circuitBreaker > 30000) {
+			str += levelDictionaries[currentLayout]["lvl" + currentLevel] + " ";
+			circuitBreaker = 0;
+			requiredLetters = startingLetters.split("");
+			console.log("taking too long to find proper word");
+			return { str, circuitBreaker, shouldContinue: true };
+		} else {
+			requiredLetters = startingLetters.split("");
+		}
+	}
+	return { str, circuitBreaker, shouldContinue: false };
 }
 
 // takes an array and removes any required letters that are found in 'word'
 // for example, if required letters === ['a', 'b', 'c', 'd'] and word=='cat', this
 // function will turn requiredLetters into ['b', 'd']
 function removeIncludedLetters(requiredLetters, word) {
-	word.split("").forEach((l) => {
-		if (requiredLetters.includes(l)) {
-			requiredLetters.splice(requiredLetters.indexOf(l), 1);
-			// console.log('removal: '+ word+ ' ' + l + ' '+ requiredLetters);
-		}
-	});
+		word.split("").forEach((l) => {
+			if (requiredLetters.includes(l)) {
+				requiredLetters.splice(requiredLetters.indexOf(l), 1);
+			}
+		});
 }
 
 // if 'word' contains an uppercase letter, return true. Else return false
@@ -1618,7 +1453,6 @@ function containsUpperCase(word) {
 	let result = false;
 	word.split("").forEach((letter) => {
 		if (upperCase.includes(letter)) {
-			// console.log('upperCase ' + letter);
 			result = true;
 		}
 	});
@@ -1654,7 +1488,7 @@ function handleCorrectWord() {
 		}
 	}
 
-	const cur = document.querySelector("#id" + (score + 1));
+	const cur = document.querySelector(`#id${score + 1}`);
 
 	if (wordScrollingMode) {
 		deleteLatestWord = true;
@@ -1663,7 +1497,9 @@ function handleCorrectWord() {
 		// set the offset value of the next word
 		promptOffset += prompt.children[0].children[0].offsetWidth;
 		// move prompt left
-		prompt.style.left = "-" + promptOffset + "px";
+		promptOffset += prompt.children[0].children[0].offsetWidth;
+		// move prompt left
+		prompt.style.left = `-${promptOffset}px`;
 		// make already typed words transparent
 		prompt.children[0].firstChild.style.opacity = 0;
 	} else {
@@ -1679,11 +1515,96 @@ function handleCorrectWord() {
 // updates the numerator and denominator of the scoretext on
 // the document
 function updateScoreText() {
-	scoreText.innerHTML = ++score + "/" + scoreMax;
+	scoreText.innerHTML = `${++score}/${scoreMax}`;
 }
 
 function resetTimeText() {
-	timeText.innerHTML = minutes + "m :" + seconds + " s";
+	timeText.innerHTML = `${minutes}m :${seconds} s`;
+}
+
+function isValidCustomKeyInput(keyCode) {
+	// if key entered is not shift, control, space, caps, enter, backspace, escape,
+	// or delete, left or right arrows, update dom element and key mapping value
+	return (
+		keyCode !== 16 &&
+		keyCode !== 17 &&
+		keyCode !== 27 &&
+		keyCode !== 46 &&
+		keyCode !== 32 &&
+		keyCode !== 8 &&
+		keyCode !== 20 &&
+		keyCode !== 13 &&
+		keyCode !== 37 &&
+		keyCode !== 39 &&
+		keyCode !== 38 &&
+		keyCode !== 40
+	);
+}
+
+function handleCustomKeyAddition(e, k) {
+	const currentUILev = document.querySelector(
+		".currentCustomUILevel",
+	).innerHTML;
+	k.children[0].innerHTML = e.key;
+
+	// // if we are not already on shift layer, add to dom element shift layer
+	// if(!shiftDown) {
+	// 	// document.querySelector('#shift' + k.id).children[0].innerHTML = e.key.toUpperCase();
+	// }
+	k.classList.add("active");
+
+	// new keyMapping Data
+	if (k.id) {
+		let keyCode = k.id.toString().replace("custom", "");
+		keyCode = keyCode.toString().replace("shift", "");
+		if (!shiftDown) {
+			layoutMaps.custom[keyCode] = e.key;
+		}
+
+		layoutMaps.custom.shiftLayer[keyCode] = e.key.toUpperCase();
+	}
+
+	//new levels data
+	levelDictionaries["custom"][currentUILev] += e.key;
+	levelDictionaries["custom"]["lvl7"] += e.key;
+	//console.log('new key ' + currentUILev + e.key);
+
+	// associate the key element with the current selected level
+
+	// this updates the main keyboard in real time. Could be ommited if performance needs a boost
+	updateCheatsheetStyling(currentLevel);
+
+	// switch to next input key
+	switchSelectedInputKey("right");
+}
+
+function handleCustomKeyDeletion(k) {
+	// if backspace, remove letter from the ui element and the keyboard map
+	k.children[0].innerHTML = "_";
+	k.classList.remove("active");
+	layoutMaps.custom.shiftLayer[k.id] = " ";
+
+	// remove deleted letter from keymapping and levels
+	if (k.id) {
+		//console.log('key added to mapping ' + e.key);
+		layoutMaps.custom[k.id] = " ";
+		removeKeyFromLevels(k);
+	}
+}
+
+function handleCustomKeyNavigation(e) {
+	if (e.keyCode === 37) {
+		switchSelectedInputKey("left");
+	} else if (e.keyCode === 39) {
+		console.log("right");
+		switchSelectedInputKey("right");
+	} else if (e.keyCode === 38) {
+		console.log("up");
+		switchSelectedInputKey("up");
+	} else if (e.keyCode === 40) {
+		console.log("down");
+		switchSelectedInputKey("down");
+	}
 }
 
 // removes currentLevel styles from all buttons. Use every time the
