@@ -43,63 +43,54 @@ var prompt = document.querySelector(".prompt"),
 	// custom ui input field for custom keys
 	customUIKeyInput = document.querySelector("#customUIKeyInput");
 
-var promptOffset = 0; // is this needed? May delete
-var score; // tracks the current number of correct words the user has typed
-var scoreMax = localStorage.getItem("scoreMax") || 50; // total number of words the user must type
-var seconds = 0; // tracks the number of seconds%minutes*60 the current test has been running for
-var minutes = 0; // tracks the number of minutes the current test has been running for
-var gameOn = false; // set to true when user starts typing in input field
-var correct = 0; // number of correct keystrokes during a game
-var errors = 0; // number of typing errors during a game
-var currentLevel = localStorage.getItem("currentLevel") || 1; // int representation of the current level, which determines which letter set to test
-var correctAnswer; // string representation of the current correct word
-var letterIndex = 0; // Keeps track of where in a word the user is
-// Increment with every keystroke except ' ', return, and backspace
-// Decrement for backspace, and reset for the other 2
-var onlyLower =
-	!localStorage.getItem("onlyLower") ||
-	localStorage.getItem("onlyLower") === "true"; // If only lower is true, include only words
-// without capital letters
-var answerString = ""; // A string representation of the words for the current test. After a correct word is typed,
-// it is removed from the beginning of answerString. By the end of the test, there should be
-// no words in answerString
-var keyboardMap = layoutMaps["colemak"];
-var letterDictionary = levelDictionaries["colemak"];
-var currentLayout = localStorage.getItem("currentLayout") || "colemak";
-var currentKeyboard = localStorage.getItem("currentKeyboard") || "ansi";
-var shiftDown = false; // tracks whether the shift key is currently being pushed
-var fullSentenceMode = false; // if true, all prompts will be replace with sentences
-var fullSentenceModeEnabled =
-	localStorage.getItem("fullSentenceModeEnabled") === "true";
-var requireBackspaceCorrection =
-	!localStorage.getItem("requireBackspaceCorrection") ||
-	localStorage.getItem("requireBackspaceCorrection") === "true";
-var timeLimitMode = localStorage.getItem("timeLimitMode") === "true";
-var wordScrollingMode =
-	!localStorage.getItem("wordScrollingMode") ||
-	localStorage.getItem("wordScrollingMode") === "true"; // true by default.
-var showCheatsheet =
-	!localStorage.getItem("showCheatsheet") ||
-	localStorage.getItem("showCheatsheet") === "true"; // true by default.
-var playSoundOnClick = localStorage.getItem("playSoundOnClick") === "true";
-var playSoundOnError = localStorage.getItem("playSoundOnError") === "true";
-var deleteFirstLine = false; // make this true every time we finish typing a line
-var deleteLatestWord = false; // if true, delete last word typed. Set to true whenever a word is finished
-var sentenceStartIndex = -1; // keeps track of where we are in full sentence mode
+// Game state variables managed by StateManager
+var promptOffset = 0;
+var score;
+var seconds = 0;
+var minutes = 0;
+var gameOn = false;
+var correct = 0;
+var errors = 0;
+var correctAnswer;
+var letterIndex = 0;
+var answerString = "";
+var shiftDown = false;
+var fullSentenceMode = false;
+var deleteFirstLine = false;
+var deleteLatestWord = false;
+var sentenceStartIndex = -1;
 var sentenceEndIndex;
 var lineLength = 23;
-var lineIndex = 0; // tracks which line of the prompt we are currently on
-var wordIndex = 0; // tracks which word you are on (ONLY IN PARAGRAPH MODE)
+var lineIndex = 0;
+var wordIndex = 0;
 var idCount = 0;
 var answerWordArray = [];
 var specialKeyCodes = [
 	27, 9, 20, 17, 18, 93, 36, 37, 38, 39, 40, 144, 36, 8, 16, 30, 32, 13, 91, 92,
 	224, 225,
-]; // list of all keycodes for keys we typically want to ignore
-var punctuation = localStorage.getItem("punctuation") || ""; // this contains punctuation to include in our test sets. Set to empty at first
-var requiredLetters = ""; //levelDictionaries[currentLayout]['lvl'+currentLevel]+punctuation;; // keeps track of letters that still need to be used in the current level
-var initialCustomKeyboardState = ""; // saves a temporary copy of a keyboard layout that a user can return to by discarding changes
-var initialCustomLevelsState = ""; // saves a temporary copy of custom levels that a user can return to by discarding changes
+];
+var requiredLetters = "";
+
+// Get state from StateManager
+var scoreMax = StateManager.get('scoreMax') || 50;
+var currentLevel = StateManager.get('currentLevel') || 1;
+var onlyLower = StateManager.get('onlyLower') !== false;
+var currentLayout = StateManager.get('currentLayout') || "colemak";
+var currentKeyboard = StateManager.get('currentKeyboard') || "ansi";
+var fullSentenceModeEnabled = StateManager.get('fullSentenceModeEnabled') === "true";
+var requireBackspaceCorrection = StateManager.get('requireBackspaceCorrection') !== false;
+var timeLimitMode = StateManager.get('timeLimitMode') === "true";
+var wordScrollingMode = StateManager.get('wordScrollingMode') !== false;
+var showCheatsheet = StateManager.get('showCheatsheet') !== false;
+var playSoundOnClick = StateManager.get('playSoundOnClick') === "true";
+var playSoundOnError = StateManager.get('playSoundOnError') === "true";
+var punctuation = StateManager.get('punctuation') || "";
+
+// Get layout and dictionary from LayoutService
+var keyboardMap = layoutMaps["colemak"];
+var letterDictionary = levelDictionaries["colemak"];
+var initialCustomKeyboardState = "";
+var initialCustomLevelsState = "";
 
 // preference menu dom elements
 var preferenceButton = document.querySelector(".preferenceButton"),
@@ -114,12 +105,12 @@ var preferenceButton = document.querySelector(".preferenceButton"),
 	wordLimitModeButton = document.querySelector(".wordLimitModeButton"),
 	wordLimitModeInput = document.querySelector(".wordLimitModeInput"),
 	timeLimitModeButton = document.querySelector(".timeLimitModeButton"),
-	timeLimitModeInput = document.querySelector(".timeLimitModeInput");
-(wordScrollingModeButton = document.querySelector(".wordScrollingModeButton")),
-	(punctuationModeButton = document.querySelector(".punctuationModeButton")),
-	(showCheatsheetButton = document.querySelector(".showCheatsheetButton"));
-playSoundOnClickButton = document.querySelector(".playSoundOnClick");
-playSoundOnErrorButton = document.querySelector(".playSoundOnError");
+	timeLimitModeInput = document.querySelector(".timeLimitModeInput"),
+	wordScrollingModeButton = document.querySelector(".wordScrollingModeButton"),
+	punctuationModeButton = document.querySelector(".punctuationModeButton"),
+	showCheatsheetButton = document.querySelector(".showCheatsheetButton"),
+	playSoundOnClickButton = document.querySelector(".playSoundOnClick"),
+	playSoundOnErrorButton = document.querySelector(".playSoundOnError");
 
 start();
 init();
@@ -145,7 +136,7 @@ function start() {
 	}
 
 	// if true, user keyboard input will be mapped to the chosen layout. No mapping otherwise
-	if (localStorage.getItem("keyRemapping") === "true") {
+	if (StateManager.get('keyRemapping') === "true") {
 		mappingStatusButton.checked = "checked";
 		mappingStatusText.innerText = "on";
 	}
@@ -164,7 +155,7 @@ function start() {
 	playSoundOnClickButton.checked = playSoundOnClick;
 	playSoundOnErrorButton.checked = playSoundOnError;
 
-	if (localStorage.getItem("preferenceMenu")) {
+	if (StorageService.get("preferenceMenu")) {
 		openMenu();
 	}
 
@@ -222,12 +213,12 @@ input.addEventListener("keydown", (e) => {
 
 function openMenu() {
 	preferenceMenu.style.right = 0;
-	localStorage.setItem("preferenceMenu", "open");
+	StorageService.set("preferenceMenu", "open");
 }
 
 function closeMenu() {
 	preferenceMenu.style.right = "-37vh";
-	localStorage.removeItem("preferenceMenu");
+	StorageService.remove("preferenceMenu");
 }
 
 // close preference menu on escape key. While we're at it, also close custom
@@ -259,16 +250,13 @@ closePreferenceButton.addEventListener("click", () => {
 // capital letters allowed
 capitalLettersAllowed.addEventListener("click", () => {
 	onlyLower = !onlyLower;
-	localStorage.setItem("onlyLower", onlyLower);
+	StorageService.set("onlyLower", onlyLower);
 	reset();
 });
 
 requireBackspaceCorrectionToggle.addEventListener("click", () => {
 	requireBackspaceCorrection = !requireBackspaceCorrection;
-	localStorage.setItem(
-		"requireBackspaceCorrection",
-		requireBackspaceCorrection,
-	);
+	StorageService.set("requiredLetters", requiredLetters);
 	reset();
 });
 
@@ -279,7 +267,7 @@ function toggleFullSentenceModeUI() {
 
 fullSentenceModeToggle.addEventListener("click", () => {
 	fullSentenceModeEnabled = !fullSentenceModeEnabled;
-	localStorage.setItem("fullSentenceModeEnabled", fullSentenceModeEnabled);
+	StorageService.set("fullSentenceModeEnabled", fullSentenceModeEnabled);
 	toggleFullSentenceModeUI();
 	if (fullSentenceModeEnabled) {
 		switchLevel(8);
@@ -314,7 +302,7 @@ timeLimitModeButton.addEventListener("click", () => {
 		// change mode logic here
 		timeLimitMode = true;
 		toggleTimeLimitModeUI();
-		localStorage.setItem("timeLimitMode", timeLimitMode);
+	StorageService.set("timeLimitMode", timeLimitMode);
 		reset();
 	}
 });
@@ -361,7 +349,7 @@ wordLimitModeButton.addEventListener("click", () => {
 		timeLimitModeInput.classList.toggle("noDisplay");
 		wordLimitModeInput.classList.toggle("noDisplay");
 
-		localStorage.setItem("timeLimitMode", timeLimitMode);
+	StorageService.set("timeLimitMode", timeLimitMode);
 
 		reset();
 	}
@@ -380,7 +368,7 @@ wordLimitModeInput.addEventListener("change", () => {
 		wordLimitModeInput.value = 10;
 	}
 
-	localStorage.setItem("scoreMax", scoreMax);
+	StorageService.set("scoreMax", scoreMax);
 
 	reset();
 });
@@ -394,7 +382,7 @@ function toggleWordScrollingModeUI() {
 
 wordScrollingModeButton.addEventListener("click", () => {
 	wordScrollingMode = !wordScrollingMode;
-	localStorage.setItem("wordScrollingMode", wordScrollingMode);
+	StorageService.set("wordScrollingMode", wordScrollingMode);
 	toggleWordScrollingModeUI();
 	reset();
 });
@@ -410,7 +398,7 @@ punctuationModeButton.addEventListener("click", () => {
 		punctuation = "";
 	}
 
-	localStorage.setItem("punctuation", punctuation);
+	StorageService.set("punctuation", punctuation);
 
 	createTestSets();
 	updateCheatsheetStyling(currentLevel);
@@ -428,19 +416,19 @@ showCheatsheetButton.addEventListener("click", () => {
 	}
 
 	showCheatsheet = !showCheatsheet;
-	localStorage.setItem("showCheatsheet", showCheatsheet);
+	StorageService.set("showCheatsheet", showCheatsheet);
 });
 
 // play sound on click toggle
 playSoundOnClickButton.addEventListener("click", () => {
 	playSoundOnClick = !playSoundOnClick;
-	localStorage.setItem("playSoundOnClick", playSoundOnClick);
+	StorageService.set("playSoundOnClick", playSoundOnClick);
 });
 
 // play sound on error toggle
 playSoundOnErrorButton.addEventListener("click", () => {
 	playSoundOnError = !playSoundOnError;
-	localStorage.setItem("playSoundOnError", playSoundOnError);
+	StorageService.set("playSoundOnError", playSoundOnError);
 });
 
 /*______________________preference menu______________________*/
@@ -449,53 +437,14 @@ playSoundOnErrorButton.addEventListener("click", () => {
 /*___________________________________________________________*/
 /*___________________________sound___________________________*/
 
-const errorSound = new Audio("sound/error.wav");
-
-const clickSounds = [
-	{
-		sounds: [new Audio("sound/click1.wav"), new Audio("sound/click1.wav")],
-		counter: 0,
-	},
-	{
-		sounds: [new Audio("sound/click2.wav"), new Audio("sound/click2.wav")],
-		counter: 0,
-	},
-	{
-		sounds: [new Audio("sound/click3.wav"), new Audio("sound/click3.wav")],
-		counter: 0,
-	},
-	{
-		sounds: [new Audio("sound/click4.wav"), new Audio("sound/click4.wav")],
-		counter: 0,
-	},
-	{
-		sounds: [new Audio("sound/click5.wav"), new Audio("sound/click5.wav")],
-		counter: 0,
-	},
-	{
-		sounds: [new Audio("sound/click6.wav"), new Audio("sound/click6.wav")],
-		counter: 0,
-	},
-];
-
 function playClickSound() {
 	if (!playSoundOnClick) return;
-
-	const rand = Math.floor(Math.random() * 6);
-	const randomSound = clickSounds[rand];
-
-	// the duplicated sounds are used to prevent the sound from cutting off
-	randomSound.counter++;
-	if (randomSound.counter === 2) randomSound.counter = 0;
-
-	randomSound.sounds[randomSound.counter].currentTime = 0;
-	randomSound.sounds[randomSound.counter].play();
+	SoundService.playClickSound();
 }
 
 function playErrorSound() {
 	if (!playSoundOnError) return;
-	errorSound.currentTime = 0;
-	errorSound.play();
+	SoundService.playErrorSound();
 }
 
 /*___________________________sound___________________________*/
@@ -611,10 +560,11 @@ function updateLayoutUI() {
 	}
 
 	// change keyboard map and key dictionary
-	keyboardMap = layoutMaps[currentLayout];
+	LayoutService.setLayout(currentLayout);
+	keyboardMap = LayoutService.getKeyboardMap();
 	console.log(currentLayout);
 	console.log(currentKeyboard);
-	letterDictionary = levelDictionaries[currentLayout];
+	letterDictionary = LayoutService.getLevelDictionary();
 
 	if (currentLayout === "custom") {
 		customUIKeyInput.focus();
@@ -624,7 +574,7 @@ function updateLayoutUI() {
 // listens for layout change
 layout.addEventListener("change", (e) => {
 	currentLayout = layout.value;
-	localStorage.setItem("currentLayout", currentLayout);
+	StorageService.set("currentLayout", currentLayout);
 	updateLayoutUI();
 	// reset everything
 	init();
@@ -633,7 +583,7 @@ layout.addEventListener("change", (e) => {
 // listens for keyboard change
 keyboard.addEventListener("change", (e) => {
 	currentKeyboard = keyboard.value;
-	localStorage.setItem("currentKeyboard", currentKeyboard);
+	StorageService.set("currentKeyboard", currentKeyboard);
 	updateLayoutUI();
 	// reset everything
 	init();
@@ -647,6 +597,8 @@ openUIButton.addEventListener("click", () => {
 // called whenever a user opens the custom editor. Sets correct displays and saves an initial state
 // of the keyboard to refer back to if the user wants to discard changes
 function startCustomKeyboardEditing() {
+	const layoutMaps = typeof layoutMaps !== 'undefined' ? layoutMaps : {};
+	const levelDictionaries = typeof levelDictionaries !== 'undefined' ? levelDictionaries : {};
 	initialCustomKeyboardState = Object.assign({}, layoutMaps["custom"]);
 	initialCustomLevelsState = Object.assign({}, levelDictionaries["custom"]);
 	// customInput.style.display = 'flex';
@@ -1000,7 +952,7 @@ input.addEventListener("keydown", (e) => {
 	const char = e.code;
 
 	// prevent default char from being typed and replace new char from keyboard map
-	if (localStorage.getItem("keyRemapping") === "true") {
+	if (StateManager.get('keyRemapping') === "true") {
 		if (char in keyboardMap && gameOn) {
 			if (!e.shiftKey) {
 				input.value += keyboardMap[char];
@@ -1232,7 +1184,7 @@ for (button of buttons) {
 
 // switches to level
 function switchLevel(lev) {
-	localStorage.setItem("currentLevel", lev);
+	StateManager.set("currentLevel", lev);
 	console.log(lev);
 	// stop timer
 	gameOn = false;
@@ -1322,14 +1274,14 @@ function updateCheatsheetStyling(level) {
 
 // listener for keyboard mapping toggle switch
 mappingStatusButton.addEventListener("click", () => {
-	if (localStorage.getItem("keyRemapping") === "true") {
+	if (StateManager.get('keyRemapping') === "true") {
 		// change the status text
 		mappingStatusText.innerText = "off";
-		localStorage.setItem("keyRemapping", false);
+		StateManager.set('keyRemapping', false);
 	} else {
 		// change the status text
 		mappingStatusText.innerText = "on";
-		localStorage.setItem("keyRemapping", true);
+		StateManager.set('keyRemapping', true);
 	}
 
 	// change focus back to input
@@ -1382,7 +1334,7 @@ function reset() {
 	score = -1;
 
 	requiredLetters = (
-		levelDictionaries[currentLayout]["lvl" + currentLevel] + punctuation
+		(LayoutService.getLevelLetters(currentLevel) || '') + punctuation
 	).split("");
 
 	// reset clock
@@ -1540,9 +1492,10 @@ function generateLine(maxWords) {
 		return str;
 	}
 
-	if (wordLists["lvl" + currentLevel].length > 0) {
+	const words = WordService.getWordList(currentLevel);
+	if (words && words.length > 0) {
 		const startingLetters =
-			levelDictionaries[currentLayout]["lvl" + currentLevel] + punctuation;
+			(LayoutService.getLevelLetters(currentLevel) || '') + punctuation;
 
 		//requiredLetters = startingLetters.split('');
 
@@ -1557,10 +1510,8 @@ function generateLine(maxWords) {
 				break;
 			}
 
-			const rand = Math.floor(
-				Math.random() * wordLists["lvl" + currentLevel].length,
-			);
-			let wordToAdd = wordLists["lvl" + currentLevel][rand];
+			const rand = Math.floor(Math.random() * words.length);
+			let wordToAdd = words[rand];
 
 			//console.log('in circuit ' + circuitBreaker);
 			if (circuitBreaker > 12000) {
@@ -1745,29 +1696,7 @@ function clearCurrentLevelStyle() {
 
 // set the word list for each level
 function createTestSets() {
-	const objKeys = Object.keys(wordLists); // the level keys of each of the wordLists
-	let includedLetters = punctuation; // the list of letters to be included in each level
-
-	// for each level, add new letters to the test set and create a new list
-	for (let i = 0; i < objKeys.length; i++) {
-		let requiredLetters;
-
-		// if 'all words' on a custom layout, don't add letters from the dictionary, because
-		// level 7 contains the whole alphabet, and the user might not have asigned every letter to
-		// a key. Instead, this level should be the same as the previous, just with every letter required
-		if (currentLayout !== "custom" || i !== 6) {
-			requiredLetters =
-				levelDictionaries[currentLayout]["lvl" + (i + 1)] + punctuation;
-			includedLetters += letterDictionary[objKeys[i]];
-		} else {
-			requiredLetters = includedLetters;
-		}
-
-		wordLists[objKeys[i]] = [];
-		//console.log('level ' +(i+1) + ": " + wordLists[objKeys[i]]);
-		wordLists[objKeys[i]] = generateList(includedLetters, requiredLetters);
-		// if(i === 6) console.log('level ' +(i+1) + ": " + wordLists[objKeys[i]]);
-	}
+	WordService.createTestSets(currentLayout, punctuation);
 }
 
 // fixes a small bug in mozilla
