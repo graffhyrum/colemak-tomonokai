@@ -114,13 +114,6 @@ input[type="checkbox"] {
 	margin-left: 2vh;
 }
 
-li input {
-	font-size: 1.7vh;
-	width: 5vh;
-	height: 1.7vh;
-	margin: 0 1.5vh 0 auto;
-}
-
 /* Typography */
 h1 {
 	font-size: 3.5vmax;
@@ -148,15 +141,6 @@ nav {
 	flex: 2 1 1000px;
 }
 
-/* Navigation Buttons */
-nav button {
-	flex: 1 1 11vh;
-	margin: 0.5vh auto;
-	width: 11vh;
-	font-size: 1.5vh;
-	color: var(--text-color);
-}
-
 /* Buttons */
 button {
 	background-color: transparent;
@@ -164,6 +148,15 @@ button {
 	color: var(--text-color);
 	cursor: pointer;
 	letter-spacing: 3px;
+}
+
+/* Navigation Buttons */
+nav button {
+	flex: 1 1 11vh;
+	margin: 0.5vh auto;
+	width: 11vh;
+	font-size: 1.5vh;
+	color: var(--text-color);
 }
 
 button:hover {
@@ -260,6 +253,13 @@ input {
 	font-size: 4vmin;
 	width: 80%;
 	margin: 2.5vh auto 3vh auto;
+}
+
+li input {
+	font-size: 1.7vh;
+	width: 5vh;
+	height: 1.7vh;
+	margin: 0 1.5vh 0 auto;
 }
 
 /* Score Display */
