@@ -9555,7 +9555,7 @@ function getPosition(target, subString, n) {
 // pattern (an array of chars)
 function contains(target, pattern) {
 	let value = 0;
-	pattern.forEach(function (letter) {
+	pattern.forEach((letter) => {
 		value = value + target.includes(letter);
 	});
 	return value >= 1;
@@ -9564,7 +9564,7 @@ function contains(target, pattern) {
 // returns true if target contains ALL letters in pattern, which is an array of chars
 function containsAll(target, pattern) {
 	let value = 0;
-	pattern.forEach(function (letter) {
+	pattern.forEach((letter) => {
 		value = value + target.includes(letter);
 	});
 	return value >= pattern.length;
@@ -9574,7 +9574,7 @@ function clearLists() {}
 
 // generates a list of words containing only the given letters
 function generateList(lettersToInclude, requiredLetters) {
-	let excludes = [];
+	const excludes = [];
 
 	// create the list of letters to exclude from final list so
 	// at the end you have only desired letters
@@ -9584,7 +9584,7 @@ function generateList(lettersToInclude, requiredLetters) {
 		}
 	});
 
-	let wordList = [];
+	const wordList = [];
 
 	masterList.forEach((word) => {
 		if (

@@ -651,7 +651,7 @@ function startCustomKeyboardEditing() {
 	initialCustomLevelsState = Object.assign({}, levelDictionaries["custom"]);
 	// customInput.style.display = 'flex';
 	customInput.style.transform = "scaleX(1)";
-	let k = document.querySelector(".defaultSelectedKey");
+	const k = document.querySelector(".defaultSelectedKey");
 	selectInputKey(k);
 }
 
@@ -694,7 +694,7 @@ discardButton.addEventListener("click", () => {
 // general click listener
 document.addEventListener(
 	"click",
-	function (e) {
+	(e) => {
 		// close preference menu if click is anywhere other than the preference menu
 		let k = e.target.closest(".preferenceMenu");
 		if (!k) {
@@ -742,7 +742,7 @@ document.addEventListener(
 
 			// remove styling from all keys that don't correspond with selected level button
 			// add styling to keys that correspond with selected level button
-			let allCKeys = document.querySelectorAll(".cKey");
+			const allCKeys = document.querySelectorAll(".cKey");
 			for (n of allCKeys) {
 				if (
 					n.children[0].innerHTML !== 0 &&
@@ -763,7 +763,7 @@ document.addEventListener(
 // listener for custom input field. Updates on any input, clearing the current selected
 // input key, and setting the new value
 customUIKeyInput.addEventListener("keydown", (e) => {
-	let k = document.querySelector(".selectedInputKey");
+	const k = document.querySelector(".selectedInputKey");
 
 	// if there was already a value for this key, remove it from all levels
 	if (k.children[0].innerHTML !== "_") {
@@ -786,7 +786,7 @@ customUIKeyInput.addEventListener("keydown", (e) => {
 		e.keyCode !== 38 &&
 		e.keyCode !== 40
 	) {
-		let currentUILev = document.querySelector(
+		const currentUILev = document.querySelector(
 			".currentCustomUILevel",
 		).innerHTML;
 		k.children[0].innerHTML = e.key;
@@ -852,9 +852,9 @@ customUIKeyInput.addEventListener("keydown", (e) => {
 
 // given a key object, k, remove a value of the letter on k from all levels
 function removeKeyFromLevels(k) {
-	let lvls = Object.keys(levelDictionaries["custom"]);
+	const lvls = Object.keys(levelDictionaries["custom"]);
 	for (lvl of lvls) {
-		let keyCode = k.id.toString().replace("custom", "");
+		const keyCode = k.id.toString().replace("custom", "");
 		//console.log(levelDictionaries.custom.lvl[keyCode]);
 		// replace any instances of letter previously found on key
 		levelDictionaries["custom"][lvl] = levelDictionaries["custom"][lvl].replace(
@@ -872,10 +872,10 @@ function loadCustomLayout(newCustomLayout) {
 	layoutMaps.custom = Object.assign({}, newCustomLayout);
 	keyboardMap = layoutMaps.custom;
 
-	let customKeys = document.querySelectorAll(".cKey");
+	const customKeys = document.querySelectorAll(".cKey");
 	// load letters onto the custom ui input keyboard
 	customKeys.forEach((cKey) => {
-		let currentKeyName = cKey.id.substring(6);
+		const currentKeyName = cKey.id.substring(6);
 		// console.log(currentKeyName);
 
 		// if the value of the new layout key is not undefined, set it to the corresponding dom element
@@ -910,7 +910,7 @@ function switchSelectedInputKey(direction) {
 		k = document.querySelector(".selectedInputKey").previousElementSibling;
 	} else if (direction === "up") {
 		let keyPosition;
-		let currentKey = document.querySelector(".selectedInputKey");
+		const currentKey = document.querySelector(".selectedInputKey");
 		for (let i = 0; i < currentKey.parentElement.children.length; i++) {
 			if (currentKey.parentElement.children[i] === currentKey) {
 				console.log("found! " + i);
@@ -923,7 +923,7 @@ function switchSelectedInputKey(direction) {
 				.previousElementSibling.children[keyPosition];
 	} else if (direction === "down") {
 		let keyPosition;
-		let currentKey = document.querySelector(".selectedInputKey");
+		const currentKey = document.querySelector(".selectedInputKey");
 		for (let i = 0; i < currentKey.parentElement.children.length; i++) {
 			if (currentKey.parentElement.children[i] === currentKey) {
 				console.log("found! " + i);
@@ -961,7 +961,7 @@ function switchSelectedInputKey(direction) {
 
 // remove 'selectedInputKey' from any keys previously clicked
 function clearSelectedInput() {
-	let k = document.querySelector(".selectedInputKey");
+	const k = document.querySelector(".selectedInputKey");
 	if (k) {
 		k.classList.remove("selectedInputKey");
 		k.children[0].classList.remove("pulse");
@@ -997,7 +997,7 @@ input.addEventListener("keydown", (e) => {
 	e.preventDefault();
 
 	// this is the actual character typed by the user
-	let char = e.code;
+	const char = e.code;
 
 	// prevent default char from being typed and replace new char from keyboard map
 	if (localStorage.getItem("keyRemapping") === "true") {
@@ -1204,7 +1204,7 @@ input.addEventListener("keydown", (e) => {
 // returns true if the letters typed SO FAR are correct
 function checkAnswerToIndex() {
 	// user input
-	let inputVal = input.value;
+	const inputVal = input.value;
 
 	// console.log('checking input ' +inputVal.slice(0,letterIndex) + "!");
 	// console.log(correctAnswer.slice(0,letterIndex)+ "!");
@@ -1213,7 +1213,7 @@ function checkAnswerToIndex() {
 
 // add event listeners to level buttons
 for (button of buttons) {
-	let b = button;
+	const b = button;
 	b.addEventListener("click", () => {
 		let lev = b.innerHTML.replace(/ /, "").toLowerCase();
 		// int representation of level we are choosing
@@ -1271,7 +1271,7 @@ function switchLevel(lev) {
 // then styling those in active levels. takes the current level (int) as a parameter
 function updateCheatsheetStyling(level) {
 	// loop through all buttons
-	let allKeys = document.querySelectorAll(".key");
+	const allKeys = document.querySelectorAll(".key");
 	for (n of allKeys) {
 		//reset all keys to default
 		n.classList.add("inactive");
@@ -1285,14 +1285,14 @@ function updateCheatsheetStyling(level) {
 
 		// set of keys to loop through the letter dictionary, which
 		// contains info about which levels each key appears at
-		let objKeys = Object.keys(letterDictionary);
+		const objKeys = Object.keys(letterDictionary);
 
 		// check active levels and apply styling
 		for (let i = 0; i < level; i++) {
 			// the letter that will appear on the key
-			let letter = keyboardMap[n.id];
+			const letter = keyboardMap[n.id];
 
-			let lettersToCheck = letterDictionary[objKeys[i]] + punctuation;
+			const lettersToCheck = letterDictionary[objKeys[i]] + punctuation;
 
 			if (lettersToCheck.includes(letter)) {
 				n.innerHTML =
@@ -1427,7 +1427,7 @@ function reset() {
 
 // generates a new line, adds it to prompt, and to answerWordArray
 function addLineToPrompt() {
-	let lineToAdd = generateLine(scoreMax - score - answerWordArray.length - 1);
+	const lineToAdd = generateLine(scoreMax - score - answerWordArray.length - 1);
 	answerString += lineToAdd;
 	prompt.innerHTML += convertLineToHTML(lineToAdd);
 	answerWordArray = answerWordArray.concat(lineToAdd.split(" "));
@@ -1464,7 +1464,7 @@ function convertLineToHTML(letters) {
 function checkAnswer() {
 	// console.log('correct answer: ' + correctAnswer);
 	// user input
-	let inputVal = input.value;
+	const inputVal = input.value;
 
 	return inputVal === correctAnswer;
 }
@@ -1516,7 +1516,7 @@ function generateLine(maxWords) {
 
 	if (fullSentenceMode) {
 		// let rand = Math.floor(Math.random()*35);
-		let rand = 0;
+		const rand = 0;
 		if (sentenceStartIndex === -1) {
 			sentenceStartIndex = getPosition(sentence, ".", rand) + 1;
 			sentenceEndIndex =
@@ -1541,7 +1541,7 @@ function generateLine(maxWords) {
 	}
 
 	if (wordLists["lvl" + currentLevel].length > 0) {
-		let startingLetters =
+		const startingLetters =
 			levelDictionaries[currentLayout]["lvl" + currentLevel] + punctuation;
 
 		//requiredLetters = startingLetters.split('');
@@ -1557,7 +1557,7 @@ function generateLine(maxWords) {
 				break;
 			}
 
-			let rand = Math.floor(
+			const rand = Math.floor(
 				Math.random() * wordLists["lvl" + currentLevel].length,
 			);
 			let wordToAdd = wordLists["lvl" + currentLevel][rand];
@@ -1608,7 +1608,7 @@ function generateLine(maxWords) {
 			}
 		}
 	} else {
-		let startingLetters =
+		const startingLetters =
 			levelDictionaries[currentLayout]["lvl" + currentLevel] + punctuation;
 		// if there are no words with the required letters, all words should be set to the
 		// current list of required letters
@@ -1636,10 +1636,10 @@ function generateLine(maxWords) {
 
 // creates a random jumble of letters to be used when no words are found for a target letter
 function randomLetterJumble() {
-	let randWordLength = Math.floor(Math.random() * 5) + 1;
+	const randWordLength = Math.floor(Math.random() * 5) + 1;
 	let jumble = "";
 	for (let i = 0; i < randWordLength; i++) {
-		let rand = Math.floor(
+		const rand = Math.floor(
 			Math.random() *
 				levelDictionaries[currentLayout]["lvl" + currentLevel].length,
 		);
@@ -1663,7 +1663,7 @@ function removeIncludedLetters(requiredLetters, word) {
 
 // if 'word' contains an uppercase letter, return true. Else return false
 function containsUpperCase(word) {
-	let upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	const upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	let result = false;
 	word.split("").forEach((letter) => {
 		if (upperCase.includes(letter)) {
@@ -1703,7 +1703,7 @@ function handleCorrectWord() {
 		}
 	}
 
-	let cur = document.querySelector("#id" + (score + 1));
+	const cur = document.querySelector("#id" + (score + 1));
 
 	if (wordScrollingMode) {
 		deleteLatestWord = true;
@@ -1745,7 +1745,7 @@ function clearCurrentLevelStyle() {
 
 // set the word list for each level
 function createTestSets() {
-	let objKeys = Object.keys(wordLists); // the level keys of each of the wordLists
+	const objKeys = Object.keys(wordLists); // the level keys of each of the wordLists
 	let includedLetters = punctuation; // the list of letters to be included in each level
 
 	// for each level, add new letters to the test set and create a new list
