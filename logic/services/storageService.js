@@ -175,6 +175,7 @@ const StorageService = (function() {
 		get,
 		set,
 		remove,
+		removeItem: remove, // Alias for backward compatibility
 		exists,
 		clear,
 		getAllKeys,

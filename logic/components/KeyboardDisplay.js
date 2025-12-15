@@ -439,7 +439,7 @@ const KeyboardDisplay = (function() {
 	function updateKeyboardHTML(layoutName) {
 		if (!_elements.cheatsheet) return;
 
-		if (LayoutService && LayoutService.getKeyboardHTML) {
+		if (typeof LayoutService !== 'undefined' && LayoutService.getKeyboardHTML) {
 			const keyboardHTML = layoutName === 'custom' ? 
 				LayoutService.getCustomKeyboardHTML() : 
 				LayoutService.getKeyboardHTML();
