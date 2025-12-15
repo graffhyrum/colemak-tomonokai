@@ -10,12 +10,42 @@ var wordLists = {
 
 var alphabet = "abcdefghijklmnopqrstuvwxyz',.-";
 
-// generate new list that includes certain letters and excludes others
-var customList = [];
+// Trie node structure
+function TrieNode() {
+	this.children = {};
+	this.isWordEnd = false;
+}
 
-// returns the index of the nth occurance of a char or string
-function getPosition(target, subString, n) {
-	return target.split(subString, n).join(subString).length;
+// Build trie from master list
+var trieRoot = null;
+function buildTrie(words) {
+	const root = new TrieNode();
+	for (const word of words) {
+		let node = root;
+		for (const char of word.toLowerCase()) {
+			if (!node.children[char]) {
+				node.children[char] = new TrieNode();
+			}
+			node = node.children[char];
+		}
+		node.isWordEnd = true;
+	}
+	return root;
+}
+
+// Initialize trie on load
+function initializeTrie() {
+	if (typeof masterList !== 'undefined' && masterList && masterList.length > 0) {
+		trieRoot = buildTrie(masterList);
+	}
+}
+
+// Initialize if masterList is already available, otherwise wait for it
+if (typeof masterList !== 'undefined') {
+	initializeTrie();
+} else {
+	// In case masterList loads after this script
+	setTimeout(initializeTrie, 100);
 }
 
 // returns true if target (a string) contains at least one letter from
@@ -28,28 +58,29 @@ function contains(target, pattern) {
 	return value >= 1;
 }
 
-// generates a list of words containing only the given letters
+// generates a list of words containing only the given letters using trie + DFS
 function generateList(lettersToInclude, requiredLetters) {
-	const excludes = [];
-
-	// create the list of letters to exclude from final list so
-	// at the end you have only desired letters
-	alphabet.split("").forEach((l) => {
-		if (!lettersToInclude.includes(l)) {
-			excludes.push(l);
+	const allowedSet = new Set(lettersToInclude);
+	const requiredSet = new Set(requiredLetters.split(""));
+	const results = [];
+	
+	function dfs(node, path, hasRequired) {
+		// Prune if path contains excluded letters
+		if (path.length > 0 && !allowedSet.has(path[path.length - 1])) {
+			return;
 		}
-	});
-
-	const wordList = [];
-
-	masterList.forEach((word) => {
-		if (
-			!contains(word.toLowerCase(), excludes) &&
-			contains(word, requiredLetters.split(""))
-		) {
-			wordList.push(word);
+		
+		// Add word if it meets criteria
+		if (node.isWordEnd && path.length > 0 && hasRequired) {
+			results.push(path);
 		}
-	});
-
-	return wordList;
+		
+		// Continue exploring valid children
+		for (const [char, childNode] of Object.entries(node.children)) {
+			dfs(childNode, path + char, hasRequired || requiredSet.has(char));
+		}
+	}
+	
+	dfs(trieRoot, "", false);
+	return results;
 }
