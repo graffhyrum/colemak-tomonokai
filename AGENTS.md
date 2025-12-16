@@ -32,6 +32,11 @@
 - **Imports**: Auto-organize with Biome assist
 - **Line endings**: Follow existing patterns
 
+### Type Safety & Assertions
+- **Non-null assertions**: Use `assertDefined()` from `tests/util/assertDefined.ts` instead of `!` operator for runtime type safety in tests
+- **Import pattern**: `import { assertDefined } from "./util/assertDefined";`
+- **Usage**: Add `assertDefined(variable);` before accessing properties to ensure runtime validation
+
 ### TypeScript Configuration
 - **Target**: ESNext with DOM lib
 - **JSX**: react-jsx transform
