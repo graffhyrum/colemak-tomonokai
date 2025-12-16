@@ -31,3 +31,28 @@ test("handles typing mistakes correctly", async ({ homePage }) => {
 	await homePage.assertions.typingArea.mistakeIndicators(0);
 	await homePage.assertions.typingArea.inputNotClearedOnMistake();
 });
+
+test("prompt does not slide too far in word scrolling mode", async ({
+	homePage,
+}) => {
+	// Ensure word scrolling mode is enabled (not paragraph mode)
+	await homePage.actions.preferences.toggleWordScrollingMode();
+	await homePage.actions.preferences.toggleWordScrollingMode(); // Toggle twice to ensure enabled
+	await homePage.actions.preferences.setWordLimit(10);
+	await homePage.actions.typingArea.focus();
+
+	// Type through several words to trigger prompt sliding
+	for (let i = 0; i < 5; i++) {
+		const currentWord = await homePage.actions.typingArea.getWord(0);
+		if (!currentWord?.trim()) continue;
+
+		await homePage.actions.typingArea.typeWord(currentWord.trim());
+		await homePage.actions.typingArea.pressSpace();
+
+		// Wait for sliding animation to complete
+		await homePage.page.waitForTimeout(200);
+
+		// Verify that the next word is fully visible (completed words are faded)
+		await homePage.assertions.typingArea.nextWordFullyVisible(i + 1);
+	}
+});

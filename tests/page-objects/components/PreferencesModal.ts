@@ -25,9 +25,15 @@ function createPreferencesModalComponent(page: Page) {
 
 			setWordLimit: async (wordLimit: number) => {
 				await locators.preferenceButton.click();
-				await locators.spinButton.click();
 				await locators.spinButton.fill(wordLimit.toString());
 				await locators.spinButton.press("Enter");
+				await locators.closePreferenceButton.click();
+			},
+
+			toggleWordScrollingMode: async () => {
+				await locators.preferenceButton.click();
+				const wordScrollingButton = page.locator(".wordScrollingModeButton");
+				await wordScrollingButton.click();
 				await locators.closePreferenceButton.click();
 			},
 		},

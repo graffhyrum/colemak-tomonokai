@@ -7,6 +7,8 @@ function createTypingAreaComponent(page: Page) {
 		word: (id: number) => page.locator(`.prompt #id${id}.word`),
 		firstLetterSpan: (wordIndex: number) =>
 			page.locator(`.prompt #id${wordIndex}.word span:first-child`),
+		characterSpans: (wordIndex: number) =>
+			page.locator(`.prompt #id${wordIndex}.word span`),
 	} as const satisfies Record<string, Locator | ((id: number) => Locator)>;
 
 	const getWords = async (...ids: number[]) => {
@@ -118,6 +120,27 @@ function createTypingAreaComponent(page: Page) {
 
 				const nextWord = await locators.word(wordIndex + 1).textContent();
 				expect(nextWord).not.toBe(currentWord);
+			},
+
+			wordHidden: async (wordIndex: number) => {
+				await test.step("assert word is deleted", async () => {
+					// Check that the completed word has been removed from the DOM
+					const word = locators.word(wordIndex);
+					expect(word.count()).toBe(0);
+				});
+			},
+
+			nextWordFullyVisible: async (wordIndex: number) => {
+				await test.step("assert next word is fully visible", async () => {
+					const nextWord = locators.word(wordIndex);
+					await expect(nextWord).toBeVisible();
+					// Check that every character span of the word is fully visible
+					const spanLocator = locators.characterSpans(wordIndex);
+					const spans = await spanLocator.all();
+					for (const span of spans) {
+						await expect(span).toBeVisible();
+					}
+				});
 			},
 		},
 	} as const satisfies ComponentObject;

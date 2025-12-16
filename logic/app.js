@@ -91,6 +91,26 @@ let letterDictionary = levelDictionaries["colemak"];
 let initialCustomKeyboardState = "";
 let initialCustomLevelsState = "";
 
+// Dependencies for LevelService
+const levelServiceDependencies = {
+	StateManager,
+	setGameOn: (value) => gameOn = value,
+	clearCurrentLevelStyle,
+	setFullSentenceMode: (value) => fullSentenceMode = value,
+	setCurrentLevel: (value) => currentLevel = value,
+	reset,
+	updateCheatsheetStyling: (level) => CheatsheetService.updateCheatsheetStyling(level, { letterDictionary, keyboardMap, punctuation })
+};
+
+// Dependencies for CheatsheetService
+const cheatsheetServiceDependencies = {
+	letterDictionary,
+	keyboardMap,
+	punctuation
+};
+
+
+
 // preference menu dom elements
 let preferenceButton = document.querySelector(".preferenceButton"),
 	preferenceMenu = document.querySelector(".preferenceMenu"),
@@ -162,7 +182,7 @@ function start() {
 		document.querySelector(".cheatsheet").classList.add("noDisplay");
 	}
 
-	switchLevel(currentLevel);
+	LevelService.switchLevel(currentLevel, levelServiceDependencies);
 
 	updateLayoutUI();
 }
@@ -173,7 +193,7 @@ function start() {
 function init() {
 	createTestSets();
 	reset();
-	updateCheatsheetStyling(currentLevel);
+	CheatsheetService.updateCheatsheetStyling(currentLevel, cheatsheetServiceDependencies);
 }
 
 /*________________Timers and Listeners___________________*/
@@ -269,9 +289,9 @@ fullSentenceModeToggle.addEventListener("click", () => {
 	StorageService.set("fullSentenceModeEnabled", fullSentenceModeEnabled);
 	toggleFullSentenceModeUI();
 	if (fullSentenceModeEnabled) {
-		switchLevel(8);
+		LevelService.switchLevel(8, levelServiceDependencies);
 	} else {
-		switchLevel(1);
+		LevelService.switchLevel(1, levelServiceDependencies);
 	}
 	reset();
 });
@@ -400,7 +420,7 @@ punctuationModeButton.addEventListener("click", () => {
 	StorageService.set("punctuation", punctuation);
 
 	createTestSets();
-	updateCheatsheetStyling(currentLevel);
+	CheatsheetService.updateCheatsheetStyling(currentLevel, cheatsheetServiceDependencies);
 	reset();
 });
 
@@ -793,14 +813,17 @@ function checkAnswerToIndex() {
 }
 
 function handleLineDeletion() {
-	// removes first line on the first letter of the first word of a new line
+	// handle line transitions
 	if (deleteLatestWord) {
 		prompt.classList.remove("smoothScroll");
-		// delete last line fromt prompt and set the offset back to 0
-		prompt.firstChild.removeChild(prompt.firstChild.firstChild);
-		if (prompt.firstChild.children.length === 0) {
-			prompt.removeChild(prompt.firstChild);
+		if (!wordScrollingMode) {
+			// in paragraph mode, remove the completed line
+			prompt.firstChild.removeChild(prompt.firstChild.firstChild);
+			if (prompt.firstChild.children.length === 0) {
+				prompt.removeChild(prompt.firstChild);
+			}
 		}
+		// reset offset for new line
 		promptOffset = 0;
 		prompt.style.left = `-${promptOffset}px`;
 		deleteLatestWord = false;
@@ -978,98 +1001,13 @@ for (button of buttons) {
 		} else if (b.innerHTML === "Full Sentences") {
 			lev = 8;
 		}
-		switchLevel(lev);
+		LevelService.switchLevel(lev, levelServiceDependencies);
 	});
 }
 
-// switches to level
-function switchLevel(lev) {
-	StateManager.set("currentLevel", lev);
-	// stop timer
-	gameOn = false;
 
-	// clear input field
-	document.querySelector("#userInput").value = "";
 
-	// clear highlighted buttons
-	clearCurrentLevelStyle();
-	document.querySelector(".lvl" + lev).classList.add("currentLevel");
 
-	// set full sentence mode to true
-	if (lev === 8) {
-		fullSentenceMode = true;
-	} else {
-		fullSentenceMode = false;
-	}
-
-	if (lev === 8) {
-		lev = 7;
-	}
-
-	// window[] here allows us to select the variable levelN, instead of
-	// setting currentLevelList to a string
-	currentLevel = lev;
-
-	// reset everything
-	reset();
-
-	// take care of styling for the cheatsheet
-	updateCheatsheetStyling(lev);
-}
-
-// updates all styling for the cheatsheet by first resetting all keys,
-// then styling those in active levels. takes the current level (int) as a parameter
-function updateCheatsheetStyling(level) {
-	// loop through all buttons
-	const allKeys = document.querySelectorAll(".key");
-	for (n of allKeys) {
-		//reset all keys to default
-		n.classList.add("inactive");
-		n.classList.remove("active");
-		n.classList.remove("homeRow");
-		n.classList.remove("currentLevelKeys");
-		n.classList.remove("punctuation");
-		n.innerHTML = `
-			<span class='letter'></span>
-		`;
-
-		// set of keys to loop through the letter dictionary, which
-		// contains info about which levels each key appears at
-		const objKeys = Object.keys(letterDictionary);
-
-		// check active levels and apply styling
-		for (let i = 0; i < level; i++) {
-			// the letter that will appear on the key
-			const letter = keyboardMap[n.id];
-
-			const lettersToCheck = letterDictionary[objKeys[i]] + punctuation;
-
-			const containsLetter = lettersToCheck.includes(letter);
-			if (containsLetter) {
-				n.innerHTML =
-					`
-					<span class='letter'>` +
-					letter +
-					`</span>
-				`;
-				n.classList.remove("inactive");
-				if (punctuation.includes(letter)) {
-					n.classList.remove("active");
-					n.classList.add("punctuation");
-				} else if (i === 0) {
-					n.classList.add("homeRow");
-				} else if (i === 6) {
-					// all words selected
-				} else if (i === level - 1) {
-					n.classList.remove("active");
-					n.classList.add("currentLevelKeys");
-				} else {
-					n.classList.add("active");
-				}
-			}
-		}
-	}
-}
 
 // listener for keyboard mapping toggle switch
 mappingStatusButton.addEventListener("click", () => {
@@ -1216,6 +1154,60 @@ function checkAnswer() {
 	const inputVal = input.value;
 
 	return inputVal === correctAnswer;
+}
+
+// updates the correct answer and manipulates the dom
+// called every time a correct word is typed
+function handleCorrectWord() {
+	// make sure no 'incorrect' styling still exists
+	input.style.color = "black";
+
+	//remove the first word from the answer string
+	answerWordArray.shift();
+
+	if (
+		prompt.children[0].children.length - 1 === 0 ||
+		wordIndex >= prompt.children[0].children.length - 1
+	) {
+		console.log("new line " + prompt);
+		lineIndex++;
+
+		// when we reach the end of a line, generate a new one IF
+		// we are more than  2 lines from from the end. This ensures that
+		// no extra words are generated when we near the end of the test
+
+		addLineToPrompt();
+
+		//make the first line of the prompt transparent
+		if (!wordScrollingMode) {
+			prompt.removeChild(prompt.children[0]);
+			wordIndex = -1;
+		}
+	}
+
+	const cur = document.querySelector(`#id${score + 1}`);
+
+	if (wordScrollingMode) {
+		// update display
+		prompt.classList.add("smoothScroll");
+		// find the completed word
+		const completedWord = document.querySelector(`#id${score}.word`);
+		if (completedWord) {
+			// slide by the width of the completed word
+			promptOffset += completedWord.offsetWidth;
+			// move prompt left
+			prompt.style.left = `-${promptOffset}px`;
+			// make the completed word transparent (effectively "deleted" from view)
+			completedWord.style.opacity = '0';
+		}
+	} else {
+		// if in paragraph mode, increase word index
+		wordIndex++;
+	}
+
+	// save the correct answer to a variable before removing it
+	// from the answer string
+	correctAnswer = answerWordArray[0];
 }
 
 function endGame() {
@@ -1368,58 +1360,7 @@ function containsUpperCase(word) {
 	return result;
 }
 
-// updates the correct answer and manipulates the dom
-// called every time a correct word is typed
-function handleCorrectWord() {
-	// make sure no 'incorrect' styling still exists
-	input.style.color = "black";
 
-	//remove the first word from the answer string
-	answerWordArray.shift();
-
-	if (
-		prompt.children[0].children.length - 1 === 0 ||
-		wordIndex >= prompt.children[0].children.length - 1
-	) {
-		console.log("new line " + prompt);
-		lineIndex++;
-
-		// when we reach the end of a line, generate a new one IF
-		// we are more than  2 lines from from the end. This ensures that
-		// no extra words are generated when we near the end of the test
-
-		addLineToPrompt();
-
-		//make the first line of the prompt transparent
-		if (!wordScrollingMode) {
-			prompt.removeChild(prompt.children[0]);
-			wordIndex = -1;
-		}
-	}
-
-	const cur = document.querySelector(`#id${score + 1}`);
-
-	if (wordScrollingMode) {
-		deleteLatestWord = true;
-		// update display
-		prompt.classList.add("smoothScroll");
-		// set the offset value of the next word
-		promptOffset += prompt.children[0].children[0].offsetWidth;
-		// move prompt left
-		promptOffset += prompt.children[0].children[0].offsetWidth;
-		// move prompt left
-		prompt.style.left = `-${promptOffset}px`;
-		// make already typed words transparent
-		prompt.children[0].firstChild.style.opacity = 0;
-	} else {
-		// if in paragraph mode, increase word index
-		wordIndex++;
-	}
-
-	// save the correct answer to a variable before removing it
-	// from the answer string
-	correctAnswer = answerWordArray[0];
-}
 
 // updates the numerator and denominator of the scoretext on
 // the document
@@ -1481,7 +1422,7 @@ function handleCustomKeyAddition(e, k) {
 	// associate the key element with the current selected level
 
 	// this updates the main keyboard in real time. Could be ommited if performance needs a boost
-	updateCheatsheetStyling(currentLevel);
+	CheatsheetService.updateCheatsheetStyling(currentLevel, cheatsheetServiceDependencies);
 
 	// switch to next input key
 	switchSelectedInputKey("right");

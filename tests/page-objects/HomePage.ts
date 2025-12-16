@@ -42,6 +42,8 @@ function createHomePagePOM(page: Page) {
 				close: () => preferencesModal.actions.close(),
 				setWordLimit: (wordLimit: number) =>
 					preferencesModal.actions.setWordLimit(wordLimit),
+				toggleWordScrollingMode: () =>
+					preferencesModal.actions.toggleWordScrollingMode(),
 			},
 
 			testResults: {
@@ -63,6 +65,10 @@ function createHomePagePOM(page: Page) {
 					typingArea.assertions.inputNotClearedOnMistake(),
 				wordCompletion: (wordIndex: number, currentWord: string) =>
 					typingArea.assertions.wordCompletion(wordIndex, currentWord),
+				wordHidden: (wordIndex: number) =>
+					typingArea.assertions.wordHidden(wordIndex),
+				nextWordFullyVisible: (wordIndex: number) =>
+					typingArea.assertions.nextWordFullyVisible(wordIndex),
 			},
 
 			testResults: {
