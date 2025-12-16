@@ -77,6 +77,18 @@ function createTypingAreaComponent(page: Page) {
 			getInputValue: async () => {
 				return await locators.userInput.inputValue();
 			},
+
+			typeLetter: async (letter: string) => {
+				await test.step(`type letter "${letter}"`, async () => {
+					await page.keyboard.type(letter, { delay: 10 });
+				});
+			},
+
+			pressBackspace: async () => {
+				await test.step("press backspace", async () => {
+					await page.keyboard.press("Backspace", { delay: 10 });
+				});
+			},
 		},
 
 		assertions: {
@@ -123,10 +135,10 @@ function createTypingAreaComponent(page: Page) {
 			},
 
 			wordHidden: async (wordIndex: number) => {
-				await test.step("assert word is deleted", async () => {
-					// Check that the completed word has been removed from the DOM
+				await test.step("assert word is faded (in scrolling mode)", async () => {
+					// In scrolling mode, completed words become transparent but stay in DOM
 					const word = locators.word(wordIndex);
-					expect(word.count()).toBe(0);
+					await expect(word).toHaveCSS("opacity", "0");
 				});
 			},
 
@@ -140,6 +152,35 @@ function createTypingAreaComponent(page: Page) {
 					for (const span of spans) {
 						await expect(span).toBeVisible();
 					}
+				});
+			},
+
+			letterColor: async (
+				wordIndex: number,
+				letterIndex: number,
+				expectedColor: string,
+			) => {
+				await test.step(`assert letter ${letterIndex} of word ${wordIndex} is ${expectedColor}`, async () => {
+					const spanLocator = locators.characterSpans(wordIndex);
+					const spans = await spanLocator.all();
+					const letterSpan = spans[letterIndex];
+					expect(letterSpan).toBeTruthy();
+					if (letterSpan) {
+						await expect(letterSpan).toBeVisible();
+						const color = await letterSpan.evaluate(
+							(el) => getComputedStyle(el).color,
+						);
+						expect(color).toBe(expectedColor);
+					}
+				});
+			},
+
+			inputFieldColor: async (expectedColor: string) => {
+				await test.step(`assert input field color is ${expectedColor}`, async () => {
+					const color = await locators.userInput.evaluate(
+						(el) => getComputedStyle(el).color,
+					);
+					expect(color).toBe(expectedColor);
 				});
 			},
 		},

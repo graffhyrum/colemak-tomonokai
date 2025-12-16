@@ -30,6 +30,8 @@ function createHomePagePOM(page: Page) {
 				getWord: (id: number) => typingArea.actions.getWord(id),
 				pressSpace: () => typingArea.actions.pressSpace(),
 				getInputValue: () => typingArea.actions.getInputValue(),
+				typeLetter: (letter: string) => typingArea.actions.typeLetter(letter),
+				pressBackspace: () => typingArea.actions.pressBackspace(),
 			},
 
 			score: {
@@ -69,6 +71,18 @@ function createHomePagePOM(page: Page) {
 					typingArea.assertions.wordHidden(wordIndex),
 				nextWordFullyVisible: (wordIndex: number) =>
 					typingArea.assertions.nextWordFullyVisible(wordIndex),
+				letterColor: (
+					wordIndex: number,
+					letterIndex: number,
+					expectedColor: string,
+				) =>
+					typingArea.assertions.letterColor(
+						wordIndex,
+						letterIndex,
+						expectedColor,
+					),
+				inputFieldColor: (expectedColor: string) =>
+					typingArea.assertions.inputFieldColor(expectedColor),
 			},
 
 			testResults: {

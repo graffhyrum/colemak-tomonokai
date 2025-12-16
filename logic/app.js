@@ -1200,6 +1200,7 @@ function handleCorrectWord() {
 			// make the completed word transparent (effectively "deleted" from view)
 			completedWord.style.opacity = '0';
 		}
+		// In word scrolling mode, wordIndex stays 0, sliding brings next word into position
 	} else {
 		// if in paragraph mode, increase word index
 		wordIndex++;
