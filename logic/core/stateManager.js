@@ -20,6 +20,7 @@ const StateManager = (function() {
 		// Timing state
 		seconds: 0,
 		minutes: 0,
+		timeLimitSeconds: 60, // Default time limit for time mode
 		
 		// Text and prompts
 		answerString: '',
@@ -135,6 +136,18 @@ const StateManager = (function() {
 	}
 
 	/**
+	 * Validate time limit value
+	 * @param {*} value - Raw value from storage
+	 * @returns {number} Validated time limit in seconds
+	 */
+	function validateTimeLimit(value) {
+		const parsed = parseInt(value);
+		if (isNaN(parsed) || parsed < 1) return 60; // Default
+		if (parsed > 3600) return 3600; // Maximum
+		return parsed;
+	}
+
+	/**
 	 * Initialize state from localStorage
 	 */
 	function loadFromStorage() {
@@ -149,6 +162,7 @@ const StateManager = (function() {
 				fullSentenceModeEnabled: localStorage.getItem('fullSentenceModeEnabled') === 'true',
 				requireBackspaceCorrection: localStorage.getItem('requireBackspaceCorrection') !== 'false',
 				timeLimitMode: localStorage.getItem('timeLimitMode') === 'true',
+				timeLimitSeconds: validateTimeLimit(localStorage.getItem('timeLimitSeconds') || 60),
 				wordScrollingMode: localStorage.getItem('wordScrollingMode') !== 'false',
 				showCheatsheet: localStorage.getItem('showCheatsheet') !== 'false',
 				playSoundOnClick: localStorage.getItem('playSoundOnClick') === 'true',
@@ -176,7 +190,7 @@ const StateManager = (function() {
 				const persistentKeys = [
 					'scoreMax', 'currentLevel', 'currentLayout', 'currentKeyboard',
 					'onlyLower', 'fullSentenceModeEnabled', 'requireBackspaceCorrection',
-					'timeLimitMode', 'wordScrollingMode', 'showCheatsheet',
+					'timeLimitMode', 'timeLimitSeconds', 'wordScrollingMode', 'showCheatsheet',
 					'playSoundOnClick', 'playSoundOnError', 'punctuation'
 				];
 				

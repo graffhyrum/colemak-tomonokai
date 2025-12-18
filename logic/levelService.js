@@ -8,7 +8,8 @@ const LevelService = {
 			setFullSentenceMode,
 			setCurrentLevel,
 			reset,
-			updateCheatsheetStyling
+			updateCheatsheetStyling,
+			regenerateWordPool
 		} = dependencies;
 
 		StateManager.set("currentLevel", lev);
@@ -36,6 +37,11 @@ const LevelService = {
 		// window[] here allows us to select the variable levelN, instead of
 		// setting currentLevelList to a string
 		setCurrentLevel(lev);
+
+		// Regenerate word pool for new level
+		if (regenerateWordPool) {
+			regenerateWordPool(lev);
+		}
 
 		// reset everything
 		reset();

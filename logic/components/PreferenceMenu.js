@@ -384,6 +384,13 @@ const PreferenceMenu = (function() {
 		// Switch to time limit mode
 		StateManager.set('timeLimitMode', true);
 		StorageService.set('timeLimitMode', true);
+
+		// Ensure time limit seconds is initialized
+		const currentTimeLimit = StateManager.get('timeLimitSeconds') || 60;
+		if (_elements.timeLimitModeInput) {
+			_elements.timeLimitModeInput.value = currentTimeLimit;
+		}
+
 		_toggleTimeLimitModeUI();
 		
 		if (typeof reset === 'function') {
@@ -396,16 +403,19 @@ const PreferenceMenu = (function() {
 	 */
 	function _handleTimeLimitModeInputChange() {
 		let value = parseInt(_elements.timeLimitModeInput.value);
-		
-		// Validate value
-		if (value < 1 || value > 10000) {
-			value = 60;
+
+		// Validate value with reasonable bounds
+		if (isNaN(value) || value < 1) {
+			value = 60; // Default
+		} else if (value > 3600) {
+			value = 3600; // Maximum 1 hour
 		}
-		
+
 		_elements.timeLimitModeInput.value = value;
-		
+
 		// Update game state for time limit
-		StateManager.set('scoreMax', value * 4); // Extended for time mode
+		StateManager.set('timeLimitSeconds', value);
+		StateManager.set('scoreMax', value * 4); // Extended for time mode (maintains backward compatibility)
 		StateManager.set('seconds', value % 60);
 		StateManager.set('minutes', Math.floor(value / 60));
 		
@@ -595,9 +605,10 @@ const PreferenceMenu = (function() {
 	 * Toggle time limit mode UI
 	 */
 	function _toggleTimeLimitModeUI() {
-		const seconds = StateManager.get('timeLimitModeInput') ? StateManager.get('timeLimitModeInput').value % 60 : 60;
-		const minutes = Math.floor((StateManager.get('timeLimitModeInput') ? StateManager.get('timeLimitModeInput').value : 60) / 60);
-		
+		const timeLimitSeconds = StateManager.get('timeLimitSeconds') || 60;
+		const seconds = timeLimitSeconds % 60;
+		const minutes = Math.floor(timeLimitSeconds / 60);
+
 		StateManager.set('seconds', seconds);
 		StateManager.set('minutes', minutes);
 		

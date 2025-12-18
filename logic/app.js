@@ -99,7 +99,18 @@ const levelServiceDependencies = {
 	setFullSentenceMode: (value) => fullSentenceMode = value,
 	setCurrentLevel: (value) => currentLevel = value,
 	reset,
-	updateCheatsheetStyling: (level) => CheatsheetService.updateCheatsheetStyling(level, { letterDictionary, keyboardMap, punctuation })
+	updateCheatsheetStyling: (level) => CheatsheetService.updateCheatsheetStyling(level, { letterDictionary, keyboardMap, punctuation }),
+	regenerateWordPool: (newLevel) => {
+		try {
+			if (typeof WordPool !== 'undefined') {
+				WordPool.generatePool(currentLayout, newLevel);
+				console.log(`WordPool regenerated for level change ${currentLayout}/${newLevel}: ${WordPool.getStats().poolSize} words`);
+			}
+		} catch (error) {
+			// Crash as requested
+			throw new Error(`Failed to regenerate word pool on level change: ${error.message}`);
+		}
+	}
 };
 
 // Dependencies for CheatsheetService
@@ -541,6 +552,18 @@ layout.addEventListener("change", (e) => {
 	StorageService.set("currentLayout", currentLayout);
 	updateLayoutUI();
 	updateLayoutNameDisplay(); // Update immediately
+
+	// Regenerate word pool for new layout
+	try {
+		if (typeof WordPool !== 'undefined') {
+			WordPool.generatePool(currentLayout, currentLevel);
+			console.log(`WordPool regenerated for layout change ${currentLayout}/${currentLevel}: ${WordPool.getStats().poolSize} words`);
+		}
+	} catch (error) {
+		// Crash as requested
+		throw new Error(`Failed to regenerate word pool on layout change: ${error.message}`);
+	}
+
 	// reset everything
 	init();
 });
@@ -836,7 +859,9 @@ function checkAnswerToIndex() {
 	// user input
 	const inputVal = input.value;
 
-	return inputVal.slice(0, letterIndex) === correctAnswer.slice(0, letterIndex);
+	let inputSnippet = inputVal.slice(0, letterIndex);
+	let substringToCheck = (correctAnswer || '').slice(0, letterIndex);
+	return inputSnippet === substringToCheck;
 }
 
 function handleLineDeletion() {
@@ -1123,10 +1148,21 @@ function reset() {
 	//set prompt to visible
 	prompt.classList.remove("noDisplay");
 
-	for (let i = 1; i <= 3; i++) {
-		addLineToPrompt();
-		if (i === 1) {
-			correctAnswer = answerWordArray[0];
+	// Initialize or update word pool for current layout/level
+	try {
+		if (typeof WordPool !== 'undefined') {
+			if (WordPool.needsRegeneration(currentLayout, currentLevel)) {
+				WordPool.generatePool(currentLayout, currentLevel);
+				console.log(`WordPool initialized/updated for ${currentLayout}/${currentLevel}: ${WordPool.getStats().poolSize} words`);
+			}
+		} else {
+			throw new Error('WordPool service not available');
+		}
+	} catch (error) {
+		// Crash as requested - testing will catch this
+		throw new Error(`Failed to initialize word pool: ${error.message}`);
+	}
+
 	if (timeLimitMode) {
 		// Time limit mode: Load dynamic word count based on time limit
 		const timeLimitSeconds = StateManager.get('timeLimitSeconds') || 60;
@@ -1212,6 +1248,12 @@ function reset() {
 		}
 	}
 
+	// Ensure correctAnswer is always defined
+	if (!correctAnswer) {
+		correctAnswer = 'a';
+	}
+	StateManager.set('correctAnswer', correctAnswer);
+
 	answerLetterArray = answerString.split("");
 	//reset prompt
 
@@ -1224,10 +1266,18 @@ function reset() {
 
 // generates a new line, adds it to prompt, and to answerWordArray
 function addLineToPrompt() {
-	const lineToAdd = generateLine(scoreMax - score - answerWordArray.length - 1);
-	answerString += lineToAdd;
-	prompt.innerHTML += convertLineToHTML(lineToAdd);
-	answerWordArray = answerWordArray.concat(lineToAdd.split(" "));
+	try {
+		const remainingWords = Math.max(1, scoreMax - score - answerWordArray.length);
+		const words = WordPool.getRandomWords(Math.min(10, remainingWords)); // Limit to ~10 words per line
+		const lineToAdd = words.join(' ');
+
+		answerString += lineToAdd;
+		prompt.innerHTML += convertLineToHTML(lineToAdd);
+		answerWordArray = answerWordArray.concat(words);
+	} catch (error) {
+		// Crash as requested
+		throw new Error(`Failed to add line to prompt: ${error.message}`);
+	}
 }
 
 // takes an array of letter and turns them into html elements representing lines
@@ -1318,6 +1368,7 @@ function handleCorrectWord() {
 	// save the correct answer to a variable before removing it
 	// from the answer string
 	correctAnswer = answerWordArray[0];
+	StateManager.set('correctAnswer', correctAnswer);
 }
 
 function endGame() {
