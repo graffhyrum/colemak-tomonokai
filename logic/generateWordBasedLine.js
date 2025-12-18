@@ -55,7 +55,22 @@ function generateWordBasedLine(maxWords) {
 		// current list of required letters
 		let wordsCreated = 0;
 		if (levelDictionaries[currentLayout]["lvl" + currentLevel].length === 0) {
-			str = "";
+			// Fallback to basic letters if no level letters defined
+			const fallbackLetters = "arstneio";
+			for (let i = 0; i < lineLength; i = i) {
+				if (wordsCreated >= maxWords) {
+					break;
+				}
+				const randWordLength = Math.floor(Math.random() * 5) + 1;
+				let jumble = "";
+				for (let j = 0; j < randWordLength; j++) {
+					const rand = Math.floor(Math.random() * fallbackLetters.length);
+					jumble += fallbackLetters[rand];
+				}
+				str += jumble + " ";
+				i += jumble.length;
+				wordsCreated++;
+			}
 		} else {
 			for (let i = 0; i < lineLength; i = i) {
 				const wordToAdd = randomLetterJumble();
