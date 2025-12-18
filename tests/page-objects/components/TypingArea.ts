@@ -1,5 +1,6 @@
-import { expect, type Locator, type Page, test } from "@playwright/test";
-import type { ComponentFactory, ComponentObject } from "../types";
+import {expect, type Locator, type Page, test} from "@playwright/test";
+import type {ComponentFactory, ComponentObject} from "../types";
+import {TYPING_DELAY} from "../../util/global-config.ts";
 
 function createTypingAreaComponent(page: Page) {
 	const locators = {
@@ -18,6 +19,14 @@ function createTypingAreaComponent(page: Page) {
 		return words.map((word) => word?.trim());
 	};
 
+	const inputIsEmpty = async () => {
+		await expect(locators.userInput, {
+			message: `Expected typing area to be empty.\n Got: "${await locators.userInput.inputValue()}"`,
+		}).toHaveValue("", {
+			timeout: 200,
+		});
+	}
+
 	return {
 		page,
 		actions: {
@@ -29,14 +38,14 @@ function createTypingAreaComponent(page: Page) {
 			typeWord: async (word: string) => {
 				await test.step(`input word "${word}"`, async () => {
 					for (const letter of word) {
-						await page.keyboard.type(letter, { delay: 10 });
+						await page.keyboard.type(letter, {delay: TYPING_DELAY});
 					}
 				});
 			},
 
 			typeIncorrectLetter: async (incorrectLetter: string) => {
 				await test.step(`type incorrect letter "${incorrectLetter}"`, async () => {
-					await page.keyboard.type(incorrectLetter, { delay: 10 });
+					await page.keyboard.type(incorrectLetter, {delay: TYPING_DELAY});
 				});
 			},
 
@@ -46,18 +55,14 @@ function createTypingAreaComponent(page: Page) {
 					if (!word?.trim()) continue;
 
 					await test.step(`type word "${word.trim()}"`, async () => {
-						await page.keyboard.type(word.trim(), { delay: 10 });
+						await page.keyboard.type(word.trim(), {delay: TYPING_DELAY});
 					});
 
 					const notLastWord = i < targetScore - 1;
 					if (notLastWord) {
 						await expect(locators.userInput).toHaveValue(word.trim());
-						await expect(async () => {
-							await page.keyboard.press("Space", { delay: 10 });
-							await expect(locators.userInput).toHaveValue("", {
-								timeout: 100,
-							});
-						}).toPass({ timeout: 500 });
+						await page.keyboard.press("Space", {delay: TYPING_DELAY});
+						await inputIsEmpty();
 
 						const nextWord = await locators.word(i + 1).textContent();
 						expect(nextWord).not.toBe(word);
@@ -81,7 +86,7 @@ function createTypingAreaComponent(page: Page) {
 			},
 
 			pressSpace: async () => {
-				await page.keyboard.press("Space", { delay: 10 });
+				await page.keyboard.press("Space", {delay: TYPING_DELAY});
 			},
 
 			getInputValue: async () => {
@@ -90,13 +95,13 @@ function createTypingAreaComponent(page: Page) {
 
 			typeLetter: async (letter: string) => {
 				await test.step(`type letter "${letter}"`, async () => {
-					await page.keyboard.type(letter, { delay: 10 });
+					await page.keyboard.type(letter, {delay: TYPING_DELAY});
 				});
 			},
 
 			pressBackspace: async () => {
 				await test.step("press backspace", async () => {
-					await page.keyboard.press("Backspace", { delay: 10 });
+					await page.keyboard.press("Backspace", {delay: TYPING_DELAY});
 				});
 			},
 		},
@@ -120,12 +125,8 @@ function createTypingAreaComponent(page: Page) {
 			inputNotClearedOnMistake: async () => {
 				await test.step("assert input not cleared on space with mistake", async () => {
 					const inputBeforeSpace = await locators.userInput.inputValue();
-
-					await page.keyboard.press("Space", { delay: 10 });
-
-					const inputAfterSpace = await locators.userInput.inputValue();
-					expect(inputAfterSpace).toBe(`${inputBeforeSpace} `);
-
+					await page.keyboard.press("Space", {delay: TYPING_DELAY});
+					await expect(locators.userInput).toHaveValue(`${inputBeforeSpace} `);
 					const currentWord = await locators.word(0).textContent();
 					expect(currentWord?.trim()).toBeTruthy();
 				});
@@ -133,11 +134,8 @@ function createTypingAreaComponent(page: Page) {
 
 			wordCompletion: async (wordIndex: number, currentWord: string) => {
 				await expect(locators.userInput).toHaveValue(currentWord);
-				await page.keyboard.press("Space", { delay: 10 });
-				await expect(locators.userInput).toHaveValue("", {
-					timeout: 30,
-				});
-
+				await page.keyboard.press("Space", {delay: TYPING_DELAY});
+				await inputIsEmpty()
 				const nextWord = await locators.word(wordIndex + 1).textContent();
 				expect(nextWord).not.toBe(currentWord);
 			},
@@ -191,6 +189,8 @@ function createTypingAreaComponent(page: Page) {
 					expect(color).toBe(expectedColor);
 				});
 			},
+
+			inputIsEmpty
 		},
 	} as const satisfies ComponentObject;
 }
