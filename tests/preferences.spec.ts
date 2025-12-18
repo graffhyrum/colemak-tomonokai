@@ -5,10 +5,6 @@ import { expect, test } from "./fixtures";
 import { assertDefined } from "./util/assertDefined";
 
 test.describe("Preferences & Advanced Features", () => {
-	test.fixme(
-		true,
-		"Capital letters mode word regeneration not working in test environment - words don't update immediately after preference change",
-	);
 
 	test("punctuation mode adds punctuation to words", async ({ homePage }) => {
 		// Enable punctuation
@@ -154,9 +150,6 @@ test.describe("Preferences & Advanced Features", () => {
 			.locator("#resetButton")
 			.evaluate((el) => el.classList.remove("noDisplay"));
 		await homePage.actions.reset.click();
-
-		// Wait for reset
-		await homePage.page.waitForTimeout(500);
 
 		// Verify session reset
 		await homePage.assertions.ui.timerText("0m :0 s");

@@ -66,7 +66,7 @@ function createHomePagePOM(page: Page) {
 			},
 
 			layout: {
-				select: (layoutName: string) =>
+				select: (layoutName: Parameters<typeof layoutSelector.actions.select>[0]) =>
 					layoutSelector.actions.select(layoutName),
 				getCurrentName: () => layoutSelector.actions.getCurrentName(),
 			},
@@ -94,7 +94,7 @@ function createHomePagePOM(page: Page) {
 			},
 
 			layout: {
-				hasName: (expectedName: string) =>
+				hasName: (expectedName: Parameters<typeof layoutSelector.assertions.hasName>[0]) =>
 					layoutSelector.assertions.hasName(expectedName),
 			},
 
@@ -111,20 +111,30 @@ function createHomePagePOM(page: Page) {
 
 			ui: {
 				promptText: () => uiElements.assertions.promptText(),
-				scoreText: (expectedText: string) =>
-					uiElements.assertions.scoreText(expectedText),
-				timerText: (expectedText: string) =>
-					uiElements.assertions.timerText(expectedText),
-				inputValue: (expectedValue: string) =>
-					uiElements.assertions.inputValue(expectedValue),
-				mappingToggleText: (expectedText: string) =>
-					uiElements.assertions.mappingToggleText(expectedText),
-				cheatsheetVisible: () => uiElements.assertions.cheatsheetVisible(),
-				cheatsheetHidden: () => uiElements.assertions.cheatsheetHidden(),
-				preferencesMenuVisible: () =>
-					uiElements.assertions.preferencesMenuVisible(),
-				preferencesMenuHidden: () =>
-					uiElements.assertions.preferencesMenuHidden(),
+				scoreText: async (expectedText: string) => {
+					await uiElements.assertions.scoreText(expectedText);
+				},
+				timerText: async (expectedText: string) => {
+					await uiElements.assertions.timerText(expectedText);
+				},
+				inputValue: async (expectedValue: string) => {
+					await uiElements.assertions.inputValue(expectedValue);
+				},
+				mappingToggleText: async (expectedText: string) => {
+					await uiElements.assertions.mappingToggleText(expectedText);
+				},
+				cheatsheetVisible: async () => {
+					await uiElements.assertions.cheatsheetVisible();
+				},
+				cheatsheetHidden: async () => {
+					await uiElements.assertions.cheatsheetHidden();
+				},
+				preferencesMenuVisible: async () => {
+					await uiElements.assertions.preferencesMenuVisible();
+				},
+				preferencesMenuHidden: async () => {
+					await uiElements.assertions.preferencesMenuHidden();
+				},
 			},
 
 			typingArea: {
@@ -170,7 +180,7 @@ function createHomePagePOM(page: Page) {
 				},
 			},
 		},
-	} as const;
+	} as const satisfies PageObject;
 }
 
 export const createHomePage = createHomePagePOM satisfies PomFactory;

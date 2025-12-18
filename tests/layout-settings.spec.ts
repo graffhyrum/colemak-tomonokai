@@ -81,6 +81,30 @@ test.describe("Layout & Settings Testing", () => {
 		expect(sentenceText.length).toBeGreaterThan(50); // Sentences are longer than words
 	});
 
+	test("word randomization on level changes", async ({ homePage }) => {
+		// Start with Level 1 and get initial words
+		await homePage.assertions.levels.hasCurrentLevel("Level 1");
+		const originalWords = await homePage.assertions.ui.promptText();
+
+		// Change to Level 2
+		await homePage.actions.levels.select(2);
+		await homePage.assertions.levels.hasCurrentLevel("Level 2");
+
+		// Change back to Level 1
+		await homePage.actions.levels.select(1);
+		await homePage.assertions.levels.hasCurrentLevel("Level 1");
+
+		// Get new words and verify they're different from original
+		const newWords = await homePage.assertions.ui.promptText();
+		expect(newWords).not.toBe(originalWords);
+
+		// Verify both word sets are valid (not empty)
+		assertDefined(originalWords);
+		assertDefined(newWords);
+		expect(originalWords.trim().length).toBeGreaterThan(0);
+		expect(newWords.trim().length).toBeGreaterThan(0);
+	});
+
 	test("preference toggles work correctly", async ({ homePage }) => {
 		// Open preferences menu
 		await homePage.actions.preferences.open();

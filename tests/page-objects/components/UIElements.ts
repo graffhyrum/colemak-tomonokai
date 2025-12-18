@@ -1,5 +1,5 @@
-import { expect, type Page } from "@playwright/test";
-import type { ComponentObject } from "../types";
+import {expect, type Page} from "@playwright/test";
+import type {ComponentObject} from "../types";
 
 function createUIElements(page: Page) {
 	const locators = {
@@ -17,24 +17,32 @@ function createUIElements(page: Page) {
 		actions: {},
 		assertions: {
 			promptText: () => locators.prompt.textContent(),
-			scoreText: (expectedText: string) =>
-				expect(locators.scoreText).toHaveText(expectedText),
-			timerText: (expectedText: string) =>
-				expect(locators.timerText).toHaveText(expectedText),
-			inputValue: (expectedValue: string) =>
-				expect(locators.userInput).toHaveValue(expectedValue),
-			mappingToggleText: (expectedText: string) =>
-				expect(locators.mappingToggle).toHaveText(expectedText),
-			cheatsheetVisible: () =>
-				expect(locators.cheatsheetContainer).toBeVisible(),
-			cheatsheetHidden: () =>
-				expect(locators.cheatsheetContainer).not.toBeVisible(),
-			preferencesMenuVisible: () =>
-				expect(locators.preferenceMenu).toBeVisible(),
-			preferencesMenuHidden: () =>
-				expect(locators.preferenceMenu).not.toBeVisible(),
+			scoreText: async (expectedText: string) => {
+				await expect(locators.scoreText).toHaveText(expectedText);
+			},
+			timerText: async (expectedText: string) => {
+				await expect(locators.timerText).toHaveText(expectedText);
+			},
+			inputValue: async (expectedValue: string) => {
+				await expect(locators.userInput).toHaveValue(expectedValue);
+			},
+			mappingToggleText: async (expectedText: string) => {
+				await expect(locators.mappingToggle).toHaveText(expectedText);
+			},
+			cheatsheetVisible: async () => {
+				await expect(locators.cheatsheetContainer).toBeVisible();
+			},
+			cheatsheetHidden: async () => {
+				await expect(locators.cheatsheetContainer).not.toBeVisible();
+			},
+			preferencesMenuVisible: async () => {
+				await expect(locators.preferenceMenu).toBeVisible();
+			},
+			preferencesMenuHidden: async () => {
+				await expect(locators.preferenceMenu).not.toBeVisible();
+			},
 		},
 	} as const satisfies ComponentObject;
 }
 
-export { createUIElements };
+export {createUIElements};
