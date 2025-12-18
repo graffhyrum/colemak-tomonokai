@@ -170,7 +170,7 @@ button:focus {
 
 /* Level System */
 .lvl8 {
-	display: none;
+	display: block;
 	font-size: 1.1vh;
 	color: orange;
 	border-color: orange;

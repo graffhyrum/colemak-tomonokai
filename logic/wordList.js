@@ -22,7 +22,7 @@ function buildTrie(words) {
 	const root = new TrieNode();
 	for (const word of words) {
 		let node = root;
-		for (const char of word.toLowerCase()) {
+		for (const char of word) {
 			if (!node.children[char]) {
 				node.children[char] = new TrieNode();
 			}

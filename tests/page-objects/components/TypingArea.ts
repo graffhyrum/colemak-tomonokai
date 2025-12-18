@@ -28,7 +28,9 @@ function createTypingAreaComponent(page: Page) {
 
 			typeWord: async (word: string) => {
 				await test.step(`input word "${word}"`, async () => {
-					await page.keyboard.type(word, { delay: 10 });
+					for (const letter of word) {
+						await page.keyboard.type(letter, { delay: 10 });
+					}
 				});
 			},
 
@@ -66,6 +68,14 @@ function createTypingAreaComponent(page: Page) {
 			getWords,
 
 			getWord: async (id: number) => {
+				// In word scrolling mode, id=0 should return the current visible word at the left edge
+				if (id === 0) {
+					const currentWord = await page
+						.locator('.prompt .word:not([style*="opacity: 0"])')
+						.first()
+						.textContent();
+					return currentWord?.trim();
+				}
 				const [word] = await getWords(id);
 				return word;
 			},
@@ -123,12 +133,10 @@ function createTypingAreaComponent(page: Page) {
 
 			wordCompletion: async (wordIndex: number, currentWord: string) => {
 				await expect(locators.userInput).toHaveValue(currentWord);
-				await expect(async () => {
-					await page.keyboard.press("Space", { delay: 10 });
-					await expect(locators.userInput).toHaveValue("", {
-						timeout: 30,
-					});
-				}).toPass({ timeout: 130 });
+				await page.keyboard.press("Space", { delay: 10 });
+				await expect(locators.userInput).toHaveValue("", {
+					timeout: 30,
+				});
 
 				const nextWord = await locators.word(wordIndex + 1).textContent();
 				expect(nextWord).not.toBe(currentWord);

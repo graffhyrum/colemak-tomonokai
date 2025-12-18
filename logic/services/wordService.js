@@ -110,11 +110,17 @@ const WordService = (function() {
 			// For each level, add new letters to test set and create new list
 			for (let i = 0; i < objKeys.length; i++) {
 				let requiredLetters;
+				let levelLetters = levelDictionaries[currentLayout][objKeys[i]];
 
 				// Special handling for custom layout level 7
 				if (currentLayout !== 'custom' || i !== 6) {
 					requiredLetters = levelDictionaries[currentLayout][`lvl${i + 1}`] + punctuation;
-					includedLetters += levelDictionaries[currentLayout][objKeys[i]];
+					includedLetters += levelLetters;
+
+					// Add uppercase letters if capital letters are allowed
+					if (!onlyLower) {
+						includedLetters += levelLetters.toUpperCase();
+					}
 				} else {
 					requiredLetters = includedLetters;
 				}
@@ -176,10 +182,16 @@ const WordService = (function() {
 
 			for (let i = 0; i < objKeys.length; i++) {
 				let requiredLetters;
+				let levelLetters = levelDictionaries[currentLayout][objKeys[i]];
 
 				if (currentLayout !== 'custom' || i !== 6) {
 					requiredLetters = levelDictionaries[currentLayout][`lvl${i + 1}`] + punctuation;
-					includedLetters += levelDictionaries[currentLayout][objKeys[i]];
+					includedLetters += levelLetters;
+
+					// Add uppercase letters if capital letters are allowed
+					if (!onlyLower) {
+						includedLetters += levelLetters.toUpperCase();
+					}
 				} else {
 					requiredLetters = includedLetters;
 				}

@@ -1,8 +1,12 @@
 import { expect, type Page } from "@playwright/test";
+import { createKeyboardSelector } from "./components/KeyboardSelector";
+import { createLayoutSelector } from "./components/LayoutSelector";
+import { createLevelSelector } from "./components/LevelSelector";
 import { createPreferencesModal } from "./components/PreferencesModal";
 import { createScoreComponent } from "./components/ScoreComponent";
 import { createTestResults } from "./components/TestResults";
 import { createTypingArea } from "./components/TypingArea";
+import { createUIElements } from "./components/UIElements";
 import type { PageObject, PomFactory } from "./types";
 
 function createHomePagePOM(page: Page) {
@@ -11,12 +15,17 @@ function createHomePagePOM(page: Page) {
 	const scoreComponent = createScoreComponent(page);
 	const testResults = createTestResults(page);
 	const preferencesModal = createPreferencesModal(page);
+	const layoutSelector = createLayoutSelector(page);
+	const keyboardSelector = createKeyboardSelector(page);
+	const levelSelector = createLevelSelector(page);
+	const uiElements = createUIElements(page);
 
 	return {
 		page,
-		goto: async () => {
+		goto: async (url?: string) => {
 			await page.goto(
-				"file:///C:/Users/graff/WebstormProjects/colemak-tomonokai/index.html",
+				url ||
+					"file:///C:/Users/graff/WebstormProjects/colemak-tomonokai/index.html",
 			);
 		},
 		actions: {
@@ -46,6 +55,8 @@ function createHomePagePOM(page: Page) {
 					preferencesModal.actions.setWordLimit(wordLimit),
 				toggleWordScrollingMode: () =>
 					preferencesModal.actions.toggleWordScrollingMode(),
+				toggleFullSentenceMode: () =>
+					preferencesModal.actions.toggleFullSentenceMode(),
 			},
 
 			testResults: {
@@ -53,11 +64,67 @@ function createHomePagePOM(page: Page) {
 				getFinalAccuracyText: () => testResults.actions.getFinalAccuracyText(),
 				getFinalWpmText: () => testResults.actions.getFinalWpmText(),
 			},
+
+			layout: {
+				select: (layoutName: string) =>
+					layoutSelector.actions.select(layoutName),
+				getCurrentName: () => layoutSelector.actions.getCurrentName(),
+			},
+
+			keyboard: {
+				select: (keyboardType: string) =>
+					keyboardSelector.actions.select(keyboardType),
+			},
+
+			levels: {
+				select: (levelNumber: number) =>
+					levelSelector.actions.select(levelNumber),
+				selectAllWords: () => levelSelector.actions.selectAllWords(),
+				selectFullSentences: () => levelSelector.actions.selectFullSentences(),
+			},
+
+			reset: {
+				click: () => page.locator("#resetButton").click(),
+			},
 		},
 
 		assertions: {
 			hasTitle: async () => {
 				await expect(page).toHaveTitle(/Colemak/);
+			},
+
+			layout: {
+				hasName: (expectedName: string) =>
+					layoutSelector.assertions.hasName(expectedName),
+			},
+
+			keyboard: {
+				isVisible: () => keyboardSelector.assertions.isVisible(),
+			},
+
+			levels: {
+				hasCurrentLevel: (expectedLevel: string) =>
+					levelSelector.assertions.hasCurrentLevel(expectedLevel),
+				isNotHighlighted: (levelNumber: number) =>
+					levelSelector.assertions.isNotHighlighted(levelNumber),
+			},
+
+			ui: {
+				promptText: () => uiElements.assertions.promptText(),
+				scoreText: (expectedText: string) =>
+					uiElements.assertions.scoreText(expectedText),
+				timerText: (expectedText: string) =>
+					uiElements.assertions.timerText(expectedText),
+				inputValue: (expectedValue: string) =>
+					uiElements.assertions.inputValue(expectedValue),
+				mappingToggleText: (expectedText: string) =>
+					uiElements.assertions.mappingToggleText(expectedText),
+				cheatsheetVisible: () => uiElements.assertions.cheatsheetVisible(),
+				cheatsheetHidden: () => uiElements.assertions.cheatsheetHidden(),
+				preferencesMenuVisible: () =>
+					uiElements.assertions.preferencesMenuVisible(),
+				preferencesMenuHidden: () =>
+					uiElements.assertions.preferencesMenuHidden(),
 			},
 
 			typingArea: {
@@ -103,7 +170,7 @@ function createHomePagePOM(page: Page) {
 				},
 			},
 		},
-	} as const satisfies PageObject;
+	} as const;
 }
 
 export const createHomePage = createHomePagePOM satisfies PomFactory;

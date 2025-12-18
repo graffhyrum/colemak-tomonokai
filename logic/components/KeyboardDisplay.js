@@ -206,10 +206,10 @@ const KeyboardDisplay = (function() {
 				selectedKey.classList.remove('active');
 				
 				if (StateManager && LayoutService) {
-					const layoutMaps = typeof layoutMaps !== 'undefined' ? layoutMaps : {};
+					const currentLayoutMaps = typeof layoutMaps !== 'undefined' ? layoutMaps : {};
 					const customLayoutKey = selectedKey.id.replace('custom', '');
-					if (layoutMaps.custom && layoutMaps.custom[customLayoutKey]) {
-						layoutMaps.custom[customLayoutKey] = ' ';
+					if (currentLayoutMaps.custom && currentLayoutMaps.custom[customLayoutKey]) {
+						currentLayoutMaps.custom[customLayoutKey] = ' ';
 					}
 				}
 			}
@@ -257,10 +257,10 @@ const KeyboardDisplay = (function() {
 		if (currentLevel && StateManager && LayoutService) {
 			const levelKey = `lvl${currentLevel}`;
 			if (StateManager.set && LayoutService.saveCustomLayout) {
-				const layoutMaps = typeof layoutMaps !== 'undefined' ? layoutMaps : {};
-				if (layoutMaps.custom) {
+				const currentLayoutMaps = typeof layoutMaps !== 'undefined' ? layoutMaps : {};
+				if (currentLayoutMaps.custom) {
 					const customLayoutKey = selectedKey.id.replace('custom', '');
-					layoutMaps.custom[customLayoutKey] = char;
+					currentLayoutMaps.custom[customLayoutKey] = char;
 				}
 			}
 
@@ -325,17 +325,17 @@ const KeyboardDisplay = (function() {
 	function _removeKeyFromLevels(letter) {
 		if (!StateManager || !LayoutService) return;
 
-		const layoutMaps = typeof layoutMaps !== 'undefined' ? layoutMaps : {};
-		const levelDictionaries = typeof levelDictionaries !== 'undefined' ? levelDictionaries : {};
+		const currentLayoutMaps = typeof layoutMaps !== 'undefined' ? layoutMaps : {};
+		const currentLevelDictionaries = typeof levelDictionaries !== 'undefined' ? levelDictionaries : {};
 
-		if (layoutMaps.custom && levelDictionaries.custom) {
+		if (currentLayoutMaps.custom && currentLevelDictionaries.custom) {
 			// Remove from all levels
-			Object.keys(levelDictionaries.custom).forEach(levelKey => {
-				levelDictionaries.custom[levelKey] = levelDictionaries.custom[levelKey].replace(letter, '');
+			Object.keys(currentLevelDictionaries.custom).forEach(levelKey => {
+				currentLevelDictionaries.custom[levelKey] = currentLevelDictionaries.custom[levelKey].replace(letter, '');
 			});
 
 			if (StateManager.set) {
-				StateManager.set('letterDictionary', levelDictionaries.custom);
+				StateManager.set('letterDictionary', currentLevelDictionaries.custom);
 			}
 		}
 	}
