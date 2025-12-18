@@ -54,8 +54,22 @@ const WordCompleter = (function() {
 		answerWordArray.shift();
 		StateManager.set('answerWordArray', answerWordArray);
 
+		// Check if lazy loading is needed (time limit mode only)
+		if (typeof WordManager !== 'undefined' && WordManager.checkAndLoadWords) {
+			WordManager.checkAndLoadWords();
+		}
+
+		// Update answerWordArray reference after potential lazy loading
+		const updatedAnswerWordArray = StateManager.get('answerWordArray') || [];
+
 		// Set new correct answer
-		StateManager.set('correctAnswer', answerWordArray[0] || '');
+		const newCorrectAnswer = updatedAnswerWordArray[0] || '';
+		StateManager.set('correctAnswer', newCorrectAnswer);
+
+		// Update global variable for backward compatibility with app.js
+		if (typeof window !== 'undefined') {
+			window.correctAnswer = newCorrectAnswer;
+		}
 
 		// Navigate after completion
 		_navigateAfterCompletion();

@@ -29,14 +29,58 @@ const PromptService = (function() {
 
 		// Update answer word array
 		const currentArray = StateManager.get('answerWordArray') || [];
-		StateManager.set('answerWordArray', currentArray.concat(lineToAdd.split(" ")));
+		const newWords = lineToAdd.split(" ");
+		const updatedArray = currentArray.concat(newWords);
+		StateManager.set('answerWordArray', updatedArray);
+
+		// Update global variable for backward compatibility with app.js
+		if (typeof window !== 'undefined' && window.answerWordArray) {
+			window.answerWordArray = window.answerWordArray.concat(newWords);
+		}
+	}
+
+	/**
+	 * Add words to the word pool without visual changes (for lazy loading)
+	 * @param {number} wordCount - Number of words to add
+	 */
+	function addWordsToPool(wordCount = 20) {
+		try {
+			// Validate word count
+			const wordsToGenerate = Math.max(1, Math.floor(wordCount) || 20);
+
+			// Get words from WordPool
+			if (typeof WordPool === 'undefined') {
+				throw new Error('WordPool service not available');
+			}
+
+			const newWords = WordPool.getRandomWords(wordsToGenerate);
+			const lineToAdd = newWords.join(' ');
+
+			// Update answer string
+			const currentAnswerString = StateManager.get('answerString') || '';
+			StateManager.set('answerString', currentAnswerString + lineToAdd + ' ');
+
+			// Update answer word array
+			const currentArray = StateManager.get('answerWordArray') || [];
+			const updatedArray = currentArray.concat(newWords);
+			StateManager.set('answerWordArray', updatedArray);
+
+			// Update global variable for backward compatibility with app.js
+			if (typeof window !== 'undefined' && window.answerWordArray) {
+				window.answerWordArray = window.answerWordArray.concat(newWords);
+			}
+		} catch (error) {
+			// Crash as requested - no fallbacks
+			throw new Error(`Failed to add words to pool: ${error.message}`);
+		}
 	}
 
 
 
 	// Public API
 	return {
-		addLineToPrompt
+		addLineToPrompt,
+		addWordsToPool
 	};
 })();
 

@@ -1127,6 +1127,88 @@ function reset() {
 		addLineToPrompt();
 		if (i === 1) {
 			correctAnswer = answerWordArray[0];
+	if (timeLimitMode) {
+		// Time limit mode: Load dynamic word count based on time limit
+		const timeLimitSeconds = StateManager.get('timeLimitSeconds') || 60;
+		const targetWords = timeLimitSeconds * 3; // 3 words per second
+		const chunkSize = 20; // Load in chunks to prevent UI blocking
+
+		let wordsLoaded = 0;
+		let chunksLoaded = 0;
+
+		// Load words in chunks until we reach target (max 10 chunks to prevent infinite loops)
+		while (wordsLoaded < targetWords && chunksLoaded < 10) {
+			const wordsNeeded = Math.min(chunkSize, targetWords - wordsLoaded);
+
+			try {
+				const words = WordPool.getRandomWords(wordsNeeded);
+				const lineToAdd = words.join(' ');
+
+				answerString += lineToAdd + ' ';
+				answerWordArray = answerWordArray.concat(words);
+
+				wordsLoaded += words.length;
+				chunksLoaded++;
+
+				// Add each chunk to visual prompt for immediate availability
+				prompt.innerHTML += convertLineToHTML(lineToAdd);
+			} catch (error) {
+				// Crash as requested
+				throw new Error(`Failed to load words for time limit mode: ${error.message}`);
+			}
+		}
+
+		// Track initial word count for lazy loading threshold
+		if (typeof WordManager !== 'undefined' && WordManager.setInitialWordCount) {
+			WordManager.setInitialWordCount(wordsLoaded);
+		}
+
+		// Set correct answer from first word
+		if (answerWordArray.length > 0) {
+			correctAnswer = answerWordArray[0];
+		}
+
+		// Track initial word count for lazy loading threshold
+		if (typeof WordManager !== 'undefined' && WordManager.setInitialWordCount) {
+			WordManager.setInitialWordCount(wordsLoaded);
+		}
+
+		// Set correct answer from first word
+		if (answerWordArray.length > 0) {
+			correctAnswer = answerWordArray[0];
+		} else {
+			// Fallback to word limit mode loading if no words were loaded
+			console.warn('Time limit mode: No words loaded, falling back to word limit mode loading');
+			for (let i = 1; i <= 3; i++) {
+				addLineToPrompt();
+				if (i === 1 && answerWordArray.length > 0) {
+					correctAnswer = answerWordArray[0];
+				}
+			}
+		}
+		// Ensure correctAnswer is always defined
+		if (!correctAnswer) {
+			correctAnswer = 'a';
+		}
+		StateManager.set('correctAnswer', correctAnswer);
+	} else {
+		// Word limit mode: Load 3 lines using WordPool
+		try {
+			for (let i = 1; i <= 3; i++) {
+				const words = WordPool.getRandomWords(10); // Approximate words per line
+				const lineToAdd = words.join(' ');
+
+				answerString += lineToAdd;
+				prompt.innerHTML += convertLineToHTML(lineToAdd);
+				answerWordArray = answerWordArray.concat(words);
+
+				if (i === 1 && answerWordArray.length > 0) {
+					correctAnswer = answerWordArray[0];
+				}
+			}
+		} catch (error) {
+			// Crash as requested
+			throw new Error(`Failed to load words for word limit mode: ${error.message}`);
 		}
 	}
 
