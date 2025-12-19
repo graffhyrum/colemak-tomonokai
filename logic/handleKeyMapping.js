@@ -1,45 +1,65 @@
 function handleKeyMapping(e) {
-	// get rid of default key press. We'll handle it ourselves
-	e.preventDefault();
-
-	// this is the actual character typed by the user
+	// Only prevent default for key remapping, allow normal input otherwise
 	const char = e.code;
+	const inputElement = DOMService.getElement('input');
 
-	// prevent default char from being typed and replace new char from keyboard map
+	// Handle key remapping
 	if (StateManager.get('keyRemapping') === "true") {
+		// Prevent default only for remapped keys
 		if (char in keyboardMap && gameOn) {
+			e.preventDefault();
 			if (!e.shiftKey) {
-				input.value += keyboardMap[char];
+				if (inputElement) inputElement.value += keyboardMap[char];
 			} else {
 				// if shift key is pressed, get final input from
 				// keymap shift layer. If shiftlayer doesn't exist
 				// use a simple toUpperCase
 				if (keyboardMap.shiftLayer === "default") {
-					input.value += keyboardMap[char].toUpperCase();
+					if (inputElement) inputElement.value += keyboardMap[char].toUpperCase();
 				} else {
 					// get char from shiftLayer
-					input.value += keyboardMap.shiftLayer[char];
+					if (inputElement) inputElement.value += keyboardMap.shiftLayer[char];
 				}
 			}
 		}
+		// For non-remapped keys in remapping mode, allow default behavior
 	} else {
-		//console.log(e.keyCode);
-		//console.log(specialKeyCodes.includes(e.keyCode));
-		// there is a bug on firefox that occassionally reads e.key as process, hence the boolean expression below
-		if (!specialKeyCodes.includes(e.keyCode) && e.key !== "Process") {
-			//console.log('Key: ' +e.key);
-			//console.log('Code: ' +e.code);
-			if (e.key !== "Process") {
-				input.value += e.key;
-			} else {
-				letterIndex--;
-			}
+		// For normal mode, allow all default behavior except special keys
+		if (specialKeyCodes.includes(e.keyCode) || e.key === "Process") {
+			// Prevent default for special keys
+			e.preventDefault();
 		} else {
-			//console.log('special Key');
-		}
-		if (e.keyCode === 32) {
-			//console.log('space bar');
-			//input.value += " ";
+			// For normal keys, check accuracy and update visual feedback
+			setTimeout(() => {
+				const inputElement = DOMService.getElement('input');
+				if (inputElement) {
+					const currentInput = inputElement.value;
+					const correctAnswer = StateManager.get('correctAnswer') || '';
+					// Use current input length as the position to check
+					const currentPosition = currentInput.length;
+
+					if (currentPosition > 0 && correctAnswer.length >= currentPosition) {
+						const typedChar = currentInput[currentPosition - 1];
+						const expectedChar = correctAnswer[currentPosition - 1];
+
+						if (typedChar === expectedChar) {
+							// Correct - turn green
+							if (window.VisualFeedback) {
+								window.VisualFeedback.updateLetterColor(StateManager.get('wordIndex') || 0, currentPosition - 1, 'green');
+							}
+							// Also update input color
+							inputElement.style.color = "black";
+						} else {
+							// Incorrect - turn red
+							if (window.VisualFeedback) {
+								window.VisualFeedback.updateLetterColor(StateManager.get('wordIndex') || 0, currentPosition - 1, 'red');
+							}
+							// Also update input color
+							inputElement.style.color = "red";
+						}
+					}
+				}
+			}, 0); // Allow input to update
 		}
 	}
 }

@@ -5,14 +5,14 @@
  */
 
 let AccuracyChecker = (function() {
-	let _visualFeedback;
+	let visualFeedback;
 
 	/**
 	 * Initialize accuracy checker with visual feedback
 	 * @param {Object} visualFeedback - Visual feedback instance
 	 */
-	function initialize(visualFeedback) {
-		_visualFeedback = visualFeedback;
+	function initialize(vf) {
+		visualFeedback = vf;
 	}
 
 	/**
@@ -26,13 +26,14 @@ let AccuracyChecker = (function() {
 		const isCorrect = input === expected;
 
 		// Update visual feedback
-		if (_visualFeedback) {
+		if (visualFeedback) {
+			const currentWordIndex = StateManager ? StateManager.get('wordIndex') : 0;
 			if (isCorrect) {
-				_visualFeedback.updateInputColor('black');
-				_visualFeedback.updateLetterColor(0, position - 1, 'green');
+				visualFeedback.updateInputColor('black');
+				visualFeedback.updateLetterColor(currentWordIndex, position - 1, 'green');
 			} else {
-				_visualFeedback.updateInputColor('red');
-				_visualFeedback.updateLetterColor(0, position - 1, 'red');
+				visualFeedback.updateInputColor('red');
+				visualFeedback.updateLetterColor(currentWordIndex, position - 1, 'red');
 			}
 		}
 

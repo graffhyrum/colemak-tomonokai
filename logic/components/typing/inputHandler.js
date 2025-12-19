@@ -5,25 +5,25 @@
  */
 
 const InputHandler = (function() {
-	let _elementManager;
-	let _keyMapper;
+	let elementManager;
+	let keyMapper;
 
 	/**
 	 * Initialize input handler with dependencies
 	 * @param {Object} elementManager - Element manager instance
 	 * @param {Object} keyMapper - Key mapper instance
 	 */
-	function initialize(elementManager, keyMapper) {
-		_elementManager = elementManager;
-		_keyMapper = keyMapper;
-		_setupEventListeners();
+	function initialize(em, km) {
+		elementManager = em;
+		keyMapper = km;
+		// Note: Event listeners are set up by the parent TypingArea component
 	}
 
 	/**
 	 * Set up keyboard event listeners
 	 */
-	function _setupEventListeners() {
-		const input = _elementManager.get('input');
+	function setupEventListeners() {
+		const input = elementManager.get('input');
 		if (input) {
 			input.addEventListener('keydown', handleKeydown);
 		}
@@ -41,22 +41,22 @@ const InputHandler = (function() {
 		const keyCode = event.keyCode;
 
 		// Handle special keys first
-		if (_isSpecialKey(keyCode)) {
+		if (isSpecialKey(keyCode)) {
 			return { type: 'special', keyCode };
 		}
 
 		// Handle reset keys
-		if (_isResetKey(keyCode)) {
+		if (isResetKey(keyCode)) {
 			return { type: 'reset', keyCode };
 		}
 
 		// Handle word completion keys
-		if (_isWordCompletionKey(keyCode)) {
+		if (isWordCompletionKey(keyCode)) {
 			return { type: 'word_completion', keyCode };
 		}
 
 		// Handle regular typing
-		const mappedChar = _keyMapper.mapKey(event);
+		const mappedChar = keyMapper.mapKey(event);
 		if (mappedChar !== null) {
 			return {
 				type: 'character',
@@ -75,8 +75,8 @@ const InputHandler = (function() {
 	 * @param {number} keyCode - Key code to check
 	 * @returns {boolean} Whether key is special
 	 */
-	function _isSpecialKey(keyCode) {
-		const specialKeys = [27, 9, 20, 17, 18, 93, 36, 37, 38, 39, 40, 144, 36, 8, 16, 30, 32, 13, 91, 92, 224, 225];
+	function isSpecialKey(keyCode) {
+		const specialKeys = [27, 9, 20, 17, 18, 93, 36, 37, 38, 39, 40, 144, 36, 8, 16, 30, 91, 92, 224, 225];
 		return specialKeys.includes(keyCode);
 	}
 
@@ -85,7 +85,7 @@ const InputHandler = (function() {
 	 * @param {number} keyCode - Key code to check
 	 * @returns {boolean} Whether key triggers reset
 	 */
-	function _isResetKey(keyCode) {
+	function isResetKey(keyCode) {
 		return keyCode === 9 || keyCode === 27; // TAB or ESC
 	}
 
@@ -94,7 +94,7 @@ const InputHandler = (function() {
 	 * @param {number} keyCode - Key code to check
 	 * @returns {boolean} Whether key triggers word completion
 	 */
-	function _isWordCompletionKey(keyCode) {
+	function isWordCompletionKey(keyCode) {
 		return keyCode === 13 || keyCode === 32; // ENTER or SPACE
 	}
 
@@ -103,7 +103,7 @@ const InputHandler = (function() {
 	 * @returns {string} Current input value
 	 */
 	function getInputValue() {
-		const input = _elementManager.get('input');
+		const input = elementManager.get('input');
 		return input ? input.value : '';
 	}
 
@@ -112,7 +112,7 @@ const InputHandler = (function() {
 	 * @param {string} value - Value to set
 	 */
 	function setInputValue(value) {
-		const input = _elementManager.get('input');
+		const input = elementManager.get('input');
 		if (input) {
 			input.value = value;
 		}
@@ -129,7 +129,7 @@ const InputHandler = (function() {
 	 * Focus input field
 	 */
 	function focus() {
-		const input = _elementManager.get('input');
+		const input = elementManager.get('input');
 		if (input && input.focus) {
 			input.focus();
 		}
@@ -140,7 +140,7 @@ const InputHandler = (function() {
 	 * @returns {boolean} Whether input handler is initialized
 	 */
 	function isReady() {
-		return !!(_elementManager && _elementManager.get('input'));
+		return !!(elementManager && elementManager.get('input'));
 	}
 
 	// Public API

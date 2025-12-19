@@ -5,14 +5,14 @@
  */
 
 const WordCompleter = (function() {
-	let _visualFeedback;
+	let visualFeedback;
 
 	/**
 	 * Initialize word completer with dependencies
 	 * @param {Object} visualFeedback - Visual feedback instance
 	 */
-	function initialize(visualFeedback) {
-		_visualFeedback = visualFeedback;
+	function initialize(vf) {
+		visualFeedback = vf;
 	}
 
 	/**
@@ -30,10 +30,10 @@ const WordCompleter = (function() {
 		const isCorrect = ValidationService ? ValidationService.checkAnswer() : false;
 
 		if (isCorrect) {
-			_handleCorrectCompletion();
+			handleCorrectCompletion();
 			return { handled: true, correct: true };
 		} else {
-			_handleIncorrectCompletion();
+			handleIncorrectCompletion();
 			return { handled: true, correct: false };
 		}
 	}
@@ -41,12 +41,12 @@ const WordCompleter = (function() {
 	/**
 	 * Handle correct word completion
 	 */
-	function _handleCorrectCompletion() {
+	function handleCorrectCompletion() {
 		if (!StateManager) return;
 
 		// Reset input color
-		if (_visualFeedback) {
-			_visualFeedback.updateInputColor('black');
+		if (visualFeedback) {
+			visualFeedback.updateInputColor('black');
 		}
 
 		// Update answer tracking
@@ -72,16 +72,16 @@ const WordCompleter = (function() {
 		}
 
 		// Navigate after completion
-		_navigateAfterCompletion();
+		navigateAfterCompletion();
 
 		// Update score
-		_updateScore();
+		updateScore();
 	}
 
 	/**
 	 * Handle incorrect word completion
 	 */
-	function _handleIncorrectCompletion() {
+	function handleIncorrectCompletion() {
 		if (!StateManager) return;
 
 		// Add space to input for incorrect completion
@@ -97,7 +97,7 @@ const WordCompleter = (function() {
 	/**
 	 * Navigate after word completion (handle scrolling/paragraph modes)
 	 */
-	function _navigateAfterCompletion() {
+	function navigateAfterCompletion() {
 		if (!StateManager) return;
 
 		const currentLevel = StateManager.get('currentLevel');
@@ -129,8 +129,8 @@ const WordCompleter = (function() {
 		if (StateManager.get('wordScrollingMode')) {
 			StateManager.set('deleteLatestWord', true);
 
-			if (_visualFeedback) {
-				_visualFeedback.enableSmoothScrolling();
+			if (visualFeedback) {
+				visualFeedback.enableSmoothScrolling();
 			}
 
 			// Update scroll offset
@@ -139,15 +139,18 @@ const WordCompleter = (function() {
 				const newOffset = promptOffset + prompt.children[0].firstChild.offsetWidth;
 				StateManager.set('promptOffset', newOffset);
 
-				if (_visualFeedback) {
-					_visualFeedback.updateScrollOffset(newOffset);
+				if (visualFeedback) {
+					visualFeedback.updateScrollOffset(newOffset);
 				}
 			}
 
 			// Fade completed word
-			if (_visualFeedback) {
-				_visualFeedback.fadeCompletedWord(0);
+			if (visualFeedback) {
+				visualFeedback.fadeCompletedWord(StateManager.get('wordIndex'));
 			}
+
+			// Increment word index for word scrolling mode
+			StateManager.set('wordIndex', StateManager.get('wordIndex') + 1);
 		} else {
 			// Paragraph mode - increment word index
 			StateManager.set('wordIndex', StateManager.get('wordIndex') + 1);
@@ -157,14 +160,14 @@ const WordCompleter = (function() {
 	/**
 	 * Update score after correct completion
 	 */
-	function _updateScore() {
-		if (!StateManager || !_visualFeedback) return;
+	function updateScore() {
+		if (!StateManager || !visualFeedback) return;
 
 		const score = StateManager.get('score') + 1;
 		const scoreMax = StateManager.get('scoreMax');
 
 		StateManager.set('score', score);
-		_visualFeedback.updateScoreDisplay(score, scoreMax);
+		visualFeedback.updateScoreDisplay(score, scoreMax);
 	}
 
 	/**

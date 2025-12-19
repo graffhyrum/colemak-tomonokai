@@ -6,20 +6,20 @@
 
 const PreferenceMenu = (function() {
 	// Private state
-	let _elements = {};
-	let _isInitialized = false;
-	let _preferenceMenuOpen = false;
+	let elements = {};
+	let isInitialized = false;
+	let preferenceMenuOpen = false;
 
 	/**
 	 * Initialize preference menu component
 	 * @param {Object} domElements - DOM elements to cache
 	 */
 	function initialize(domElements = {}) {
-		if (_isInitialized) return false;
+		if (isInitialized) return false;
 
 		try {
 			// Cache DOM elements
-			_elements = {
+			elements = {
 				preferenceButton: domElements.preferenceButton || document.querySelector('.preferenceButton'),
 				preferenceMenu: domElements.preferenceMenu || document.querySelector('.preferenceMenu'),
 				closePreferenceButton: domElements.closePreferenceButton || document.querySelector('.closePreferenceButton'),
@@ -43,18 +43,21 @@ const PreferenceMenu = (function() {
 			};
 
 			// Validate required elements
-			if (!_elements.preferenceButton || !_elements.preferenceMenu) {
+			if (!elements.preferenceButton || !elements.preferenceMenu) {
 				console.error('PreferenceMenu: Required elements not found');
 				return false;
 			}
 
 			// Set up event listeners
-			_setupEventListeners();
-			
+			setupEventListeners();
+
 			// Load initial state from localStorage
-			_loadSettingsFromStorage();
-			
-			_isInitialized = true;
+			loadSettingsFromStorage();
+
+			// Set initial visibility state
+			setInitialVisibility();
+
+			isInitialized = true;
 			return true;
 		} catch (error) {
 			console.error('Error initializing PreferenceMenu:', error);
@@ -63,76 +66,100 @@ const PreferenceMenu = (function() {
 	}
 
 	/**
+	 * Set initial visibility state based on stored preference
+	 */
+	function setInitialVisibility() {
+		const menuWasOpen = StorageService.get('preferenceMenu') === 'open';
+
+		if (menuWasOpen) {
+			openMenu();
+		} else {
+			closeMenu();
+		}
+
+		// Ensure preference button starts visible and enabled, close button starts hidden and disabled
+		if (elements.preferenceButton) {
+			elements.preferenceButton.style.display = 'block';
+			elements.preferenceButton.disabled = false;
+		}
+		if (elements.closePreferenceButton) {
+			elements.closePreferenceButton.style.display = 'none';
+			elements.closePreferenceButton.disabled = true;
+		}
+	}
+
+	/**
 	 * Set up all event listeners
 	 */
-	function _setupEventListeners() {
+	function setupEventListeners() {
 		// Menu controls
-		if (_elements.preferenceButton) {
-			_elements.preferenceButton.addEventListener('click', _handlePreferenceButtonClick);
+		if (elements.preferenceButton) {
+			elements.preferenceButton.addEventListener('click', handlePreferenceButtonClick);
 		}
-		if (_elements.closePreferenceButton) {
-			_elements.closePreferenceButton.addEventListener('click', _handleClosePreferenceButtonClick);
+		if (elements.closePreferenceButton) {
+			elements.closePreferenceButton.addEventListener('click', handleClosePreferenceButtonClick);
 		}
 
 		// Setting toggles
-		if (_elements.capitalLettersAllowed) {
-			_elements.capitalLettersAllowed.addEventListener('click', _handleCapitalLettersToggle);
+		if (elements.capitalLettersAllowed) {
+			elements.capitalLettersAllowed.addEventListener('click', handleCapitalLettersToggle);
 		}
-		if (_elements.requireBackspaceCorrectionToggle) {
-			_elements.requireBackspaceCorrectionToggle.addEventListener('click', _handleRequireBackspaceCorrectionToggle);
+		if (elements.requireBackspaceCorrectionToggle) {
+			elements.requireBackspaceCorrectionToggle.addEventListener('click', handleRequireBackspaceCorrectionToggle);
 		}
-		if (_elements.fullSentenceModeToggle) {
-			_elements.fullSentenceModeToggle.addEventListener('click', _handleFullSentenceModeToggle);
+		if (elements.fullSentenceModeToggle) {
+			elements.fullSentenceModeToggle.addEventListener('click', handleFullSentenceModeToggle);
 		}
-		if (_elements.wordLimitModeButton) {
-			_elements.wordLimitModeButton.addEventListener('click', _handleWordLimitModeButtonClick);
+		if (elements.wordLimitModeButton) {
+			elements.wordLimitModeButton.addEventListener('click', handleWordLimitModeButtonClick);
 		}
-		if (_elements.wordLimitModeInput) {
-			_elements.wordLimitModeInput.addEventListener('change', _handleWordLimitModeInputChange);
+		if (elements.wordLimitModeInput) {
+			elements.wordLimitModeInput.addEventListener('change', handleWordLimitModeInputChange);
 		}
-		if (_elements.timeLimitModeButton) {
-			_elements.timeLimitModeButton.addEventListener('click', _handleTimeLimitModeButtonClick);
+		if (elements.timeLimitModeButton) {
+			elements.timeLimitModeButton.addEventListener('click', handleTimeLimitModeButtonClick);
 		}
-		if (_elements.timeLimitModeInput) {
-			_elements.timeLimitModeInput.addEventListener('change', _handleTimeLimitModeInputChange);
+		if (elements.timeLimitModeInput) {
+			elements.timeLimitModeInput.addEventListener('change', handleTimeLimitModeInputChange);
+			elements.timeLimitModeInput.addEventListener('input', handleTimeLimitModeInputChange);
 		}
-		if (_elements.wordScrollingModeButton) {
-			_elements.wordScrollingModeButton.addEventListener('click', _handleWordScrollingModeToggle);
+		if (elements.wordScrollingModeButton) {
+			elements.wordScrollingModeButton.addEventListener('click', handleWordScrollingModeToggle);
 		}
-		if (_elements.punctuationModeButton) {
-			_elements.punctuationModeButton.addEventListener('click', _handlePunctuationModeToggle);
+		if (elements.punctuationModeButton) {
+			elements.punctuationModeButton.addEventListener('click', handlePunctuationModeToggle);
 		}
-		if (_elements.showCheatsheetButton) {
-			_elements.showCheatsheetButton.addEventListener('click', _handleShowCheatsheetToggle);
+		if (elements.showCheatsheetButton) {
+			elements.showCheatsheetButton.addEventListener('click', handleShowCheatsheetToggle);
 		}
-		if (_elements.playSoundOnClickButton) {
-			_elements.playSoundOnClickButton.addEventListener('click', _handlePlaySoundOnClickToggle);
+		if (elements.playSoundOnClickButton) {
+			elements.playSoundOnClickButton.addEventListener('click', handlePlaySoundOnClickToggle);
 		}
-		if (_elements.playSoundOnErrorButton) {
-			_elements.playSoundOnErrorButton.addEventListener('click', _handlePlaySoundOnErrorToggle);
+		if (elements.playSoundOnErrorButton) {
+			elements.playSoundOnErrorButton.addEventListener('click', handlePlaySoundOnErrorToggle);
 		}
 
 		// Layout and keyboard selection
-		if (_elements.layout) {
-			_elements.layout.addEventListener('change', _handleLayoutChange);
+		if (elements.layout) {
+			elements.layout.addEventListener('change', handleLayoutChange);
 		}
-		if (_elements.keyboard) {
-			_elements.keyboard.addEventListener('change', _handleKeyboardChange);
+		if (elements.keyboard) {
+			elements.keyboard.addEventListener('change', handleKeyboardChange);
 		}
 
 		// Mapping toggle
-		if (_elements.mappingStatusButton) {
-			_elements.mappingStatusButton.addEventListener('click', _handleMappingToggle);
+		if (elements.mappingStatusButton) {
+			elements.mappingStatusButton.addEventListener('click', handleMappingToggle);
 		}
 
 		// Close on escape key
-		document.addEventListener('keydown', _handleEscapeKey);
+		document.addEventListener('keydown', handleEscapeKey);
 	}
 
 	/**
 	 * Load settings from localStorage into state and UI
 	 */
-	function _loadSettingsFromStorage() {
+	function loadSettingsFromStorage() {
 		if (!StorageService || !StateManager) return;
 
 		try {
@@ -160,7 +187,7 @@ const PreferenceMenu = (function() {
 			}
 
 			// Update UI elements
-			_updateUIFromSettings(settings);
+			updateUIFromSettings(settings);
 		} catch (error) {
 			console.error('Error loading settings:', error);
 		}
@@ -170,77 +197,77 @@ const PreferenceMenu = (function() {
 	 * Update UI elements from settings
 	 * @param {Object} settings - Settings object
 	 */
-	function _updateUIFromSettings(settings) {
+	function updateUIFromSettings(settings) {
 		// Update checkboxes
-		if (_elements.capitalLettersAllowed) {
-			_elements.capitalLettersAllowed.checked = !settings.onlyLower;
+		if (elements.capitalLettersAllowed) {
+			elements.capitalLettersAllowed.checked = !settings.onlyLower;
 		}
-		if (_elements.requireBackspaceCorrectionToggle) {
-			_elements.requireBackspaceCorrectionToggle.checked = settings.requireBackspaceCorrection;
+		if (elements.requireBackspaceCorrectionToggle) {
+			elements.requireBackspaceCorrectionToggle.checked = settings.requireBackspaceCorrection;
 		}
-		if (_elements.fullSentenceModeToggle) {
-			_elements.fullSentenceModeToggle.checked = settings.fullSentenceModeEnabled;
+		if (elements.fullSentenceModeToggle) {
+			elements.fullSentenceModeToggle.checked = settings.fullSentenceModeEnabled;
 		}
-		if (_elements.wordScrollingModeButton) {
-			_elements.wordScrollingModeButton.checked = settings.wordScrollingMode;
+		if (elements.wordScrollingModeButton) {
+			elements.wordScrollingModeButton.checked = settings.wordScrollingMode;
 		}
-		if (_elements.punctuationModeButton) {
-			_elements.punctuationModeButton.checked = settings.punctuation !== '';
+		if (elements.punctuationModeButton) {
+			elements.punctuationModeButton.checked = settings.punctuation !== '';
 		}
-		if (_elements.showCheatsheetButton) {
-			_elements.showCheatsheetButton.checked = settings.showCheatsheet;
+		if (elements.showCheatsheetButton) {
+			elements.showCheatsheetButton.checked = settings.showCheatsheet;
 		}
-		if (_elements.playSoundOnClickButton) {
-			_elements.playSoundOnClickButton.checked = settings.playSoundOnClick;
+		if (elements.playSoundOnClickButton) {
+			elements.playSoundOnClickButton.checked = settings.playSoundOnClick;
 		}
-		if (_elements.playSoundOnErrorButton) {
-			_elements.playSoundOnErrorButton.checked = settings.playSoundOnError;
+		if (elements.playSoundOnErrorButton) {
+			elements.playSoundOnErrorButton.checked = settings.playSoundOnError;
 		}
 
 		// Update selects and inputs
-		if (_elements.layout) {
-			_elements.layout.value = settings.currentLayout;
+		if (elements.layout) {
+			elements.layout.value = settings.currentLayout;
 		}
-		if (_elements.keyboard) {
-			_elements.keyboard.value = settings.currentKeyboard;
+		if (elements.keyboard) {
+			elements.keyboard.value = settings.currentKeyboard;
 		}
-		if (_elements.wordLimitModeInput) {
-			_elements.wordLimitModeInput.value = settings.scoreMax;
+		if (elements.wordLimitModeInput) {
+			elements.wordLimitModeInput.value = settings.scoreMax;
 		}
-		if (_elements.timeLimitModeInput) {
-			_elements.timeLimitModeInput.value = 60; // Default time limit
+		if (elements.timeLimitModeInput) {
+			elements.timeLimitModeInput.value = 60; // Default time limit
 		}
 
 		// Update mapping toggle
-		if (_elements.mappingStatusButton) {
-			_elements.mappingStatusButton.checked = StorageService.get('keyRemapping') === 'true';
+		if (elements.mappingStatusButton) {
+			elements.mappingStatusButton.checked = StorageService.get('keyRemapping') === 'true';
 		}
-		if (_elements.mappingStatusText) {
-			_elements.mappingStatusText.innerText = StorageService.get('keyRemapping') === 'true' ? 'on' : 'off';
+		if (elements.mappingStatusText) {
+			elements.mappingStatusText.innerText = StorageService.get('keyRemapping') === 'true' ? 'on' : 'off';
 		}
 
 		// Update mode-specific UI
-		_updateModeSpecificUI(settings);
+		updateModeSpecificUI(settings);
 	}
 
 	/**
 	 * Update mode-specific UI elements
 	 * @param {Object} settings - Current settings
 	 */
-	function _updateModeSpecificUI(settings) {
+	function updateModeSpecificUI(settings) {
 		// Full sentence mode UI
 		if (settings.fullSentenceModeEnabled) {
-			_toggleFullSentenceModeUI();
+			toggleFullSentenceModeUI();
 		}
 
 		// Time limit mode UI
 		if (settings.timeLimitMode) {
-			_toggleTimeLimitModeUI();
+			toggleTimeLimitModeUI();
 		}
 
 		// Word scrolling mode UI
 		if (!settings.wordScrollingMode) {
-			_toggleWordScrollingModeUI();
+			toggleWordScrollingModeUI();
 		}
 
 		// Cheatsheet visibility
@@ -255,24 +282,24 @@ const PreferenceMenu = (function() {
 	/**
 	 * Handle preference button click
 	 */
-	function _handlePreferenceButtonClick() {
-		_openMenu();
+	function handlePreferenceButtonClick() {
+		openMenu();
 	}
 
 	/**
 	 * Handle close preference button click
 	 */
-	function _handleClosePreferenceButtonClick() {
-		_closeMenu();
+	function handleClosePreferenceButtonClick() {
+		closeMenu();
 	}
 
 	/**
 	 * Handle escape key
 	 * @param {Event} e - Keyboard event
 	 */
-	function _handleEscapeKey(e) {
+	function handleEscapeKey(e) {
 		if (e.keyCode === 27) {
-			_closeMenu();
+			closeMenu();
 			// Also close custom UI menu if open
 			const customInput = document.querySelector('.customInput');
 			if (customInput && customInput.style.transform !== 'scaleX(0)') {
@@ -290,11 +317,11 @@ const PreferenceMenu = (function() {
 	/**
 	 * Handle capital letters toggle
 	 */
-	function _handleCapitalLettersToggle() {
+	function handleCapitalLettersToggle() {
 		const onlyLower = !StateManager.get('onlyLower');
 		StateManager.set('onlyLower', onlyLower);
 		StorageService.set('onlyLower', onlyLower);
-		
+
 		if (typeof reset === 'function') {
 			reset();
 		}
@@ -303,11 +330,11 @@ const PreferenceMenu = (function() {
 	/**
 	 * Handle require backspace correction toggle
 	 */
-	function _handleRequireBackspaceCorrectionToggle() {
+	function handleRequireBackspaceCorrectionToggle() {
 		const requireBackspaceCorrection = !StateManager.get('requireBackspaceCorrection');
 		StateManager.set('requireBackspaceCorrection', requireBackspaceCorrection);
 		StorageService.set('requireBackspaceCorrection', requireBackspaceCorrection);
-		
+
 		if (typeof reset === 'function') {
 			reset();
 		}
@@ -316,13 +343,13 @@ const PreferenceMenu = (function() {
 	/**
 	 * Handle full sentence mode toggle
 	 */
-	function _handleFullSentenceModeToggle() {
+	function handleFullSentenceModeToggle() {
 		const fullSentenceModeEnabled = !StateManager.get('fullSentenceModeEnabled');
 		StateManager.set('fullSentenceModeEnabled', fullSentenceModeEnabled);
 		StorageService.set('fullSentenceModeEnabled', fullSentenceModeEnabled);
-		
-		_toggleFullSentenceModeUI();
-		
+
+		toggleFullSentenceModeUI();
+
 		if (fullSentenceModeEnabled) {
 			if (typeof switchLevel === 'function') {
 				switchLevel(8);
@@ -332,7 +359,7 @@ const PreferenceMenu = (function() {
 				switchLevel(1);
 			}
 		}
-		
+
 		if (typeof reset === 'function') {
 			reset();
 		}
@@ -341,19 +368,16 @@ const PreferenceMenu = (function() {
 	/**
 	 * Handle word limit mode button click
 	 */
-	function _handleWordLimitModeButtonClick() {
-		if (StateManager.get('timeLimitMode') === true) {
-			_timeLimitModeButton.checked = true;
-			_switchToWordLimitMode();
-		}
+	function handleWordLimitModeButtonClick() {
+		switchToWordLimitMode();
 	}
 
 	/**
 	 * Handle word limit mode input change
 	 */
-	function _handleWordLimitModeInputChange() {
-		let value = parseInt(_elements.wordLimitModeInput.value);
-		
+	function handleWordLimitModeInputChange() {
+		let value = parseInt(elements.wordLimitModeInput.value);
+
 		// Validate and clamp value
 		if (value > 10 && value <= 500) {
 			value = Math.ceil(value / 10) * 10; // Round to nearest 10
@@ -362,11 +386,11 @@ const PreferenceMenu = (function() {
 		} else {
 			value = 10;
 		}
-		
-		_elements.wordLimitModeInput.value = value;
+
+		elements.wordLimitModeInput.value = value;
 		StateManager.set('scoreMax', value);
 		StorageService.set('scoreMax', value);
-		
+
 		if (typeof reset === 'function') {
 			reset();
 		}
@@ -375,24 +399,19 @@ const PreferenceMenu = (function() {
 	/**
 	 * Handle time limit mode button click
 	 */
-	function _handleTimeLimitModeButtonClick() {
-		if (StateManager.get('timeLimitMode') === true) {
-			_timeLimitModeButton.checked = true;
-			return;
-		}
-		
+	function handleTimeLimitModeButtonClick() {
 		// Switch to time limit mode
 		StateManager.set('timeLimitMode', true);
 		StorageService.set('timeLimitMode', true);
 
 		// Ensure time limit seconds is initialized
 		const currentTimeLimit = StateManager.get('timeLimitSeconds') || 60;
-		if (_elements.timeLimitModeInput) {
-			_elements.timeLimitModeInput.value = currentTimeLimit;
+		if (elements.timeLimitModeInput) {
+			elements.timeLimitModeInput.value = currentTimeLimit;
 		}
 
-		_toggleTimeLimitModeUI();
-		
+		toggleTimeLimitModeUI();
+
 		if (typeof reset === 'function') {
 			reset();
 		}
@@ -401,8 +420,8 @@ const PreferenceMenu = (function() {
 	/**
 	 * Handle time limit mode input change
 	 */
-	function _handleTimeLimitModeInputChange() {
-		let value = parseInt(_elements.timeLimitModeInput.value);
+	function handleTimeLimitModeInputChange() {
+		let value = parseInt(elements.timeLimitModeInput.value);
 
 		// Validate value with reasonable bounds
 		if (isNaN(value) || value < 1) {
@@ -411,14 +430,14 @@ const PreferenceMenu = (function() {
 			value = 3600; // Maximum 1 hour
 		}
 
-		_elements.timeLimitModeInput.value = value;
+		elements.timeLimitModeInput.value = value;
 
 		// Update game state for time limit
 		StateManager.set('timeLimitSeconds', value);
-		StateManager.set('scoreMax', value * 4); // Extended for time mode (maintains backward compatibility)
+		StateManager.set('scoreMax', value); // Score max equals time limit in seconds
 		StateManager.set('seconds', value % 60);
 		StateManager.set('minutes', Math.floor(value / 60));
-		
+
 		if (typeof resetTimeText === 'function') {
 			resetTimeText();
 		}
@@ -427,13 +446,13 @@ const PreferenceMenu = (function() {
 	/**
 	 * Handle word scrolling mode toggle
 	 */
-	function _handleWordScrollingModeToggle() {
+	function handleWordScrollingModeToggle() {
 		const wordScrollingMode = !StateManager.get('wordScrollingMode');
 		StateManager.set('wordScrollingMode', wordScrollingMode);
 		StorageService.set('wordScrollingMode', wordScrollingMode);
-		
-		_toggleWordScrollingModeUI();
-		
+
+		toggleWordScrollingModeUI();
+
 		if (typeof reset === 'function') {
 			reset();
 		}
@@ -442,18 +461,18 @@ const PreferenceMenu = (function() {
 	/**
 	 * Handle punctuation mode toggle
 	 */
-	function _handlePunctuationModeToggle() {
+	function handlePunctuationModeToggle() {
 		const punctuation = StateManager.get('punctuation') === '' ? "'.-": '';
 		StateManager.set('punctuation', punctuation);
 		StorageService.set('punctuation', punctuation);
-		
+
 		if (typeof createTestSets === 'function') {
 			createTestSets();
 		}
 		if (typeof updateCheatsheetStyling === 'function') {
 			updateCheatsheetStyling(StateManager.get('currentLevel'));
 		}
-		
+
 		if (typeof reset === 'function') {
 			reset();
 		}
@@ -462,11 +481,11 @@ const PreferenceMenu = (function() {
 	/**
 	 * Handle show cheatsheet toggle
 	 */
-	function _handleShowCheatsheetToggle() {
+	function handleShowCheatsheetToggle() {
 		const showCheatsheet = !StateManager.get('showCheatsheet');
 		StateManager.set('showCheatsheet', showCheatsheet);
 		StorageService.set('showCheatsheet', showCheatsheet);
-		
+
 		const cheatsheet = document.querySelector('.cheatsheet');
 		if (cheatsheet) {
 			if (showCheatsheet) {
@@ -480,7 +499,7 @@ const PreferenceMenu = (function() {
 	/**
 	 * Handle play sound on click toggle
 	 */
-	function _handlePlaySoundOnClickToggle() {
+	function handlePlaySoundOnClickToggle() {
 		const playSoundOnClick = !StateManager.get('playSoundOnClick');
 		StateManager.set('playSoundOnClick', playSoundOnClick);
 		StorageService.set('playSoundOnClick', playSoundOnClick);
@@ -489,7 +508,7 @@ const PreferenceMenu = (function() {
 	/**
 	 * Handle play sound on error toggle
 	 */
-	function _handlePlaySoundOnErrorToggle() {
+	function handlePlaySoundOnErrorToggle() {
 		const playSoundOnError = !StateManager.get('playSoundOnError');
 		StateManager.set('playSoundOnError', playSoundOnError);
 		StorageService.set('playSoundOnError', playSoundOnError);
@@ -499,11 +518,11 @@ const PreferenceMenu = (function() {
 	 * Handle layout change
 	 * @param {Event} e - Change event
 	 */
-	function _handleLayoutChange(e) {
+	function handleLayoutChange(e) {
 		const currentLayout = e.target.value;
 		StateManager.set('currentLayout', currentLayout);
 		StorageService.set('currentLayout', currentLayout);
-		
+
 		if (typeof updateLayoutUI === 'function') {
 			updateLayoutUI();
 		}
@@ -516,11 +535,11 @@ const PreferenceMenu = (function() {
 	 * Handle keyboard change
 	 * @param {Event} e - Change event
 	 */
-	function _handleKeyboardChange(e) {
+	function handleKeyboardChange(e) {
 		const currentKeyboard = e.target.value;
 		StateManager.set('currentKeyboard', currentKeyboard);
 		StorageService.set('currentKeyboard', currentKeyboard);
-		
+
 		if (typeof updateLayoutUI === 'function') {
 			updateLayoutUI();
 		}
@@ -532,16 +551,16 @@ const PreferenceMenu = (function() {
 	/**
 	 * Handle mapping toggle
 	 */
-	function _handleMappingToggle() {
+	function handleMappingToggle() {
 		const keyRemapping = StorageService.get('keyRemapping') === 'true' ? 'false' : 'true';
 		StorageService.set('keyRemapping', keyRemapping);
-		
-		if (_elements.mappingStatusText) {
-			_elements.mappingStatusText.innerText = keyRemapping === 'true' ? 'on' : 'off';
+
+		if (elements.mappingStatusText) {
+			elements.mappingStatusText.innerText = keyRemapping === 'true' ? 'on' : 'off';
 		}
-		
+
 		// Focus back to input
-		if (StateManager && _elements.input) {
+		if (StateManager && elements.input) {
 			const input = StateManager.getElement ? StateManager.getElement('input') : document.querySelector('#userInput');
 			if (input) {
 				input.focus();
@@ -552,41 +571,63 @@ const PreferenceMenu = (function() {
 	/**
 	 * Open preference menu
 	 */
-	function _openMenu() {
-		if (_elements.preferenceMenu) {
-			_elements.preferenceMenu.style.right = '0';
+	function openMenu() {
+		if (elements.preferenceMenu) {
+			elements.preferenceMenu.style.display = 'block';
+			elements.preferenceMenu.disabled = false;
 			StorageService.set('preferenceMenu', 'open');
-			_preferenceMenuOpen = true;
+			preferenceMenuOpen = true;
+
+			// Hide and disable preference button, show and enable close button when menu is open
+			if (elements.preferenceButton) {
+				elements.preferenceButton.style.display = 'none';
+				elements.preferenceButton.disabled = true;
+			}
+			if (elements.closePreferenceButton) {
+				elements.closePreferenceButton.style.display = 'block';
+				elements.closePreferenceButton.disabled = false;
+			}
 		}
 	}
 
 	/**
 	 * Close preference menu
 	 */
-	function _closeMenu() {
-		if (_elements.preferenceMenu) {
-			_elements.preferenceMenu.style.right = '-37vh';
+	function closeMenu() {
+		if (elements.preferenceMenu) {
+			elements.preferenceMenu.style.display = 'none';
+			elements.preferenceMenu.disabled = true;
 			StorageService.removeItem('preferenceMenu');
-			_preferenceMenuOpen = false;
+			preferenceMenuOpen = false;
+
+			// Show and enable preference button, hide and disable close button when menu is closed
+			if (elements.preferenceButton) {
+				elements.preferenceButton.style.display = 'block';
+				elements.preferenceButton.disabled = false;
+			}
+			if (elements.closePreferenceButton) {
+				elements.closePreferenceButton.style.display = 'none';
+				elements.closePreferenceButton.disabled = true;
+			}
 		}
 	}
 
 	/**
 	 * Switch to word limit mode
 	 */
-	function _switchToWordLimitMode() {
+	function switchToWordLimitMode() {
 		StateManager.set('timeLimitMode', false);
 		StorageService.set('timeLimitMode', false);
-		
+
 		StateManager.set('seconds', 0);
 		StateManager.set('minutes', 0);
-		
-		if (_elements.scoreText && _elements.scoreText.style) {
-			_elements.scoreText.style.display = 'flex';
+
+		if (elements.scoreText && elements.scoreText.style) {
+			elements.scoreText.style.display = 'flex';
 		}
-		
-		_toggleTimeLimitModeUI();
-		
+
+		toggleTimeLimitModeUI();
+
 		if (typeof reset === 'function') {
 			reset();
 		}
@@ -595,46 +636,53 @@ const PreferenceMenu = (function() {
 	/**
 	 * Toggle full sentence mode UI
 	 */
-	function _toggleFullSentenceModeUI() {
-		if (_elements.fullSentenceModeLevelButton) {
-			_elements.fullSentenceModeLevelButton.classList.toggle('visible');
+	function toggleFullSentenceModeUI() {
+		if (elements.fullSentenceModeLevelButton) {
+			elements.fullSentenceModeLevelButton.classList.toggle('visible');
 		}
 	}
 
 	/**
 	 * Toggle time limit mode UI
 	 */
-	function _toggleTimeLimitModeUI() {
+	function toggleTimeLimitModeUI() {
+		const timeLimitMode = StateManager.get('timeLimitMode');
 		const timeLimitSeconds = StateManager.get('timeLimitSeconds') || 60;
 		const seconds = timeLimitSeconds % 60;
 		const minutes = Math.floor(timeLimitSeconds / 60);
 
 		StateManager.set('seconds', seconds);
 		StateManager.set('minutes', minutes);
-		
-		if (_elements.scoreText && _elements.scoreText.style) {
-			_elements.scoreText.style.display = StateManager.get('timeLimitMode') ? 'none' : 'flex';
+
+		if (elements.scoreText && elements.scoreText.style) {
+			elements.scoreText.style.display = timeLimitMode ? 'none' : 'flex';
 		}
-		
+
 		// Toggle input fields
-		if (_elements.timeLimitModeInput && _elements.wordLimitModeInput) {
-			_elements.timeLimitModeInput.classList.toggle('noDisplay');
-			_elements.wordLimitModeInput.classList.toggle('noDisplay');
+		if (elements.timeLimitModeInput && elements.wordLimitModeInput) {
+			if (timeLimitMode) {
+				elements.timeLimitModeInput.classList.remove('noDisplay');
+				elements.wordLimitModeInput.classList.add('noDisplay');
+			} else {
+				elements.timeLimitModeInput.classList.add('noDisplay');
+				elements.wordLimitModeInput.classList.remove('noDisplay');
+			}
 		}
-		
-		// Toggle buttons
-		if (_elements.timeLimitModeButton && _elements.wordLimitModeButton) {
-			_elements.timeLimitModeButton.checked = !_elements.timeLimitModeButton.checked;
+
+		// Update button states to be mutually exclusive
+		if (elements.timeLimitModeButton && elements.wordLimitModeButton) {
+			elements.timeLimitModeButton.checked = timeLimitMode;
+			elements.wordLimitModeButton.checked = !timeLimitMode;
 		}
 	}
 
 	/**
 	 * Toggle word scrolling mode UI
 	 */
-	function _toggleWordScrollingModeUI() {
+	function toggleWordScrollingModeUI() {
 		const prompt = document.querySelector('.prompt');
 		const fadeElement = document.querySelector('#fadeElement');
-		
+
 		if (prompt && prompt.classList) {
 			prompt.classList.toggle('paragraph');
 		}
@@ -648,7 +696,7 @@ const PreferenceMenu = (function() {
 	 * @returns {boolean} Menu open status
 	 */
 	function isMenuOpen() {
-		return _preferenceMenuOpen;
+		return preferenceMenuOpen;
 	}
 
 	/**
@@ -656,7 +704,7 @@ const PreferenceMenu = (function() {
 	 * @returns {Object} Cached elements
 	 */
 	function getElements() {
-		return { ..._elements };
+		return { ...elements };
 	}
 
 	/**
@@ -664,7 +712,7 @@ const PreferenceMenu = (function() {
 	 * @returns {boolean} Initialization status
 	 */
 	function isReady() {
-		return _isInitialized;
+		return isInitialized;
 	}
 
 	// Public API
@@ -672,7 +720,10 @@ const PreferenceMenu = (function() {
 		initialize,
 		isMenuOpen,
 		getElements,
-		isReady
+		isReady,
+		openMenu,
+		toggleWordScrollingModeUI: toggleWordScrollingModeUI,
+		toggleFullSentenceModeUI: toggleFullSentenceModeUI
 	};
 })();
 

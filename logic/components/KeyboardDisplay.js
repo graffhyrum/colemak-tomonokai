@@ -6,20 +6,20 @@
 
 const KeyboardDisplay = (function() {
 	// Private state
-	let _elements = {};
-	let _isInitialized = false;
-	let _currentSelectedKey = null;
+	let elements = {};
+	let isInitialized = false;
+	let currentSelectedKey = null;
 
 	/**
 	 * Initialize keyboard display component
 	 * @param {Object} domElements - DOM elements to cache
 	 */
 	function initialize(domElements = {}) {
-		if (_isInitialized) return false;
+		if (isInitialized) return false;
 
 		try {
 			// Cache required DOM elements
-			_elements = {
+			elements = {
 				cheatsheet: domElements.cheatsheet || document.querySelector('.cheatsheet'),
 				inputKeyboard: domElements.inputKeyboard || document.querySelector('#inputKeyboard'),
 				inputShiftKeyboard: domElements.inputShiftKeyboard || document.querySelector('#inputShiftKeyboard'),
@@ -33,12 +33,12 @@ const KeyboardDisplay = (function() {
 
 			// Cache custom UI level buttons
 			if (document.querySelectorAll('.customUILevelButton')) {
-				_elements.customUILevelButtons = Array.from(document.querySelectorAll('.customUILevelButton'));
+				elements.customUILevelButtons = Array.from(document.querySelectorAll('.customUILevelButton'));
 			}
 
 			// Set up event listeners
-			_setupEventListeners();
-			_isInitialized = true;
+			setupEventListeners();
+			isInitialized = true;
 			return true;
 		} catch (error) {
 			console.error('Error initializing KeyboardDisplay:', error);
@@ -49,35 +49,35 @@ const KeyboardDisplay = (function() {
 	/**
 	 * Set up all event listeners
 	 */
-	function _setupEventListeners() {
+	function setupEventListeners() {
 		// Custom UI open button
-		if (_elements.openUIButton) {
-			_elements.openUIButton.addEventListener('click', _handleOpenUIButtonClick);
+		if (elements.openUIButton) {
+			elements.openUIButton.addEventListener('click', handleOpenUIButtonClick);
 		}
 
 		// Custom UI save button
-		if (_elements.saveButton) {
-			_elements.saveButton.addEventListener('click', _handleSaveButtonClick);
+		if (elements.saveButton) {
+			elements.saveButton.addEventListener('click', handleSaveButtonClick);
 		}
 
 		// Custom UI discard button
-		if (_elements.discardButton) {
-			_elements.discardButton.addEventListener('click', _handleDiscardButtonClick);
+		if (elements.discardButton) {
+			elements.discardButton.addEventListener('click', handleDiscardButtonClick);
 		}
 
 		// Custom UI key input
-		if (_elements.customUIKeyInput) {
-			_elements.customUIKeyInput.addEventListener('keydown', _handleCustomUIKeyInput);
+		if (elements.customUIKeyInput) {
+			elements.customUIKeyInput.addEventListener('keydown', handleCustomUIKeyInput);
 		}
 
 		// General click listener for key selection and level buttons
-		document.addEventListener('click', _handleGeneralClick);
+		document.addEventListener('click', handleGeneralClick);
 	}
 
 	/**
 	 * Handle open custom UI button click
 	 */
-	function _handleOpenUIButtonClick() {
+	function handleOpenUIButtonClick() {
 		if (typeof startCustomKeyboardEditing === 'function') {
 			startCustomKeyboardEditing();
 		}
@@ -86,13 +86,13 @@ const KeyboardDisplay = (function() {
 	/**
 	 * Handle save custom layout button click
 	 */
-	function _handleSaveButtonClick() {
+	function handleSaveButtonClick() {
 		if (StateManager) {
 			StateManager.set('initialCustomKeyboardState', '');
 			StateManager.set('initialCustomLevelsState', '');
 		}
 
-		_closeCustomUI();
+		closeCustomUI();
 		if (typeof init === 'function') {
 			init();
 		}
@@ -101,7 +101,7 @@ const KeyboardDisplay = (function() {
 	/**
 	 * Handle discard custom layout button click
 	 */
-	function _handleDiscardButtonClick() {
+	function handleDiscardButtonClick() {
 		if (!StateManager || !LayoutService) {
 			console.warn('StateManager or LayoutService not available');
 			return;
@@ -120,7 +120,7 @@ const KeyboardDisplay = (function() {
 			}
 		}
 
-		_closeCustomUI();
+		closeCustomUI();
 		if (typeof init === 'function') {
 			init();
 		}
@@ -129,9 +129,9 @@ const KeyboardDisplay = (function() {
 	/**
 	 * Close custom UI interface
 	 */
-	function _closeCustomUI() {
-		if (_elements.customInput) {
-			_elements.customInput.style.transform = 'scaleX(0)';
+	function closeCustomUI() {
+		if (elements.customInput) {
+			elements.customInput.style.transform = 'scaleX(0)';
 		}
 
 		if (typeof clearSelectedInput === 'function') {
@@ -143,28 +143,28 @@ const KeyboardDisplay = (function() {
 	 * Handle custom UI key input
 	 * @param {Event} e - Keyboard event
 	 */
-	function _handleCustomUIKeyInput(e) {
-		const selectedKey = _getSelectedInputKey();
+	function handleCustomUIKeyInput(e) {
+		const selectedKey = getSelectedInputKey();
 		if (!selectedKey) return;
 
 		// Handle navigation keys
-		if (_handleNavigationKeys(e)) return;
+		if (handleNavigationKeys(e)) return;
 
 		// Handle delete/backspace
-		if (_handleDeleteKeys(e)) return;
+		if (handleDeleteKeys(e)) return;
 
 		// Handle character input
-		_handleCharacterInput(e, selectedKey);
+		handleCharacterInput(e, selectedKey);
 	}
 
 	/**
 	 * Get currently selected key element
 	 * @returns {Element|null} Selected key element
 	 */
-	function _getSelectedInputKey() {
-		if (!_elements.customUIKeyInput) return null;
-		
-		const customUIKeyInput = _elements.customUIKeyInput;
+	function getSelectedInputKey() {
+		if (!elements.customUIKeyInput) return null;
+
+		const customUIKeyInput = elements.customUIKeyInput;
 		if (customUIKeyInput && customUIKeyInput.focus) {
 			return document.querySelector('.selectedInputKey');
 		}
@@ -176,7 +176,7 @@ const KeyboardDisplay = (function() {
 	 * @param {Event} e - Keyboard event
 	 * @returns {boolean} Whether key was handled
 	 */
-	function _handleNavigationKeys(e) {
+	function handleNavigationKeys(e) {
 		const keyMap = {
 			37: 'left',   // Left arrow
 			38: 'up',     // Up arrow
@@ -198,13 +198,13 @@ const KeyboardDisplay = (function() {
 	 * @param {Event} e - Keyboard event
 	 * @returns {boolean} Whether key was handled
 	 */
-	function _handleDeleteKeys(e) {
+	function handleDeleteKeys(e) {
 		if (e.keyCode === 8 || e.keyCode === 46) { // Backspace or Delete
-			const selectedKey = _getSelectedInputKey();
+			const selectedKey = getSelectedInputKey();
 			if (selectedKey && selectedKey.children[0]) {
 				selectedKey.children[0].innerHTML = '_';
 				selectedKey.classList.remove('active');
-				
+
 				if (StateManager && LayoutService) {
 					const currentLayoutMaps = typeof layoutMaps !== 'undefined' ? layoutMaps : {};
 					const customLayoutKey = selectedKey.id.replace('custom', '');
@@ -215,8 +215,8 @@ const KeyboardDisplay = (function() {
 			}
 
 			// Clear input field
-			if (_elements.customUIKeyInput) {
-				_elements.customUIKeyInput.value = '';
+			if (elements.customUIKeyInput) {
+				elements.customUIKeyInput.value = '';
 			}
 
 			return true;
@@ -230,7 +230,7 @@ const KeyboardDisplay = (function() {
 	 * @param {Event} e - Keyboard event
 	 * @param {Element} selectedKey - Currently selected key element
 	 */
-	function _handleCharacterInput(e, selectedKey) {
+	function handleCharacterInput(e, selectedKey) {
 		// Ignore special keys
 		if ([16, 17, 18, 20, 27, 32, 37, 38, 39, 40].includes(e.keyCode)) return;
 		if ([13, 46].includes(e.keyCode)) return; // Enter and Delete
@@ -242,7 +242,7 @@ const KeyboardDisplay = (function() {
 		if (selectedKey && selectedKey.children[0]) {
 			const oldLetter = selectedKey.children[0].innerHTML;
 			if (oldLetter && oldLetter !== '_') {
-				_removeKeyFromLevels(oldLetter);
+				removeKeyFromLevels(oldLetter);
 			}
 		}
 
@@ -253,7 +253,7 @@ const KeyboardDisplay = (function() {
 		}
 
 		// Add to current level
-		const currentLevel = _getCurrentSelectedLevel();
+		const currentLevel = getCurrentSelectedLevel();
 		if (currentLevel && StateManager && LayoutService) {
 			const levelKey = `lvl${currentLevel}`;
 			if (StateManager.set && LayoutService.saveCustomLayout) {
@@ -290,8 +290,8 @@ const KeyboardDisplay = (function() {
 		}
 
 		// Clear input field
-		if (_elements.customUIKeyInput) {
-			_elements.customUIKeyInput.value = '';
+		if (elements.customUIKeyInput) {
+			elements.customUIKeyInput.value = '';
 		}
 	}
 
@@ -299,10 +299,10 @@ const KeyboardDisplay = (function() {
 	 * Get currently selected level button
 	 * @returns {number|null} Level number or null
 	 */
-	function _getCurrentSelectedLevel() {
-		if (!_elements.customUILevelButtons || _elements.customUILevelButtons.length === 0) return null;
+	function getCurrentSelectedLevel() {
+		if (!elements.customUILevelButtons || elements.customUILevelButtons.length === 0) return null;
 
-		const currentSelected = _elements.customUILevelButtons.find(button => 
+		const currentSelected = elements.customUILevelButtons.find(button =>
 			button.classList.contains('currentCustomUILevel')
 		);
 
@@ -322,7 +322,7 @@ const KeyboardDisplay = (function() {
 	 * Remove key from all custom levels
 	 * @param {string} letter - Letter to remove
 	 */
-	function _removeKeyFromLevels(letter) {
+	function removeKeyFromLevels(letter) {
 		if (!StateManager || !LayoutService) return;
 
 		const currentLayoutMaps = typeof layoutMaps !== 'undefined' ? layoutMaps : {};
@@ -344,18 +344,18 @@ const KeyboardDisplay = (function() {
 	 * Handle general click events for key selection and level buttons
 	 * @param {Event} e - Click event
 	 */
-	function _handleGeneralClick(e) {
+	function handleGeneralClick(e) {
 		const clickedKey = e.target.closest('.cKey');
 		const clickedLevelButton = e.target.closest('.customUILevelButton');
 
 		if (clickedKey) {
-			_selectInputKey(clickedKey);
-			_elements.customUIKeyInput.focus();
+			selectInputKey(clickedKey);
+			elements.customUIKeyInput.focus();
 		}
 
 		if (clickedLevelButton) {
-			_selectLevelButton(clickedLevelButton);
-			_updateKeyHighlighting();
+			selectLevelButton(clickedLevelButton);
+			updateKeyHighlighting();
 		}
 	}
 
@@ -363,7 +363,7 @@ const KeyboardDisplay = (function() {
 	 * Select a key for editing
 	 * @param {Element} keyElement - Key element to select
 	 */
-	function _selectInputKey(keyElement) {
+	function selectInputKey(keyElement) {
 		// Clear previous selection
 		if (typeof clearSelectedInput === 'function') {
 			clearSelectedInput();
@@ -378,18 +378,18 @@ const KeyboardDisplay = (function() {
 			keyElement.children[0].classList.add('pulse');
 		}
 
-		_currentSelectedKey = keyElement;
+		currentSelectedKey = keyElement;
 	}
 
 	/**
 	 * Select a level button
 	 * @param {Element} levelButton - Level button element
 	 */
-	function _selectLevelButton(levelButton) {
-		if (!_elements.customUILevelButtons) return;
+	function selectLevelButton(levelButton) {
+		if (!elements.customUILevelButtons) return;
 
 		// Clear previous selection
-		_elements.customUILevelButtons.forEach(button => {
+		elements.customUILevelButtons.forEach(button => {
 			button.classList.remove('currentCustomUILevel');
 		});
 
@@ -400,10 +400,10 @@ const KeyboardDisplay = (function() {
 	/**
 	 * Update key highlighting based on current level
 	 */
-	function _updateKeyHighlighting() {
-		if (!_elements.customUIKeyInput || !_elements.customUILevelButtons) return;
+	function updateKeyHighlighting() {
+		if (!elements.customUIKeyInput || !elements.customUILevelButtons) return;
 
-		const currentLevel = _getCurrentSelectedLevel();
+		const currentLevel = getCurrentSelectedLevel();
 		if (currentLevel === null) return;
 
 		const allKeys = document.querySelectorAll('.cKey');
@@ -411,7 +411,7 @@ const KeyboardDisplay = (function() {
 
 		if (StateManager && LayoutService) {
 			const levelDictionaries = typeof levelDictionaries !== 'undefined' ? levelDictionaries : {};
-			const currentLevelLetters = levelDictionaries.custom && levelDictionaries.custom[levelKey] ? 
+			const currentLevelLetters = levelDictionaries.custom && levelDictionaries.custom[levelKey] ?
 				levelDictionaries.custom[levelKey] : '';
 
 			allKeys.forEach(key => {
@@ -437,14 +437,14 @@ const KeyboardDisplay = (function() {
 	 * @param {string} layoutName - Current layout name
 	 */
 	function updateKeyboardHTML(layoutName) {
-		if (!_elements.cheatsheet) return;
+		if (!elements.cheatsheet) return;
 
 		if (typeof LayoutService !== 'undefined' && LayoutService.getKeyboardHTML) {
-			const keyboardHTML = layoutName === 'custom' ? 
-				LayoutService.getCustomKeyboardHTML() : 
+			const keyboardHTML = layoutName === 'custom' ?
+				LayoutService.getCustomKeyboardHTML() :
 				LayoutService.getKeyboardHTML();
 
-			_elements.cheatsheet.innerHTML = keyboardHTML;
+			elements.cheatsheet.innerHTML = keyboardHTML;
 		}
 	}
 
@@ -453,12 +453,12 @@ const KeyboardDisplay = (function() {
 	 * @param {string} layoutName - Current layout name
 	 */
 	function updateOpenUIButton(layoutName) {
-		if (!_elements.openUIButton) return;
+		if (!elements.openUIButton) return;
 
 		if (layoutName === 'custom') {
-			_elements.openUIButton.style.display = 'block';
+			elements.openUIButton.style.display = 'block';
 		} else {
-			_elements.openUIButton.style.display = 'none';
+			elements.openUIButton.style.display = 'none';
 		}
 	}
 
@@ -502,8 +502,8 @@ const KeyboardDisplay = (function() {
 			}
 
 			// Update level descriptions
-			if (_elements.customUILevelButtons) {
-				const levelButtons = _elements.customUILevelButtons;
+			if (elements.customUILevelButtons) {
+				const levelButtons = elements.customUILevelButtons;
 				levelButtons.forEach((button, index) => {
 					if (LayoutService && LayoutService.getLevelDescription) {
 						button.innerHTML = LayoutService.getLevelDescription(index + 1);
@@ -517,8 +517,8 @@ const KeyboardDisplay = (function() {
 	 * Focus custom UI key input
 	 */
 	function focusCustomUIKeyInput() {
-		if (_elements.customUIKeyInput) {
-			_elements.customUIKeyInput.focus();
+		if (elements.customUIKeyInput) {
+			elements.customUIKeyInput.focus();
 		}
 	}
 
@@ -527,7 +527,7 @@ const KeyboardDisplay = (function() {
 	 * @returns {boolean} Initialization status
 	 */
 	function isReady() {
-		return _isInitialized;
+		return isInitialized;
 	}
 
 	/**
@@ -535,15 +535,15 @@ const KeyboardDisplay = (function() {
 	 * @returns {Object} Cached elements
 	 */
 	function getElements() {
-		return { ..._elements };
+		return { ...elements };
 	}
 
 	/**
 	 * Reset component state
 	 */
 	function reset() {
-		_currentSelectedKey = null;
-		
+		currentSelectedKey = null;
+
 		// Clear selection if needed
 		if (typeof clearSelectedInput === 'function') {
 			clearSelectedInput();

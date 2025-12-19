@@ -6,8 +6,8 @@
 
 const ElementManager = (function() {
 	// Private state
-	let _elements = {};
-	let _isInitialized = false;
+	let elements = {};
+	let isInitialized = false;
 
 	/**
 	 * Initialize element manager with DOM elements
@@ -15,11 +15,11 @@ const ElementManager = (function() {
 	 * @returns {boolean} Success status
 	 */
 	function initialize(domElements = {}) {
-		if (_isInitialized) return true;
+		if (isInitialized) return true;
 
 		try {
 			// Cache required DOM elements with fallbacks to querySelector
-			_elements = {
+			elements = {
 				input: domElements.input || document.querySelector('#userInput'),
 				prompt: domElements.prompt || document.querySelector('.prompt'),
 				scoreText: domElements.scoreText || document.querySelector('#scoreText'),
@@ -32,12 +32,12 @@ const ElementManager = (function() {
 			};
 
 			// Validate required elements
-			if (!_elements.input) {
+			if (!elements.input) {
 				console.error('ElementManager: Required input element not found');
 				return false;
 			}
 
-			_isInitialized = true;
+			isInitialized = true;
 			return true;
 		} catch (error) {
 			console.error('Error initializing ElementManager:', error);
@@ -51,7 +51,7 @@ const ElementManager = (function() {
 	 * @returns {Element|null} The cached element or null
 	 */
 	function get(name) {
-		return _elements[name] || null;
+		return elements[name] || null;
 	}
 
 	/**
@@ -59,7 +59,7 @@ const ElementManager = (function() {
 	 * @returns {Object} Copy of cached elements object
 	 */
 	function getAll() {
-		return { ..._elements };
+		return { ...elements };
 	}
 
 	/**
@@ -67,15 +67,15 @@ const ElementManager = (function() {
 	 * @returns {boolean} Initialization status
 	 */
 	function isReady() {
-		return _isInitialized;
+		return isInitialized;
 	}
 
 	/**
 	 * Reset element manager state
 	 */
 	function reset() {
-		_isInitialized = false;
-		_elements = {};
+		isInitialized = false;
+		elements = {};
 	}
 
 	// Public API

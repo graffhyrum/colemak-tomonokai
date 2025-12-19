@@ -6,22 +6,22 @@
 
 const SoundService = (function() {
 	// Private audio cache
-	let _audioCache = {};
-	let _isInitialized = false;
+	let audioCache = {};
+	let isInitialized = false;
 
 	/**
 	 * Initialize audio files
 	 * @param {string} basePath - Base path for sound files
 	 */
 	function initialize(basePath = 'sound/') {
-		if (_isInitialized) return;
+		if (isInitialized) return;
 
 		try {
 			// Cache error sound
-			_audioCache.error = new Audio(`${basePath}error.wav`);
-			
+			audioCache.error = new Audio(`${basePath}error.wav`);
+
 			// Cache click sounds with duplicates to prevent cut-off
-			_audioCache.clicks = [
+			audioCache.clicks = [
 				{
 					sounds: [
 						new Audio(`${basePath}click1.wav`),
@@ -66,7 +66,7 @@ const SoundService = (function() {
 				}
 			];
 
-			_isInitialized = true;
+			isInitialized = true;
 		} catch (error) {
 			console.error('Error initializing SoundService:', error);
 		}
@@ -77,11 +77,11 @@ const SoundService = (function() {
 	 * @param {boolean} enabled - Whether sound should play
 	 */
 	function playClickSound(enabled) {
-		if (!enabled || !_isInitialized) return;
+		if (!enabled || !isInitialized) return;
 
 		try {
 			const rand = Math.floor(Math.random() * 6);
-			const clickSound = _audioCache.clicks[rand];
+			const clickSound = audioCache.clicks[rand];
 
 			// Use duplicate sounds to prevent cut-off
 			clickSound.counter++;
@@ -102,11 +102,11 @@ const SoundService = (function() {
 	 * @param {boolean} enabled - Whether sound should play
 	 */
 	function playErrorSound(enabled) {
-		if (!enabled || !_isInitialized) return;
+		if (!enabled || !isInitialized) return;
 
 		try {
-			_audioCache.error.currentTime = 0;
-			_audioCache.error.play().catch(error => {
+			audioCache.error.currentTime = 0;
+			audioCache.error.play().catch(error => {
 				console.error('Error playing error sound:', error);
 			});
 		} catch (error) {
@@ -118,18 +118,18 @@ const SoundService = (function() {
 	 * Stop all currently playing sounds
 	 */
 	function stopAllSounds() {
-		if (!_isInitialized) return;
+		if (!isInitialized) return;
 
 		try {
 			// Stop error sound
-			if (_audioCache.error) {
-				_audioCache.error.pause();
-				_audioCache.error.currentTime = 0;
+			if (audioCache.error) {
+				audioCache.error.pause();
+				audioCache.error.currentTime = 0;
 			}
 
 			// Stop click sounds
-			if (_audioCache.clicks) {
-				_audioCache.clicks.forEach(clickGroup => {
+			if (audioCache.clicks) {
+				audioCache.clicks.forEach(clickGroup => {
 					clickGroup.sounds.forEach(sound => {
 						sound.pause();
 						sound.currentTime = 0;
@@ -146,14 +146,14 @@ const SoundService = (function() {
 	 * @param {string} basePath - Base path for sound files
 	 */
 	function preloadSounds(basePath = 'sound/') {
-		if (!_isInitialized) {
+		if (!isInitialized) {
 			initialize(basePath);
 		}
 
 		try {
 			// Preload all sounds by setting volume to 0 and playing
-			const allSounds = [_audioCache.error];
-			_audioCache.clicks.forEach(clickGroup => {
+			const allSounds = [audioCache.error];
+			audioCache.clicks.forEach(clickGroup => {
 				allSounds.push(...clickGroup.sounds);
 			});
 
@@ -188,7 +188,7 @@ const SoundService = (function() {
 	 * @returns {boolean} Whether service is initialized
 	 */
 	function isReady() {
-		return _isInitialized;
+		return isInitialized;
 	}
 
 	/**
@@ -196,8 +196,8 @@ const SoundService = (function() {
 	 */
 	function dispose() {
 		stopAllSounds();
-		_audioCache = {};
-		_isInitialized = false;
+		audioCache = {};
+		isInitialized = false;
 	}
 
 	/**
@@ -205,17 +205,17 @@ const SoundService = (function() {
 	 * @param {number} volume - Volume level (0.0 to 1.0)
 	 */
 	function setVolume(volume) {
-		if (!_isInitialized) return;
+		if (!isInitialized) return;
 
 		try {
 			// Set error sound volume
-			if (_audioCache.error) {
-				_audioCache.error.volume = Math.max(0, Math.min(1, volume));
+			if (audioCache.error) {
+				audioCache.error.volume = Math.max(0, Math.min(1, volume));
 			}
 
 			// Set click sound volumes
-			if (_audioCache.clicks) {
-				_audioCache.clicks.forEach(clickGroup => {
+			if (audioCache.clicks) {
+				audioCache.clicks.forEach(clickGroup => {
 					clickGroup.sounds.forEach(sound => {
 						sound.volume = Math.max(0, Math.min(1, volume));
 					});

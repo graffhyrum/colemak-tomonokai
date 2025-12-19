@@ -7,14 +7,14 @@
 const WordManager = (function() {
 	// Configuration
 	const LAZY_LOAD_CHUNK_SIZE = 20; // Fixed amount to load each time
-	let _initialWordCount = 0; // Track initial word count for threshold calculation
+	let initialWordCount = 0; // Track initial word count for threshold calculation
 
 	/**
 	 * Set the initial word count for threshold calculations
 	 * @param {number} wordCount - Number of words loaded initially
 	 */
 	function setInitialWordCount(wordCount) {
-		_initialWordCount = Math.max(0, wordCount);
+		initialWordCount = Math.max(0, wordCount);
 	}
 
 	/**
@@ -27,7 +27,7 @@ const WordManager = (function() {
 		// Use initial word count if available, otherwise estimate
 		const timeLimitSeconds = StateManager.get('timeLimitSeconds') || 60;
 		const estimatedInitialLoad = timeLimitSeconds * 3; // 3 words per second
-		const initialLoad = _initialWordCount > 0 ? _initialWordCount : estimatedInitialLoad;
+		const initialLoad = initialWordCount > 0 ? initialWordCount : estimatedInitialLoad;
 
 		return Math.max(10, Math.floor(initialLoad / 3));
 	}

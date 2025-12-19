@@ -5,17 +5,17 @@
  */
 
 const GameController = (function() {
-	let _elementManager;
-	let _scoreCalculator;
+	let elementManager;
+	let scoreCalculator;
 
 	/**
 	 * Initialize game controller with dependencies
 	 * @param {Object} elementManager - Element manager instance
 	 * @param {Object} scoreCalculator - Score calculator instance
 	 */
-	function initialize(elementManager, scoreCalculator) {
-		_elementManager = elementManager;
-		_scoreCalculator = scoreCalculator;
+	function initialize(em, sc) {
+		elementManager = em;
+		scoreCalculator = sc;
 	}
 
 	/**
@@ -31,17 +31,17 @@ const GameController = (function() {
 	 * End the game and show results
 	 */
 	function endGame() {
-		if (!StateManager || !_elementManager || !_scoreCalculator) return;
+		if (!StateManager || !elementManager || !scoreCalculator) return;
 
 		// Stop timer
 		StateManager.set('gameOn', false);
 
 		// Calculate final results
-		const results = _scoreCalculator.getFormattedResults();
+		const results = scoreCalculator.getFormattedResults();
 
 		// Update displays
-		const accuracyText = _elementManager.get('accuracyText');
-		const wpmText = _elementManager.get('wpmText');
+		const accuracyText = elementManager.get('accuracyText');
+		const wpmText = elementManager.get('wpmText');
 
 		if (accuracyText) {
 			accuracyText.innerHTML = `Accuracy: ${results.accuracy}%`;
@@ -58,7 +58,7 @@ const GameController = (function() {
 		StateManager.set('errors', 0);
 
 		// Focus reset button
-		const resetButton = _elementManager.get('resetButton');
+		const resetButton = elementManager.get('resetButton');
 		if (resetButton && resetButton.focus) {
 			resetButton.focus();
 		}
@@ -74,7 +74,7 @@ const GameController = (function() {
 
 		// Reset game-specific state
 		StateManager.set('gameOn', false);
-		StateManager.set('score', -1);
+		StateManager.set('score', 0);
 		StateManager.set('correct', 0);
 		StateManager.set('errors', 0);
 		StateManager.set('letterIndex', 0);
@@ -96,7 +96,7 @@ const GameController = (function() {
 		hideResults();
 
 		// Clear input
-		const input = _elementManager ? _elementManager.get('input') : null;
+		const input = elementManager ? elementManager.get('input') : null;
 		if (input) {
 			input.value = '';
 			StateManager.set('letterIndex', 0);

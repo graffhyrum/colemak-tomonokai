@@ -5,14 +5,14 @@
  */
 
 const VisualFeedback = (function() {
-	let _elementManager;
+	let elementManager;
 
 	/**
 	 * Initialize visual feedback with element manager
 	 * @param {Object} elementManager - Element manager instance
 	 */
-	function initialize(elementManager) {
-		_elementManager = elementManager;
+	function initialize(em) {
+		elementManager = em;
 	}
 
 	/**
@@ -22,9 +22,9 @@ const VisualFeedback = (function() {
 	 * @param {string} color - Color to apply ('green', 'red', 'gray')
 	 */
 	function updateLetterColor(wordIndex, letterIndex, color) {
-		if (!_elementManager) return;
+		if (!elementManager) return;
 
-		const prompt = _elementManager.get('prompt');
+		const prompt = elementManager.get('prompt');
 		if (!prompt || !prompt.children || !prompt.children[0]) return;
 
 		const wordElement = prompt.children[0].children[wordIndex];
@@ -43,21 +43,78 @@ const VisualFeedback = (function() {
 	 * @param {string} color - Color to apply ('black', 'red')
 	 */
 	function updateInputColor(color) {
-		if (!_elementManager) return;
+		if (!elementManager) return;
 
-		const input = _elementManager.get('input');
+		const input = elementManager.get('input');
 		if (input) {
 			input.style.color = color;
 		}
 	}
 
+	/**
+	 * Enable smooth scrolling for word scrolling mode
+	 */
+	function enableSmoothScrolling() {
+		if (!elementManager) return;
 
+		const prompt = elementManager.get('prompt');
+		if (prompt) {
+			prompt.classList.add('smoothScroll');
+		}
+	}
+
+	/**
+	 * Update scroll offset for word scrolling mode
+	 * @param {number} offset - New scroll offset in pixels
+	 */
+	function updateScrollOffset(offset) {
+		if (!elementManager) return;
+
+		const prompt = elementManager.get('prompt');
+		if (prompt) {
+			prompt.style.left = `-${offset}px`;
+		}
+	}
+
+	/**
+	 * Remove a completed word in word scrolling mode
+	 * @param {number} wordIndex - Index of the word to remove
+	 */
+	function fadeCompletedWord(wordIndex) {
+		if (!elementManager) return;
+
+		const prompt = elementManager.get('prompt');
+		if (!prompt || !prompt.children || !prompt.children[0]) return;
+
+		const wordElement = prompt.children[0].children[wordIndex];
+		if (wordElement) {
+			wordElement.remove();
+		}
+	}
+
+	/**
+	 * Update score display
+	 * @param {number} score - Current score
+	 * @param {number} scoreMax - Maximum score
+	 */
+	function updateScoreDisplay(score, scoreMax) {
+		if (!elementManager) return;
+
+		const scoreText = elementManager.get('scoreText');
+		if (scoreText) {
+			scoreText.innerHTML = `${score}/${scoreMax}`;
+		}
+	}
 
 	// Public API
 	return {
 		initialize,
 		updateLetterColor,
-		updateInputColor
+		updateInputColor,
+		enableSmoothScrolling,
+		updateScrollOffset,
+		fadeCompletedWord,
+		updateScoreDisplay
 	};
 })();
 

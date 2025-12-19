@@ -6,20 +6,20 @@
 
 const LayoutService = (function() {
 	// Private state
-	let _currentLayout = 'colemak';
-	let _currentKeyboard = 'ansi';
-	let _layoutMaps = null;
-	let _levelDictionaries = null;
+	let currentLayout = 'colemak';
+	let currentKeyboard = 'ansi';
+	let layoutMaps = null;
+	let levelDictionaries = null;
 
 	/**
 	 * Initialize layout service with global layout data
 	 */
 	function initialize() {
-		if (typeof layoutMaps !== 'undefined') {
-			_layoutMaps = layoutMaps;
+		if (typeof window.layoutMaps !== 'undefined') {
+			layoutMaps = window.layoutMaps;
 		}
-		if (typeof levelDictionaries !== 'undefined') {
-			_levelDictionaries = levelDictionaries;
+		if (typeof window.levelDictionaries !== 'undefined') {
+			levelDictionaries = window.levelDictionaries;
 		}
 	}
 
@@ -28,7 +28,7 @@ const LayoutService = (function() {
 	 * @returns {string} Current layout name
 	 */
 	function getCurrentLayout() {
-		return _currentLayout;
+		return currentLayout;
 	}
 
 	/**
@@ -36,7 +36,7 @@ const LayoutService = (function() {
 	 * @returns {string} Current keyboard type (ansi/iso/ortho)
 	 */
 	function getCurrentKeyboard() {
-		return _currentKeyboard;
+		return currentKeyboard;
 	}
 
 	/**
@@ -45,12 +45,12 @@ const LayoutService = (function() {
 	 * @returns {boolean} Success status
 	 */
 	function setLayout(layoutName) {
-		if (!_layoutMaps || !_layoutMaps[layoutName]) {
+		if (!layoutMaps || !layoutMaps[layoutName]) {
 			console.error(`Layout ${layoutName} not found`);
 			return false;
 		}
-		
-		_currentLayout = layoutName;
+
+		currentLayout = layoutName;
 		return true;
 	}
 
@@ -64,8 +64,8 @@ const LayoutService = (function() {
 			console.error(`Invalid keyboard type: ${keyboardType}`);
 			return false;
 		}
-		
-		_currentKeyboard = keyboardType;
+
+		currentKeyboard = keyboardType;
 		return true;
 	}
 
@@ -74,7 +74,7 @@ const LayoutService = (function() {
 	 * @returns {Object|null} Current keyboard mapping or null
 	 */
 	function getKeyboardMap() {
-		return _layoutMaps && _layoutMaps[_currentLayout] ? _layoutMaps[_currentLayout] : null;
+		return layoutMaps && layoutMaps[currentLayout] ? layoutMaps[currentLayout] : null;
 	}
 
 	/**
@@ -82,7 +82,7 @@ const LayoutService = (function() {
 	 * @returns {Object|null} Current level dictionary or null
 	 */
 	function getLevelDictionary() {
-		return _levelDictionaries && _levelDictionaries[_currentLayout] ? _levelDictionaries[_currentLayout] : null;
+		return levelDictionaries && levelDictionaries[currentLayout] ? levelDictionaries[currentLayout] : null;
 	}
 
 	/**
@@ -100,7 +100,7 @@ const LayoutService = (function() {
 	 * @returns {Array<string>} Array of layout names
 	 */
 	function getAvailableLayouts() {
-		return _layoutMaps ? Object.keys(_layoutMaps) : [];
+		return layoutMaps ? Object.keys(layoutMaps) : [];
 	}
 
 	/**
@@ -116,25 +116,25 @@ const LayoutService = (function() {
 	 * Some layouts need different mappings for different keyboard types
 	 */
 	function applyKeyboardSpecificModifications() {
-		if (!_layoutMaps || !_layoutMaps[_currentLayout]) return;
+		if (!layoutMaps || !layoutMaps[currentLayout]) return;
 
-		const layout = _layoutMaps[_currentLayout];
+		const layout = layoutMaps[currentLayout];
 
-		switch (_currentKeyboard) {
+		switch (currentKeyboard) {
 			case 'ansi':
 				// ANSI layout modifications
-				if (_currentLayout === 'colemakdh' || _currentLayout === 'tarmakdh') {
+				if (currentLayout === 'colemakdh' || currentLayout === 'tarmakdh') {
 					layout.KeyZ = 'x';
 					layout.KeyX = 'c';
 					layout.KeyC = 'd';
 					layout.KeyV = 'v';
 					layout.KeyB = 'z';
 				}
-				if (_currentLayout === 'tarmakdh') {
+				if (currentLayout === 'tarmakdh') {
 					levelDictionaries.tarmakdh.lvl1 = 'qwagv';
 					levelDictionaries.tarmakdh.lvl3 = 'ftbzxc';
 				}
-				if (_currentLayout === 'canary') {
+				if (currentLayout === 'canary') {
 					layout.KeyZ = 'j';
 					layout.KeyX = 'v';
 					layout.KeyC = 'd';
@@ -150,7 +150,7 @@ const LayoutService = (function() {
 
 			case 'iso':
 				// ISO layout modifications
-				if (_currentLayout === 'colemakdh' || _currentLayout === 'tarmakdh') {
+				if (currentLayout === 'colemakdh' || currentLayout === 'tarmakdh') {
 					layout.IntlBackslash = 'z';
 					layout.KeyZ = 'x';
 					layout.KeyX = 'c';
@@ -158,11 +158,11 @@ const LayoutService = (function() {
 					layout.KeyV = 'v';
 					delete layout.KeyB;
 				}
-				if (_currentLayout === 'tarmakdh') {
+				if (currentLayout === 'tarmakdh') {
 					levelDictionaries.tarmakdh.lvl1 = 'qwagv';
 					levelDictionaries.tarmakdh.lvl3 = 'ftbzxc';
 				}
-				if (_currentLayout === 'canary') {
+				if (currentLayout === 'canary') {
 					layout.IntlBackslash = 'q';
 					layout.KeyZ = 'j';
 					layout.KeyX = 'v';
@@ -179,18 +179,18 @@ const LayoutService = (function() {
 
 			case 'ortho':
 				// Ortho layout modifications
-				if (_currentLayout === 'colemakdh' || _currentLayout === 'tarmakdh') {
+				if (currentLayout === 'colemakdh' || currentLayout === 'tarmakdh') {
 					layout.KeyZ = 'z';
 					layout.KeyX = 'x';
 					layout.KeyC = 'c';
 					layout.KeyV = 'd';
 					layout.KeyB = 'v';
 				}
-				if (_currentLayout === 'tarmakdh') {
+				if (currentLayout === 'tarmakdh') {
 					levelDictionaries.tarmakdh.lvl1 = 'qwagzxc';
 					levelDictionaries.tarmakdh.lvl3 = 'ftbv';
 				}
-				if (_currentLayout === 'canary') {
+				if (currentLayout === 'canary') {
 					layout.KeyZ = 'q';
 					layout.KeyX = 'j';
 					layout.KeyC = 'v';
@@ -211,7 +211,7 @@ const LayoutService = (function() {
 	 * @returns {string} HTML string for keyboard display
 	 */
 	function getKeyboardHTML() {
-		switch (_currentKeyboard) {
+		switch (currentKeyboard) {
 			case 'ansi':
 				return typeof ansiDivs !== 'undefined' ? ansiDivs : '';
 			case 'iso':
@@ -238,13 +238,13 @@ const LayoutService = (function() {
 	 */
 	function saveCustomLayout(customLayout) {
 		try {
-			if (!_layoutMaps || !_layoutMaps.custom) {
+			if (!layoutMaps || !layoutMaps.custom) {
 				console.error('Custom layout not available');
 				return false;
 			}
 
 			// Merge custom layout with existing
-			Object.assign(_layoutMaps.custom, customLayout);
+			Object.assign(layoutMaps.custom, customLayout);
 			return true;
 		} catch (error) {
 			console.error('Error saving custom layout:', error);
@@ -258,15 +258,15 @@ const LayoutService = (function() {
 	 */
 	function resetCustomLayout() {
 		try {
-			if (!_layoutMaps || !_layoutMaps.custom) {
+			if (!layoutMaps || !layoutMaps.custom) {
 				console.error('Custom layout not available');
 				return false;
 			}
 
 			// Reset to default empty layout
-			Object.keys(_layoutMaps.custom).forEach(key => {
+			Object.keys(layoutMaps.custom).forEach(key => {
 				if (key !== 'shiftLayer') {
-					_layoutMaps.custom[key] = ' ';
+					layoutMaps.custom[key] = ' ';
 				}
 			});
 			return true;
@@ -282,7 +282,7 @@ const LayoutService = (function() {
 	 * @returns {string} Level description
 	 */
 	function getLevelDescription(level) {
-		if (_currentLayout === 'tarmak' || _currentLayout === 'tarmakdh') {
+		if (currentLayout === 'tarmak' || currentLayout === 'tarmakdh') {
 			return `Step ${level - 1}`;
 		}
 		return `Level ${level}`;
@@ -293,7 +293,7 @@ const LayoutService = (function() {
 	 * @param {string} layoutName - Layout name to check
 	 * @returns {boolean} Whether layout is custom
 	 */
-	function isCustomLayout(layoutName = _currentLayout) {
+	function isCustomLayout(layoutName = currentLayout) {
 		return layoutName === 'custom';
 	}
 
@@ -302,12 +302,12 @@ const LayoutService = (function() {
 	 * @param {string} layoutName - Layout name (optional, uses current)
 	 * @returns {Object|string} Shift layer mapping
 	 */
-	function getShiftLayer(layoutName = _currentLayout) {
-		if (!_layoutMaps || !_layoutMaps[layoutName]) {
+	function getShiftLayer(layoutName = currentLayout) {
+		if (!layoutMaps || !layoutMaps[layoutName]) {
 			return {};
 		}
-		
-		const layout = _layoutMaps[layoutName];
+
+		const layout = layoutMaps[layoutName];
 		return layout.shiftLayer || 'default';
 	}
 
@@ -331,8 +331,8 @@ const LayoutService = (function() {
 	 * @param {string} layoutName - Layout name (optional, uses current)
 	 * @returns {Object} Layout statistics
 	 */
-	function getLayoutStats(layoutName = _currentLayout) {
-		if (!_layoutMaps || !_layoutMaps[layoutName]) {
+	function getLayoutStats(layoutName = currentLayout) {
+		if (!layoutMaps || !layoutMaps[layoutName]) {
 			return {
 				name: layoutName,
 				valid: false,
@@ -341,7 +341,7 @@ const LayoutService = (function() {
 			};
 		}
 
-		const layout = _layoutMaps[layoutName];
+		const layout = layoutMaps[layoutName];
 		const keyCount = Object.keys(layout).filter(key => key !== 'shiftLayer').length;
 		const hasShiftLayer = layout.shiftLayer && layout.shiftLayer !== 'default';
 

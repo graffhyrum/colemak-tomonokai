@@ -6,10 +6,10 @@
 
 const WordPool = (function() {
     // Private state
-    let _currentPool = [];
-    let _currentLayout = null;
-    let _currentLevel = null;
-    let _recentIndices = new Set(); // Track recently used indices to avoid immediate repetition
+    let currentPool = [];
+    let currentLayout = null;
+    let currentLevel = null;
+    let recentIndices = new Set(); // Track recently used indices to avoid immediate repetition
 
     /**
      * Check if word is valid for given letter set
@@ -121,12 +121,12 @@ const WordPool = (function() {
         }
 
         // Create pool with all valid words, shuffled for randomization
-        _currentPool = shuffleArray(validWords);
-        _currentLayout = layout;
-        _currentLevel = level;
-        _recentIndices.clear(); // Reset repetition tracking
+        currentPool = shuffleArray(validWords);
+        currentLayout = layout;
+        currentLevel = level;
+        recentIndices.clear(); // Reset repetition tracking
 
-        return _currentPool.length;
+        return currentPool.length;
     }
 
     /**
@@ -136,7 +136,7 @@ const WordPool = (function() {
      * @throws {Error} If pool not initialized
      */
     function getRandomWords(count) {
-        if (_currentPool.length === 0) {
+        if (currentPool.length === 0) {
             throw new Error('WordPool: Pool not initialized. Call generatePool() first.');
         }
 
@@ -149,20 +149,20 @@ const WordPool = (function() {
         for (let i = 0; i < count; i++) {
             let randomIndex;
             let attempts = 0;
-            const maxAttempts = Math.min(3, _currentPool.length); // Don't try harder than pool size
+            const maxAttempts = Math.min(3, currentPool.length); // Don't try harder than pool size
 
             // Try to avoid immediate repetition (up to maxAttempts)
             do {
-                randomIndex = Math.floor(Math.random() * _currentPool.length);
+                randomIndex = Math.floor(Math.random() * currentPool.length);
                 attempts++;
-            } while (_recentIndices.has(randomIndex) && attempts < maxAttempts);
+            } while (recentIndices.has(randomIndex) && attempts < maxAttempts);
 
-            result.push(_currentPool[randomIndex]);
-            _recentIndices.add(randomIndex);
+            result.push(currentPool[randomIndex]);
+            recentIndices.add(randomIndex);
 
             // Clear tracking when it gets too large (memory management)
-            if (_recentIndices.size > _currentPool.length * 0.8) {
-                _recentIndices.clear();
+            if (recentIndices.size > currentPool.length * 0.8) {
+                recentIndices.clear();
             }
         }
 
@@ -176,7 +176,7 @@ const WordPool = (function() {
      * @returns {boolean} Whether regeneration is needed
      */
     function needsRegeneration(layout, level) {
-        return _currentLayout !== layout || _currentLevel !== level;
+        return currentLayout !== layout || currentLevel !== level;
     }
 
     /**
@@ -185,11 +185,11 @@ const WordPool = (function() {
      */
     function getStats() {
         return {
-            poolSize: _currentPool.length,
-            currentLayout: _currentLayout,
-            currentLevel: _currentLevel,
-            recentIndicesCount: _recentIndices.size,
-            isInitialized: _currentPool.length > 0
+            poolSize: currentPool.length,
+            currentLayout: currentLayout,
+            currentLevel: currentLevel,
+            recentIndicesCount: recentIndices.size,
+            isInitialized: currentPool.length > 0
         };
     }
 

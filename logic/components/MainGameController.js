@@ -81,7 +81,7 @@ const MainGameController = (function() {
     // Reset counts
     correct = 0;
     errors = 0;
-    score = -1;
+    score = 0;
 
     // Load required letters for current level
     requiredLetters = (
@@ -118,6 +118,7 @@ const MainGameController = (function() {
       correctAnswer = 'a';
     }
     StateManager.set('correctAnswer', correctAnswer);
+    window.correctAnswer = correctAnswer;
 
     // Create answer letter array
     answerLetterArray = answerString.split("");
@@ -188,21 +189,23 @@ const MainGameController = (function() {
     const convertLineToHTML = dependencies.convertLineToHTML;
 
     try {
+      let allWords = [];
       for (let i = 1; i <= 3; i++) {
         const words = WordPool.getRandomWords(10);
-        const lineToAdd = words.join(' ');
+        allWords = allWords.concat(words);
+      }
 
-        answerString += lineToAdd;
-        answerWordArray = answerWordArray.concat(words);
+      const lineToAdd = allWords.join(' ');
+      answerString = lineToAdd;
+      answerWordArray = allWords;
 
-        const prompt = DOMService.getElement('prompt');
-        if (prompt && convertLineToHTML) {
-          prompt.innerHTML += convertLineToHTML(lineToAdd);
-        }
+      const prompt = DOMService.getElement('prompt');
+      if (prompt && convertLineToHTML) {
+        prompt.innerHTML = convertLineToHTML(lineToAdd);
+      }
 
-        if (i === 1 && answerWordArray.length > 0) {
-          correctAnswer = answerWordArray[0];
-        }
+      if (answerWordArray.length > 0) {
+        correctAnswer = answerWordArray[0];
       }
     } catch (error) {
       throw new Error(`Failed to load words for word limit mode: ${error.message}`);
@@ -246,7 +249,7 @@ const MainGameController = (function() {
     if (StateManager.get('wordScrollingMode')) {
       if (prompt) prompt.classList.add("smoothScroll");
 
-      const completedWord = document.querySelector(`#id${score}.word`);
+      const completedWord = document.querySelector(`#id${wordIndex}.word`);
       if (completedWord) {
         promptOffset += completedWord.offsetWidth;
         if (prompt) prompt.style.left = `-${promptOffset}px`;
@@ -256,6 +259,7 @@ const MainGameController = (function() {
         promptOffset = 0;
         if (prompt) prompt.style.left = `-${promptOffset}px`;
       }
+      wordIndex++;
     } else {
       wordIndex++;
     }

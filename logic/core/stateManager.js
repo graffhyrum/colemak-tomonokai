@@ -6,22 +6,22 @@
 
 const StateManager = (function() {
 	// Private state object
-	let _state = {
+	let state = {
 		// Game state
 		gameOn: false,
-		score: -1,
+		score: 0,
 		scoreMax: 50,
 		correct: 0,
 		errors: 0,
 		letterIndex: 0,
 		currentLevel: 1,
 		correctAnswer: '',
-		
+
 		// Timing state
 		seconds: 0,
 		minutes: 0,
 		timeLimitSeconds: 60, // Default time limit for time mode
-		
+
 		// Text and prompts
 		answerString: '',
 		answerWordArray: [],
@@ -34,14 +34,14 @@ const StateManager = (function() {
 		lineIndex: 0,
 		wordIndex: 0,
 		idCount: 0,
-		
+
 		// Layout and keyboard state
 		currentLayout: 'colemak',
 		currentKeyboard: 'ansi',
 		keyboardMap: null,
 		letterDictionary: null,
 		shiftDown: false,
-		
+
 		// Mode settings
 		fullSentenceMode: false,
 		fullSentenceModeEnabled: false,
@@ -52,22 +52,22 @@ const StateManager = (function() {
 		showCheatsheet: true,
 		playSoundOnClick: false,
 		playSoundOnError: false,
-		
+
 		// Text generation
 		lineLength: 23,
 		requiredLetters: '',
 		punctuation: '',
-		
+
 		// Custom layout state
 		initialCustomKeyboardState: '',
 		initialCustomLevelsState: '',
-		
+
 		// DOM element cache
 		domElements: {}
 	};
 
 	// Private state change listeners
-	let _listeners = {};
+	let listeners = {};
 
 	/**
 	 * Get state value
@@ -75,7 +75,7 @@ const StateManager = (function() {
 	 * @returns {*} State value
 	 */
 	function get(key) {
-		return _state[key];
+		return state[key];
 	}
 
 	/**
@@ -84,12 +84,12 @@ const StateManager = (function() {
 	 * @param {*} value - New value
 	 */
 	function set(key, value) {
-		const oldValue = _state[key];
-		_state[key] = value;
-		
+		const oldValue = state[key];
+		state[key] = value;
+
 		// Notify listeners of change
-		if (_listeners[key]) {
-			_listeners[key].forEach(callback => {
+		if (listeners[key]) {
+			listeners[key].forEach(callback => {
 				try {
 					callback(value, oldValue, key);
 				} catch (error) {
@@ -104,7 +104,7 @@ const StateManager = (function() {
 	 * @returns {Object} Current state copy
 	 */
 	function getAll() {
-		return { ..._state };
+		return { ...state };
 	}
 
 	/**
@@ -124,14 +124,14 @@ const StateManager = (function() {
 	 * @returns {function} Unsubscribe function
 	 */
 	function subscribe(key, callback) {
-		if (!_listeners[key]) {
-			_listeners[key] = [];
+		if (!listeners[key]) {
+			listeners[key] = [];
 		}
-		_listeners[key].push(callback);
-		
+		listeners[key].push(callback);
+
 		// Return unsubscribe function
 		return () => {
-			_listeners[key] = _listeners[key].filter(cb => cb !== callback);
+			listeners[key] = listeners[key].filter(cb => cb !== callback);
 		};
 	}
 
@@ -183,8 +183,8 @@ const StateManager = (function() {
 	 */
 	function saveToStorage(key) {
 		try {
-			if (key && _state.hasOwnProperty(key)) {
-				localStorage.setItem(key, _state[key]);
+			if (key && state.hasOwnProperty(key)) {
+				localStorage.setItem(key, state[key]);
 			} else {
 				// Save all persistent state
 				const persistentKeys = [
@@ -193,10 +193,10 @@ const StateManager = (function() {
 					'timeLimitMode', 'timeLimitSeconds', 'wordScrollingMode', 'showCheatsheet',
 					'playSoundOnClick', 'playSoundOnError', 'punctuation'
 				];
-				
+
 				persistentKeys.forEach(persistentKey => {
-					if (_state[persistentKey] !== null && _state[persistentKey] !== undefined) {
-						localStorage.setItem(persistentKey, _state[persistentKey]);
+					if (state[persistentKey] !== null && state[persistentKey] !== undefined) {
+						localStorage.setItem(persistentKey, state[persistentKey]);
 					}
 				});
 			}
@@ -210,16 +210,16 @@ const StateManager = (function() {
 	 */
 	function resetGameState() {
 		const gameKeys = [
-			'gameOn', 'score', 'correct', 'errors', 'letterIndex', 
+			'gameOn', 'score', 'correct', 'errors', 'letterIndex',
 			'answerString', 'answerWordArray', 'answerLetterArray',
 			'promptOffset', 'deleteFirstLine', 'deleteLatestWord',
 			'sentenceStartIndex', 'sentenceEndIndex', 'lineIndex', 'wordIndex',
 			'idCount', 'requiredLetters', 'correctAnswer'
 		];
-		
+
 		const resetValues = {
 			gameOn: false,
-			score: -1,
+			score: 0,
 			correct: 0,
 			errors: 0,
 			letterIndex: 0,
@@ -237,7 +237,7 @@ const StateManager = (function() {
 			requiredLetters: '',
 			correctAnswer: ''
 		};
-		
+
 		gameKeys.forEach(key => {
 			if (resetValues.hasOwnProperty(key)) {
 				set(key, resetValues[key]);
@@ -251,7 +251,7 @@ const StateManager = (function() {
 	 * @param {Element} element - DOM element to cache
 	 */
 	function cacheElement(name, element) {
-		_state.domElements[name] = element;
+		state.domElements[name] = element;
 	}
 
 	/**
@@ -260,7 +260,7 @@ const StateManager = (function() {
 	 * @returns {Element|null} Cached element or null
 	 */
 	function getElement(name) {
-		return _state.domElements[name] || null;
+		return state.domElements[name] || null;
 	}
 
 	// Initialize from localStorage on load

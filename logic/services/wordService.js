@@ -6,7 +6,7 @@
 
 const WordService = (function() {
 	// Private state
-	let _wordLists = {
+	let wordLists = {
 		lvl1: [],
 		lvl2: [],
 		lvl3: [],
@@ -15,18 +15,18 @@ const WordService = (function() {
 		lvl6: [],
 		lvl7: [],
 	};
-	let _isInitialized = false;
+	let isInitialized = false;
 
 	/**
 	 * Initialize word service
 	 */
 	function initialize() {
-		if (_isInitialized) return;
+		if (isInitialized) return;
 
 		try {
 			// Initialize if trie is available
 			if (typeof generateList === 'function') {
-				_isInitialized = true;
+				isInitialized = true;
 			}
 		} catch (error) {
 			console.error('Error initializing WordService:', error);
@@ -98,13 +98,13 @@ const WordService = (function() {
 	 * @param {boolean} onlyLower - Whether to exclude uppercase words
 	 */
 	function createTestSets(currentLayout, punctuation = '', onlyLower = true) {
-		if (!_isInitialized) {
+		if (!isInitialized) {
 			console.warn('WordService not initialized, using fallback method');
 			return createFallbackTestSets(currentLayout, punctuation, onlyLower);
 		}
 
 		try {
-			const objKeys = Object.keys(_wordLists);
+			const objKeys = Object.keys(wordLists);
 			let includedLetters = punctuation;
 
 			// For each level, add new letters to test set and create new list
@@ -125,13 +125,13 @@ const WordService = (function() {
 					requiredLetters = includedLetters;
 				}
 
-				_wordLists[objKeys[i]] = [];
+				wordLists[objKeys[i]] = [];
 
 				// Generate list using trie if available, otherwise fallback
 				if (typeof generateList === 'function') {
-					_wordLists[objKeys[i]] = generateList(includedLetters, requiredLetters);
+					wordLists[objKeys[i]] = generateList(includedLetters, requiredLetters);
 				} else {
-					_wordLists[objKeys[i]] = generateFallbackList(includedLetters, requiredLetters, onlyLower);
+					wordLists[objKeys[i]] = generateFallbackList(includedLetters, requiredLetters, onlyLower);
 				}
 			}
 		} catch (error) {
@@ -177,7 +177,7 @@ const WordService = (function() {
 	 * @param {boolean} onlyLower - Whether to exclude uppercase words
 	 */
 	function createFallbackTestSets(currentLayout, punctuation = '', onlyLower = true) {
-			const objKeys = Object.keys(_wordLists);
+			const objKeys = Object.keys(wordLists);
 			let includedLetters = punctuation;
 
 			for (let i = 0; i < objKeys.length; i++) {
@@ -196,7 +196,7 @@ const WordService = (function() {
 					requiredLetters = includedLetters;
 				}
 
-				_wordLists[objKeys[i]] = generateFallbackList(includedLetters, requiredLetters, onlyLower);
+				wordLists[objKeys[i]] = generateFallbackList(includedLetters, requiredLetters, onlyLower);
 			}
 		}
 
@@ -245,7 +245,7 @@ const WordService = (function() {
 	 * @returns {string} Generated word line
 	 */
 	function generateWordLine(maxWords, currentLevel, onlyLower, punctuation) {
-			const words = _wordLists[`lvl${currentLevel}`];
+			const words = wordLists[`lvl${currentLevel}`];
 			if (!words || words.length === 0) {
 				return generateLetterJumbleLine(currentLevel, currentLayout, maxWords);
 			}
@@ -312,7 +312,7 @@ const WordService = (function() {
 	 * @returns {Array<string>} Word list for level
 	 */
 	function getWordList(level) {
-			return _wordLists[`lvl${level}`] || [];
+			return wordLists[`lvl${level}`] || [];
 		}
 
 	/**
@@ -320,7 +320,7 @@ const WordService = (function() {
 	 * @returns {Object} All word lists
 	 */
 	function getAllWordLists() {
-			return { ..._wordLists };
+			return { ...wordLists };
 		}
 
 	/**
@@ -328,14 +328,14 @@ const WordService = (function() {
 	 * @returns {boolean} Initialization status
 	 */
 	function isReady() {
-		return _isInitialized;
+		return isInitialized;
 	}
 
 	/**
 	 * Reset all word lists
 	 */
 	function reset() {
-		_wordLists = {
+		wordLists = {
 			lvl1: [],
 			lvl2: [],
 			lvl3: [],
@@ -351,16 +351,16 @@ const WordService = (function() {
 	 * @returns {Object} Word list statistics
 	 */
 	function getStats() {
-		const totalWords = Object.values(_wordLists).reduce((sum, list) => sum + list.length, 0);
+		const totalWords = Object.values(wordLists).reduce((sum, list) => sum + list.length, 0);
 
 		return {
 			totalWords,
-			levels: Object.keys(_wordLists).length,
-			wordsPerLevel: Object.keys(_wordLists).reduce((obj, key) => {
-				obj[key] = _wordLists[key].length;
+			levels: Object.keys(wordLists).length,
+			wordsPerLevel: Object.keys(wordLists).reduce((obj, key) => {
+				obj[key] = wordLists[key].length;
 				return obj;
 			}, {}),
-			isInitialized: _isInitialized
+			isInitialized: isInitialized
 		};
 	}
 

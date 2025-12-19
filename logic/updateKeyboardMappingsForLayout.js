@@ -1,4 +1,5 @@
 function updateKeyboardMappingsForLayout() {
+	const currentKeyboard = StateManager.get('currentKeyboard') || "ansi";
 	switch (currentKeyboard) {
 		case "ansi":
 			document.querySelector(".cheatsheet").innerHTML = ansiDivs;

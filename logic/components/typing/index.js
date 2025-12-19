@@ -68,19 +68,19 @@ const TypingArea = (function() {
 		// Route based on event type
 		switch (processedEvent.type) {
 			case 'special':
-				_handleSpecialKey(processedEvent.keyCode);
+				handleSpecialKey(processedEvent.keyCode);
 				break;
 
 			case 'reset':
-				_handleResetKey(processedEvent.keyCode);
+				handleResetKey(processedEvent.keyCode);
 				break;
 
 			case 'word_completion':
-				_handleWordCompletion(processedEvent.keyCode);
+				handleWordCompletion(processedEvent.keyCode);
 				break;
 
 			case 'character':
-				_handleCharacterInput(processedEvent);
+				handleCharacterInput(processedEvent);
 				break;
 
 			case 'unhandled':
@@ -94,7 +94,7 @@ const TypingArea = (function() {
 	 * Handle special keys (currently no actions)
 	 * @param {number} keyCode - Key code
 	 */
-	function _handleSpecialKey(keyCode) {
+	function handleSpecialKey(keyCode) {
 		// Currently no special actions needed
 		// Placeholder for future features
 	}
@@ -103,7 +103,7 @@ const TypingArea = (function() {
 	 * Handle reset keys (TAB, ESC)
 	 * @param {number} keyCode - Key code
 	 */
-	function _handleResetKey(keyCode) {
+	function handleResetKey(keyCode) {
 		// F5 reload
 		if (keyCode === 116) {
 			window.location.reload();
@@ -120,7 +120,7 @@ const TypingArea = (function() {
 	 * Handle word completion (space, enter)
 	 * @param {number} keyCode - Key code
 	 */
-	function _handleWordCompletion(keyCode) {
+	function handleWordCompletion(keyCode) {
 		if (!modules.wordCompleter || !StateManager) return;
 
 		// Check if game is active
@@ -145,7 +145,7 @@ const TypingArea = (function() {
 	 * Handle character input
 	 * @param {Object} processedEvent - Processed event data
 	 */
-	function _handleCharacterInput(processedEvent) {
+	function handleCharacterInput(processedEvent) {
 		if (!modules.accuracyChecker || !modules.soundController || !StateManager) return;
 
 		// Check if game is active
