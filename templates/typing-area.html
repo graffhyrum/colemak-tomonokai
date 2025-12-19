@@ -1,0 +1,22 @@
+<!-- Typing Area Component -->
+<div class='typingArea' role="main" aria-label="Typing practice area">
+	<div class='fade' id='fadeElement' aria-hidden="false">
+		<h2 class='noDisplay prompt' aria-live="polite" aria-atomic="false">
+			<!-- Words will be dynamically inserted here -->
+		</h2>
+	</div>
+	<button id="resetButton" class='noDisplay' type="button" aria-label="Reset typing session">Reset</button>
+	<input id='userInput' type="text" spellcheck="false" autocomplete="off" 
+	       aria-label="Type the words shown above" 
+	       aria-describedby="scoreAndClock"
+	       placeholder="Start typing...">
+	<div id='scoreAndClock' role="status" aria-live="polite">
+		<span id="scoreText" aria-label="Current score">0/50</span>
+		<span id="timeText" aria-label="Elapsed time">0m :0 s</span>
+	</div>
+	<div id='testResults' class='transparent' role="region" aria-label="Test results" aria-live="polite">
+		<div id='accuracyText' aria-label="Accuracy percentage"></div>
+		<div id='wpmText' aria-label="Words per minute"></div>
+	</div>
+</div>
+
