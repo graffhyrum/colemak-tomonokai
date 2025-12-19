@@ -10,6 +10,7 @@ export default defineConfig({
 	retries: process.env.CI ? 2 : 0,
 	workers: process.env.CI ? 1 : undefined,
 	reporter: [["dot"], ["html", { open: "never" }]],
+	maxFailures: 10,
 	use: {
 		trace: "on",
 	},
