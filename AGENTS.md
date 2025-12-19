@@ -3,6 +3,7 @@
 ## Agent Best Practices
 - In **ALL** interactions, be extremely concise and sacrifice grammar for brevity.
 - At the end of each plan, give me a list of unresolved questions you have about the task, if any. Make questions extremely concise and sacrifice grammar for brevity.
+- **File Reading**: When reading any file, always read the ENTIRE file to avoid incomplete edits and unforced bugs.
 
 ## Build & Test Commands
 
@@ -69,5 +70,26 @@
 - **Coverage**: Playwright tests across Chrome, Firefox, Safari
 - **Validation**: `bun vet` must pass before commits
 - **Screenshots**: Update snapshots when UI changes
-- **Isolation**: Tests should be independent and parallel</content>
+- **Isolation**: Tests should be independent and parallel
+- **Failed Test Cap**: Playwright caps failed test output at 10; if 10 failures shown, likely more exist
+
+## JetBrains MCP Tools Usage Guidelines
+
+### When to Use JetBrains Tools Over Native Tools
+- **File Operations**: Use `jetbrains_get_file_text_by_path`, `jetbrains_create_new_file`, `jetbrains_replace_text_in_file` over `read`, `write`, `edit` for IDE-integrated file handling with automatic indexing and error checking
+- **Search Operations**: Prefer `jetbrains_search_in_files_by_text`, `jetbrains_search_in_files_by_regex` over `grep` for faster IDE-indexed searches with better context highlighting
+- **File Discovery**: Use `jetbrains_find_files_by_name_keyword`, `jetbrains_find_files_by_glob` over `glob`, `list` for project-aware file finding with exclusion awareness
+- **Directory Exploration**: Prefer `jetbrains_list_directory_tree` over `list` for hierarchical project structure visualization
+- **Refactoring**: Always use `jetbrains_rename_refactoring` over manual search/replace for symbol renaming across the entire project
+- **Code Analysis**: Use `jetbrains_get_symbol_info`, `jetbrains_get_file_problems` for IDE-powered code intelligence and error detection
+- **Terminal Commands**: Prefer `jetbrains_execute_terminal_command` over `bash` when IDE integration provides better environment context
+- **Run Configurations**: Use JetBrains run configuration tools for project-specific build/test execution
+- **Code Formatting**: Use `jetbrains_reformat_file` for consistent IDE-formatted code changes
+
+### When to Use Native Tools Instead
+- **Non-project Files**: Use native `read`, `write` for files outside the IDE project scope
+- **System Operations**: Use `bash` for OS-level commands, environment setup, or when IDE integration isn't needed
+- **Web/Content Fetching**: Use `webfetch`, `websearch`, `codesearch` for external resource access
+- **Agent Management**: Use native agent tools for multi-agent coordination and caching
+- **Bulk Operations**: Use native tools when processing many files simultaneously across the filesystem</content>
 
