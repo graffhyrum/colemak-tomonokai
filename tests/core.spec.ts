@@ -37,8 +37,7 @@ test("prompt does not slide too far in word scrolling mode", async ({
 	homePage,
 }) => {
 	// Ensure word scrolling mode is enabled (not paragraph mode)
-	await homePage.actions.preferences.toggleWordScrollingMode();
-	await homePage.actions.preferences.toggleWordScrollingMode(); // Toggle twice to ensure enabled
+	await homePage.actions.preferences.setWordScrollingMode("enable");
 	await homePage.actions.preferences.setWordLimit(10);
 	await homePage.actions.typingArea.focus();
 
@@ -57,8 +56,7 @@ test("prompt does not slide too far in word scrolling mode", async ({
 
 test("letter coloring works during typing", async ({ homePage }) => {
 	// Ensure word scrolling mode is enabled
-	await homePage.actions.preferences.toggleWordScrollingMode();
-	await homePage.actions.preferences.toggleWordScrollingMode(); // Toggle twice to ensure enabled
+	await homePage.actions.preferences.setWordScrollingMode("enable");
 
 	await homePage.actions.typingArea.focus();
 

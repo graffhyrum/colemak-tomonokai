@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
 import type {
 	ComponentFactory,
 	ComponentObject,
@@ -12,55 +12,65 @@ function createPreferencesModalComponent(page: Page) {
 		spinButton: page.getByRole("spinbutton"),
 	} as const satisfies LocatorConfigMap;
 
+	const open = async () => {
+		// Check if modal is already open
+		const isModalOpen = await locators.closePreferenceButton.isEnabled();
+		if (!isModalOpen) {
+			await locators.preferenceButton.click();
+		}
+		await expect(locators.preferenceButton).not.toBeEnabled();
+		await expect(locators.closePreferenceButton).toBeVisible();
+		await expect(locators.closePreferenceButton).toBeEnabled();
+	};
+
+	const close = async () => {
+		// Check if modal is already closed
+		const isModalClosed = await locators.preferenceButton.isEnabled();
+		if (!isModalClosed) {
+			await locators.closePreferenceButton.click();
+		}
+		await expect(locators.closePreferenceButton).not.toBeEnabled();
+		await expect(locators.preferenceButton).toBeVisible();
+		await expect(locators.preferenceButton).toBeEnabled();
+	};
+
 	return {
 		page,
 		actions: {
-			open: async () => {
-				await locators.preferenceButton.click();
-			},
-
-			close: async () => {
-				await locators.closePreferenceButton.click();
-			},
-
+			open,
+			close,
 			setWordLimit: async (wordLimit: number) => {
-				// Close menu first if open
-				const closeButton = page.locator("button.closePreferenceButton");
-				if (await closeButton.isVisible()) {
-					await closeButton.click();
+				if (wordLimit % 10 !== 0 || wordLimit < 10 || wordLimit > 200) {
+					throw new Error(
+						"Word limit must be between 10 and 200 and a multiple of 10",
+					);
 				}
-				await locators.preferenceButton.click();
+				await open();
 				await locators.spinButton.fill(wordLimit.toString());
 				await locators.spinButton.press("Enter");
 				// Trigger change event
 				await locators.spinButton.evaluate((el) =>
 					el.dispatchEvent(new Event("change", { bubbles: true })),
 				);
-				await locators.closePreferenceButton.click();
+				await close();
 			},
 
-			toggleWordScrollingMode: async () => {
-				// Close menu first if open
-				const closeButton = page.locator("button.closePreferenceButton");
-				if (await closeButton.isVisible()) {
-					await closeButton.click();
-				}
-				await locators.preferenceButton.click();
+			setWordScrollingMode: async (mode: "enable" | "disable") => {
+				await open();
 				const wordScrollingButton = page.locator(".wordScrollingModeButton");
-				await wordScrollingButton.click();
-				await locators.closePreferenceButton.click();
+				const isChecked = await wordScrollingButton.isChecked();
+				const shouldBeChecked = mode === "enable";
+				if (isChecked !== shouldBeChecked) {
+					await wordScrollingButton.click();
+				}
+				await close();
 			},
 
 			toggleFullSentenceMode: async () => {
-				// Close menu first if open
-				const closeButton = page.locator("button.closePreferenceButton");
-				if (await closeButton.isVisible()) {
-					await closeButton.click();
-				}
-				await locators.preferenceButton.click();
+				await open();
 				const fullSentenceButton = page.locator(".fullSentenceMode");
 				await fullSentenceButton.click();
-				await locators.closePreferenceButton.click();
+				await close();
 			},
 		},
 

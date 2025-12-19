@@ -1,5 +1,6 @@
-import {expect, type Page} from "@playwright/test";
-import type {ComponentObject} from "../types";
+import { expect, type Page } from "@playwright/test";
+import { assertDefined } from "../../util/AssertDefined";
+import type { ComponentObject } from "../types";
 
 function createUIElements(page: Page) {
 	const locators = {
@@ -14,7 +15,13 @@ function createUIElements(page: Page) {
 
 	return {
 		page,
-		actions: {},
+		actions: {
+			getTimerText: async () => {
+				const timerText = await locators.timerText.textContent();
+				assertDefined(timerText);
+				return timerText;
+			},
+		},
 		assertions: {
 			promptText: () => locators.prompt.textContent(),
 			scoreText: async (expectedText: string) => {
@@ -45,4 +52,4 @@ function createUIElements(page: Page) {
 	} as const satisfies ComponentObject;
 }
 
-export {createUIElements};
+export { createUIElements };

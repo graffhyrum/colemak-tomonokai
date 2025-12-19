@@ -30,61 +30,75 @@ function createHomePagePOM(page: Page) {
 		},
 		actions: {
 			typingArea: {
-				focus: () => typingArea.actions.focus(),
-				typeWord: (word: string) => typingArea.actions.typeWord(word),
-				typeIncorrectLetter: (letter: string) =>
-					typingArea.actions.typeIncorrectLetter(letter),
-				completeAllWords: (targetScore: number) =>
-					typingArea.actions.completeAllWords(targetScore),
-				getWord: (id: number) => typingArea.actions.getWord(id),
-				pressSpace: () => typingArea.actions.pressSpace(),
-				getInputValue: () => typingArea.actions.getInputValue(),
-				typeLetter: (letter: string) => typingArea.actions.typeLetter(letter),
-				pressBackspace: () => typingArea.actions.pressBackspace(),
+				focus: async () => await typingArea.actions.focus(),
+				typeWord: async (word: string) =>
+					await typingArea.actions.typeWord(word),
+				typeIncorrectLetter: async (letter: string) =>
+					await typingArea.actions.typeIncorrectLetter(letter),
+				completeAllWords: async (targetScore: number) =>
+					await typingArea.actions.completeAllWords(targetScore),
+				getWord: async (id: number) => await typingArea.actions.getWord(id),
+				pressSpace: async () => await typingArea.actions.pressSpace(),
+				getInputValue: async () => await typingArea.actions.getInputValue(),
+				typeLetter: async (letter: string) =>
+					await typingArea.actions.typeLetter(letter),
+				pressBackspace: async () => await typingArea.actions.pressBackspace(),
 			},
 
 			score: {
-				getCurrentScore: () => scoreComponent.actions.getCurrentScore(),
-				getTargetScore: () => scoreComponent.actions.getTargetScore(),
+				getCurrentScore: async () =>
+					await scoreComponent.actions.getCurrentScore(),
+				getTargetScore: async () =>
+					await scoreComponent.actions.getTargetScore(),
 			},
 
 			preferences: {
-				open: () => preferencesModal.actions.open(),
-				close: () => preferencesModal.actions.close(),
-				setWordLimit: (wordLimit: number) =>
-					preferencesModal.actions.setWordLimit(wordLimit),
-				toggleWordScrollingMode: () =>
-					preferencesModal.actions.toggleWordScrollingMode(),
-				toggleFullSentenceMode: () =>
-					preferencesModal.actions.toggleFullSentenceMode(),
+				open: async () => await preferencesModal.actions.open(),
+				close: async () => await preferencesModal.actions.close(),
+				setWordLimit: async (wordLimit: number) =>
+					await preferencesModal.actions.setWordLimit(wordLimit),
+				setWordScrollingMode: async (mode: "enable" | "disable") =>
+					await preferencesModal.actions.setWordScrollingMode(mode),
+				toggleFullSentenceMode: async () =>
+					await preferencesModal.actions.toggleFullSentenceMode(),
 			},
 
 			testResults: {
-				getAllResults: () => testResults.actions.getAllResults(),
-				getFinalAccuracyText: () => testResults.actions.getFinalAccuracyText(),
-				getFinalWpmText: () => testResults.actions.getFinalWpmText(),
+				getAllResults: async () => await testResults.actions.getAllResults(),
+				getFinalAccuracyText: async () =>
+					await testResults.actions.getFinalAccuracyText(),
+				getFinalWpmText: async () =>
+					await testResults.actions.getFinalWpmText(),
 			},
 
 			layout: {
-				select: (layoutName: Parameters<typeof layoutSelector.actions.select>[0]) =>
-					layoutSelector.actions.select(layoutName),
-				getCurrentName: () => layoutSelector.actions.getCurrentName(),
+				select: async (
+					layoutName: Parameters<typeof layoutSelector.actions.select>[0],
+				) => await layoutSelector.actions.select(layoutName),
+				getCurrentName: async () =>
+					await layoutSelector.actions.getCurrentName(),
 			},
 
 			keyboard: {
-				select: (keyboardType: string) =>
-					keyboardSelector.actions.select(keyboardType),
+				select: async (keyboardType: string) =>
+					await keyboardSelector.actions.select(keyboardType),
 			},
 
 			levels: {
-				select: (levelNumber: number) =>
-					levelSelector.actions.select(levelNumber),
-				selectAllWords: () => levelSelector.actions.selectAllWords(),
-				selectFullSentences: () => levelSelector.actions.selectFullSentences(),
+				select: async (levelNumber: number) =>
+					await levelSelector.actions.select(levelNumber),
+				selectAllWords: async () =>
+					await levelSelector.actions.selectAllWords(),
+				selectFullSentences: async () =>
+					await levelSelector.actions.selectFullSentences(),
 			},
 
 			reset: {
-				click: () => page.locator("#resetButton").click(),
+				click: async () => await page.locator("#resetButton").click(),
+			},
+
+			ui: {
+				getTimerText: async () => await uiElements.actions.getTimerText(),
 			},
 		},
 
@@ -94,23 +108,24 @@ function createHomePagePOM(page: Page) {
 			},
 
 			layout: {
-				hasName: (expectedName: Parameters<typeof layoutSelector.assertions.hasName>[0]) =>
-					layoutSelector.assertions.hasName(expectedName),
+				hasName: async (
+					expectedName: Parameters<typeof layoutSelector.assertions.hasName>[0],
+				) => await layoutSelector.assertions.hasName(expectedName),
 			},
 
 			keyboard: {
-				isVisible: () => keyboardSelector.assertions.isVisible(),
+				isVisible: async () => await keyboardSelector.assertions.isVisible(),
 			},
 
 			levels: {
-				hasCurrentLevel: (expectedLevel: string) =>
-					levelSelector.assertions.hasCurrentLevel(expectedLevel),
-				isNotHighlighted: (levelNumber: number) =>
-					levelSelector.assertions.isNotHighlighted(levelNumber),
+				hasCurrentLevel: async (expectedLevel: string) =>
+					await levelSelector.assertions.hasCurrentLevel(expectedLevel),
+				isNotHighlighted: async (levelNumber: number) =>
+					await levelSelector.assertions.isNotHighlighted(levelNumber),
 			},
 
 			ui: {
-				promptText: () => uiElements.assertions.promptText(),
+				promptText: async () => await uiElements.assertions.promptText(),
 				scoreText: async (expectedText: string) => {
 					await uiElements.assertions.scoreText(expectedText);
 				},
@@ -138,38 +153,38 @@ function createHomePagePOM(page: Page) {
 			},
 
 			typingArea: {
-				mistakeIndicators: (wordIndex: number) =>
-					typingArea.assertions.mistakeIndicators(wordIndex),
-				inputNotClearedOnMistake: () =>
-					typingArea.assertions.inputNotClearedOnMistake(),
-				wordCompletion: (wordIndex: number, currentWord: string) =>
-					typingArea.assertions.wordCompletion(wordIndex, currentWord),
-				wordHidden: (wordIndex: number) =>
-					typingArea.assertions.wordHidden(wordIndex),
-				nextWordFullyVisible: (wordIndex: number) =>
-					typingArea.assertions.nextWordFullyVisible(wordIndex),
-				letterColor: (
+				mistakeIndicators: async (wordIndex: number) =>
+					await typingArea.assertions.mistakeIndicators(wordIndex),
+				inputNotClearedOnMistake: async () =>
+					await typingArea.assertions.inputNotClearedOnMistake(),
+				wordCompletion: async (wordIndex: number, currentWord: string) =>
+					await typingArea.assertions.wordCompletion(wordIndex, currentWord),
+				wordHidden: async (wordIndex: number) =>
+					await typingArea.assertions.wordHidden(wordIndex),
+				nextWordFullyVisible: async (wordIndex: number) =>
+					await typingArea.assertions.nextWordFullyVisible(wordIndex),
+				letterColor: async (
 					wordIndex: number,
 					letterIndex: number,
 					expectedColor: string,
 				) =>
-					typingArea.assertions.letterColor(
+					await typingArea.assertions.letterColor(
 						wordIndex,
 						letterIndex,
 						expectedColor,
 					),
-				inputFieldColor: (expectedColor: string) =>
-					typingArea.assertions.inputFieldColor(expectedColor),
+				inputFieldColor: async (expectedColor: string) =>
+					await typingArea.assertions.inputFieldColor(expectedColor),
 			},
 
 			testResults: {
-				isVisible: () => testResults.assertions.isVisible(),
-				perfectGameResults: (
+				isVisible: async () => await testResults.assertions.isVisible(),
+				perfectGameResults: async (
 					finalScore: number,
 					finalAccuracyText: string | null,
 					finalWpmText: string | null,
 				) =>
-					testResults.assertions.perfectGameResults(
+					await testResults.assertions.perfectGameResults(
 						finalScore,
 						finalAccuracyText,
 						finalWpmText,

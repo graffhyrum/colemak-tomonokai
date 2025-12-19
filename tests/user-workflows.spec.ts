@@ -10,8 +10,11 @@ test.describe("User Workflows - Complete E2E Scenarios", () => {
 	test("complete typing session from start to finish with perfect accuracy", async ({
 		homePage,
 	}) => {
-		// Set a reasonable word limit for testing, must be multiple of 10
+		// Set word limit to 10
 		await homePage.actions.preferences.setWordLimit(wordLimit);
+
+		// Ensure word scrolling mode is enabled
+		await homePage.actions.preferences.setWordScrollingMode("enable");
 
 		// Verify initial state
 		await homePage.assertions.ui.scoreText(`0/${wordLimit}`);
@@ -19,22 +22,38 @@ test.describe("User Workflows - Complete E2E Scenarios", () => {
 
 		await homePage.actions.typingArea.focus();
 
+		// Get all words upfront (needed for scrolling mode)
+		const words: string[] = [];
+		for (let i = 0; i < wordLimit; i++) {
+			const word = await homePage.actions.typingArea.getWord(i);
+			expect(word).toBeTruthy();
+			assertDefined(word);
+			words.push(word);
+		}
+
 		// Complete all wordLimit words perfectly
 		for (let wordIndex = 0; wordIndex < wordLimit; wordIndex++) {
-			// Get current word
-			const currentWord = await homePage.actions.typingArea.getWord(0);
-			expect(currentWord).toBeTruthy();
+			// Use pre-fetched word
+			const currentWord = words[wordIndex];
 			assertDefined(currentWord);
+			expect(currentWord).toBeDefined();
 
 			// Type each letter correctly
 			await homePage.actions.typingArea.typeWord(currentWord);
 
-			// Press space to complete the word
+			// Verify input contains the complete word and immediately press space
+			await expect(homePage.page.locator("#userInput")).toHaveValue(
+				currentWord,
+			);
+			await homePage.actions.typingArea.focus();
 			await homePage.actions.typingArea.pressSpace();
 
-			// Verify score incremented
-			const expectedScore = `${wordIndex + 1}/${wordLimit}`;
-			await homePage.assertions.ui.scoreText(expectedScore);
+			// Wait for score to update asynchronously
+			const expectedScoreNum = wordIndex + 1;
+			await expect(async () => {
+				const currentScore = await homePage.actions.score.getCurrentScore();
+				expect(currentScore).toBe(expectedScoreNum);
+			}).toPass({ timeout: 1000 });
 		}
 
 		// Verify test completion
@@ -153,9 +172,9 @@ test.describe("User Workflows - Complete E2E Scenarios", () => {
 		// Keyboard display should be visible
 		await homePage.assertions.keyboard.isVisible();
 
-		// Enable keyboard mapping
+		// Disable keyboard mapping
 		await mappingToggle.click();
-		await homePage.assertions.ui.mappingToggleText("on");
+		await homePage.assertions.ui.mappingToggleText("off");
 
 		// Keyboard display should still be visible but mapping inactive
 		await homePage.assertions.keyboard.isVisible();
@@ -216,6 +235,7 @@ test.describe("User Workflows - Complete E2E Scenarios", () => {
 			"input.timeLimitModeButton",
 		);
 		await timeLimitCheckbox.click();
+		await expect(timeLimitCheckbox).toBeChecked();
 		const timeLimitInput = homePage.page.locator("input.timeLimitModeInput");
 		await timeLimitInput.fill("10");
 		await timeLimitInput.dispatchEvent("change"); // Trigger change event
@@ -224,16 +244,12 @@ test.describe("User Workflows - Complete E2E Scenarios", () => {
 		// Start typing
 		await homePage.actions.typingArea.focus();
 
-		// Type 5 words
-		let wordsTyped = 0;
-
 		for (let i = 0; i < 5; i++) {
 			const currentWord = await homePage.actions.typingArea.getWord(0);
 			if (!currentWord?.trim()) break;
 
 			await homePage.actions.typingArea.typeWord(currentWord);
 			await homePage.actions.typingArea.pressSpace();
-			wordsTyped++;
 		}
 
 		// Verify some progress was made
