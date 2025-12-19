@@ -72,6 +72,14 @@
 - **Screenshots**: Update snapshots when UI changes
 - **Isolation**: Tests should be independent and parallel
 - **Failed Test Cap**: Playwright caps failed test output at 10; if 10 failures shown, likely more exist
+- **Banned Methods**: `.waitForTimeout()` is COMPLETELY BANNED - hard waits are a Playwright antipattern that make tests flaky and slow. Use these alternatives instead:
+  - Auto-waiting: Playwright automatically waits for elements (no explicit wait needed)
+  - `page.waitForSelector()` or `locator.waitFor()` with conditions
+  - `page.waitForURL()` for navigation completion
+  - `page.waitForLoadState()` for page load states
+  - `expect(locator).toBeVisible()` - includes built-in waiting
+  - `page.waitForResponse()`/`page.waitForRequest()` for network operations
+  - `page.waitForEvent()` for specific events
 
 ## JetBrains MCP Tools Usage Guidelines
 
