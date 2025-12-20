@@ -466,6 +466,17 @@ const PreferenceMenu = (function() {
 		StateManager.set('punctuation', punctuation);
 		StorageService.set('punctuation', punctuation);
 
+		// Regenerate word pool with new punctuation settings
+		if (typeof WordPool !== 'undefined' && WordPool.generatePool) {
+			try {
+				const layout = StateManager.get('currentLayout') || "colemak";
+				const level = StateManager.get('currentLevel') || 1;
+				WordPool.generatePool(layout, level);
+			} catch (error) {
+				console.error('Error regenerating word pool on punctuation change:', error);
+			}
+		}
+
 		if (typeof createTestSets === 'function') {
 			createTestSets();
 		}
